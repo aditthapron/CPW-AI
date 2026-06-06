@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI for Ed — สัปดาห์ที่ 1: รู้จัก Generative AI · Gemini · Prompt</title>
+
+<!-- reveal.js core -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+<!-- Thai fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --ink:#1a2235; --muted:#5b6678; --line:#dfe4ec;
+  --blue:#1a73e8; --purple:#7b41d8; --teal:#0aa3a3;
+  --bg1:#f7f9fc; --card:#ffffff; --soft:#eef3fb;
+  --warn:#c2410c; --good:#0f8a4f;
+}
+.reveal{ font-family:'Sarabun','Noto Sans Thai',sans-serif; color:var(--ink); font-size:30px; }
+.reveal .slides{ text-align:left; }
+.reveal h1,.reveal h2,.reveal h3{ font-family:'Sarabun','Noto Sans Thai',sans-serif; color:var(--ink); font-weight:700; text-transform:none; letter-spacing:0; line-height:1.2; }
+.reveal h1{ font-size:1.9em; }
+.reveal h2{ font-size:1.35em; }
+.reveal h3{ font-size:1.15em; color:var(--blue); }
+.reveal p{ line-height:1.6; }
+.reveal ul{ display:block; }
+.reveal li{ margin:.5em 0; line-height:1.55; }
+.reveal strong{ color:var(--purple); }
+.reveal section{ height:100%; overflow-y:auto; }
+.reveal section::-webkit-scrollbar { width:6px; }
+.reveal section::-webkit-scrollbar-track { background:transparent; }
+.reveal section::-webkit-scrollbar-thumb { background:var(--line); border-radius:99px; }
+.reveal section::-webkit-scrollbar-thumb:hover { background:var(--muted); }
+.reveal .slides section{ padding:6px 18px; box-sizing:border-box; }
+.reveal h2{ margin-bottom:.5em; }
+
+/* accent header bar on each slide */
+.reveal .slides section > .kicker{
+  display:inline-block; font-size:.62em; font-weight:700; letter-spacing:.06em;
+  color:#fff; background:linear-gradient(90deg,var(--blue),var(--purple));
+  padding:.18em .8em; border-radius:999px; margin-bottom:.5em;
+}
+.reveal .q{ background:var(--soft); border-left:5px solid var(--blue);
+  padding:.7em 1em; border-radius:10px; font-size:.92em; line-height:1.55; margin:.55em 0 .75em; }
+.reveal .note{ color:var(--muted); font-size:.7em; }
+.reveal .rule{ background:#fff6ed; border:1px solid #ffd8b8; color:var(--warn);
+  border-radius:10px; padding:.45em .8em; font-size:.8em; font-weight:600; }
+.reveal .good{ color:var(--good); font-weight:700; }
+.reveal .warn{ color:var(--warn); font-weight:600; }
+
+/* title slide */
+.title-wrap{ text-align:center; height:100%; display:flex; flex-direction:column;
+  justify-content:center; align-items:center; }
+.title-wrap .badge{ font-size:.7em; color:#fff; background:linear-gradient(90deg,var(--blue),var(--purple));
+  padding:.3em 1.1em; border-radius:999px; font-weight:700; }
+.title-wrap h1{ background:linear-gradient(90deg,var(--blue),var(--purple));
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; margin:.25em 0; }
+.title-wrap .sub{ font-size:1.05em; color:var(--ink); font-weight:600; }
+.title-wrap .meta{ color:var(--muted); font-size:.8em; margin-top:.6em; }
+
+/* two-column helper */
+.cols{ display:flex; gap:1.3em; align-items:flex-start; }
+.cols > div{ flex:1; }
+.card{ background:var(--card); border:1px solid var(--line); border-radius:14px;
+  padding:.85em 1.05em; box-shadow:0 2px 10px rgba(20,30,60,.05); line-height:1.55; }
+.card h3{ margin-top:0; }
+.pill{ display:inline-block; background:var(--soft); color:var(--blue);
+  border-radius:8px; padding:.08em .5em; font-size:.8em; font-weight:600; margin:.1em; }
+
+.term{ display:flex; gap:.6em; margin:.5em 0; align-items:baseline; }
+.term > b:first-child{ color:var(--purple); min-width:230px; display:inline-block; }
+
+/* worksheet fields */
+.ws-label{ display:block; font-size:.72em; font-weight:700; color:var(--muted);
+  margin:.45em 0 .15em; }
+.ws-label.gem{ color:var(--teal); }
+textarea.ws-field, input.save{
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:.7em; color:var(--ink);
+  width:100%; border:1.5px solid var(--line); border-radius:10px; padding:.5em .7em;
+  background:#fcfdff; box-sizing:border-box; resize:vertical; }
+textarea.ws-field{ height:90px; line-height:1.35; }
+textarea.ws-field:focus, input.save:focus{ outline:none; border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(26,115,232,.12); }
+input.save{ height:auto; }
+
+/* prompt split subfields */
+.prompt-subfield {
+  font-family: 'Sarabun', 'Noto Sans Thai', sans-serif;
+  font-size: .7em;
+  width: 100%;
+  height: 65px;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: .4em .6em;
+  box-sizing: border-box;
+  resize: none;
+  overflow-y: auto;
+  line-height: 1.35;
+  background: #fcfdff;
+  color: var(--ink);
+}
+.prompt-subfield:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(26,115,232,.12);
+}
+
+/* thin scrollbar for all textareas */
+textarea::-webkit-scrollbar {
+  width: 5px;
+}
+textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+textarea::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 99px;
+}
+textarea::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+.info-grid{ display:grid; grid-template-columns:1fr; gap:.3em; max-width:620px; }
+.info-row{ display:flex; gap:.8em; }
+.info-row > div{ flex:1; }
+
+/* download button (floating) */
+#dlbtn{ position:fixed; top:14px; right:16px; z-index:60;
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:15px; font-weight:700;
+  color:#fff; background:linear-gradient(90deg,var(--blue),var(--purple));
+  border:none; border-radius:999px; padding:10px 18px; cursor:pointer;
+  box-shadow:0 4px 14px rgba(76,40,160,.35); display:none; }
+#dlbtn:hover{ filter:brightness(1.05); }
+#dlbtn:active{ transform:translateY(1px); }
+#savehint{ position:fixed; top:54px; right:18px; z-index:60; font-size:11px;
+  color:var(--good); font-family:'Sarabun',sans-serif; opacity:0; transition:opacity .3s; }
+.dlbig{ font-size:.9em; font-weight:700; color:#fff;
+  background:linear-gradient(90deg,var(--blue),var(--purple)); border:none;
+  border-radius:12px; padding:.5em 1.1em; cursor:pointer; box-shadow:0 4px 14px rgba(76,40,160,.3);
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; }
+
+/* assignment print area — hidden on screen, shown only when printing */
+#print-area{ display:none; }
+.pdf-doc{ font-family:'Sarabun','Noto Sans Thai',sans-serif; color:#11131a; padding:6px 4px; }
+.pdf-doc h1{ font-size:22px; margin:0 0 4px; color:#1a73e8; }
+.pdf-doc .pdf-meta{ display:flex; gap:18px; font-size:13px; border-bottom:2px solid #1a73e8;
+  padding-bottom:8px; margin-bottom:12px; flex-wrap:wrap; }
+.pdf-doc h2{ font-size:15px; margin:16px 0 6px; color:#7b41d8; border-left:4px solid #7b41d8; padding-left:8px; }
+.pdf-item{ margin:8px 0; page-break-inside:avoid; }
+.pdf-label{ font-size:12.5px; font-weight:700; color:#333; margin-bottom:3px; }
+.pdf-answer{ font-size:12.5px; line-height:1.5; border:1px solid #c9d2e0; border-radius:6px;
+  padding:7px 9px; white-space:pre-wrap; min-height:18px; background:#fbfcfe; }
+.pdf-answer .empty{ color:#aab2c0; }
+@page{ size:A4; margin:14mm; }
+@media print{
+  body.printing > *:not(#print-area){ display:none !important; }
+  body.printing #print-area{ display:block !important; }
+  body.printing{ background:#fff !important; }
+}
+.pdf-imgs img{ display:block; max-width:100%; max-height:420px; margin-top:6px;
+  border:1px solid #c9d2e0; border-radius:6px; page-break-inside:avoid; }
+
+/* ---- AI prompt coach ---- */
+.coach-btn{ display:inline-flex; align-items:center; gap:.3em; margin-top:.35em;
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:.62em; font-weight:700;
+  color:#fff; background:linear-gradient(90deg,var(--teal),var(--blue));
+  border:none; border-radius:999px; padding:.42em .95em; cursor:pointer;
+  box-shadow:0 2px 8px rgba(10,163,163,.25); }
+.coach-btn:hover{ filter:brightness(1.06); }
+.coach-btn:active{ transform:translateY(1px); }
+.coach-btn:disabled{ opacity:.6; cursor:wait; }
+.coach-box{ display:none; margin-top:.45em; background:#f0fbfb; border:1px solid #b9e6e6;
+  border-left:5px solid var(--teal); border-radius:10px; padding:.55em .8em;
+  font-size:.62em; line-height:1.55; color:var(--ink); white-space:pre-wrap;
+  max-height:240px; overflow:auto; }
+.coach-box.err{ background:#fff6ed; border-color:#ffd8b8; border-left-color:var(--warn); color:var(--warn); }
+.coach-head{ display:block; font-weight:700; color:var(--teal); margin-bottom:.25em; }
+.coach-foot{ display:block; margin-top:.4em; font-size:.85em; color:var(--muted); }
+
+/* ---- image attach / paste ---- */
+.img-btn{ display:inline-flex; align-items:center; gap:.3em; margin-top:.35em;
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:.6em; font-weight:700;
+  color:var(--blue); background:var(--soft); border:1.5px solid #cfe0fb;
+  border-radius:999px; padding:.4em .9em; cursor:pointer; }
+.img-btn:hover{ filter:brightness(.98); }
+.img-hint{ font-size:.55em; color:var(--muted); margin-left:.5em; }
+.img-tray{ display:flex; flex-wrap:wrap; gap:.5em; margin-top:.4em; }
+.img-thumb{ position:relative; width:96px; height:96px; border:1px solid var(--line);
+  border-radius:8px; overflow:hidden; background:#fafbff; }
+.img-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+.img-thumb .rm{ position:absolute; top:2px; right:2px; width:20px; height:20px;
+  border:none; border-radius:50%; background:rgba(20,30,60,.7); color:#fff;
+  font-size:13px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.img-thumb .rm:hover{ background:var(--warn); }
+</style>
+</head>
+<body>
+
+<button id="dlbtn" onclick="downloadPDF()">⬇ บันทึกใบงานเป็น PDF</button>
+<div id="savehint">บันทึกแล้ว ✓</div>
+
+<div class="reveal"><div class="slides">
+
+<!-- 1 TITLE -->
+<section>
+  <div class="title-wrap">
+    <span class="badge">AI for Ed · สัปดาห์ที่ 1</span>
+    <h1>รู้จัก Generative AI<br>Gemini · การเขียน Prompt</h1>
+  </div>
+</section>
+
+<!-- 2 STUDENT INFO -->
+<section>
+  <span class="kicker">เริ่มต้น</span>
+  <h2>กรอกข้อมูลของคุณก่อนเริ่ม</h2>
+  <div class="info-grid">
+    <div>
+      <span class="ws-label">ชื่อ–นามสกุล</span>
+      <input class="save" id="ws-name" type="text" placeholder="เช่น สมชาย ใจดี">
+    </div>
+    <div class="info-row">
+      <div><span class="ws-label">ชั้น</span><input class="save" id="ws-class" type="text" placeholder="ม.4/1"></div>
+      <div><span class="ws-label">เลขที่</span><input class="save" id="ws-no" type="text" placeholder="12"></div>
+    </div>
+  </div>
+  <div id="setbox" class="rule" style="margin-top:.8em">📋 ชุดโจทย์ของคุณ: <b id="setlabel">— (กรอก “เลขที่” ก่อน เพื่อรับชุดโจทย์ของคุณ)</b></div>
+  <p class="note" style="margin-top:1em">💾 คำตอบทั้งหมดจะถูก <b>บันทึกอัตโนมัติในเครื่องของคุณ</b> (เปิด–ปิดไฟล์ใหม่ก็ไม่หาย) และไม่ถูกส่งออกไปที่ใด<br>
+  ✏️ ขณะพิมพ์ในช่อง ปุ่มลูกศรจะใช้เลื่อนสไลด์ไม่ได้ — คลิกนอกช่องก่อน หรือใช้ปุ่มลูกศรบนหน้าจอ</p>
+</section>
+
+<!-- 3 AGENDA -->
+<section>
+  <span class="kicker">วันนี้เราจะทำอะไร</span>
+  <h2>แผนการเรียน 3 ชั่วโมง</h2>
+  <div class="cols">
+    <div style="flex: 1.6; display: flex; gap: 1.1em;">
+      <div style="flex: 1;">
+        <ul>
+          <li><b>1.</b> Generative AI คืออะไร ทำงานยังไง</li>
+          <li><b>2.</b> รู้จักเครื่องมือ <b>Gemini</b></li>
+          <li><b>3.</b> หลักการเขียน <b>Prompt</b> ที่ดี</li>
+        </ul>
+      </div>
+      <div style="flex: 1;">
+        <ul>
+          <li><b>4.</b> กิจกรรมที่ 1 — ฝึกเขียน Prompt</li>
+          <li><b>5.</b> กิจกรรมที่ 2 — เรียนรู้และตรวจสอบกับ AI</li>
+          <li><b>6.</b> กิจกรรมที่ 3 — AI ผู้ช่วยทำการบ้าน</li>
+          <li><b>7.</b> กิจกรรมที่ 4 — สร้างผู้ช่วย AI ของตัวเอง</li>
+          <li><b>8.</b> ส่งใบงาน (PDF)</li>
+        </ul>
+      </div>
+    </div>
+    <div style="flex: 1; text-align: center;">
+      <img src="images/agenda_learning.png" alt="Agenda Learning Roadmap" style="width: 100%; max-height: 290px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid var(--line); background: #ffffff;">
+    </div>
+  </div>
+</section>
+
+<!-- 4 HOOK -->
+<section>
+  <span class="kicker">วอร์มอัป</span>
+  <h2>จริง หรือ AI? 🤔</h2>
+  <p class="note">แคปชันโปรโมตชานมไข่มุก 2 อัน — อันไหนคนเขียน อันไหน AI เขียน?</p>
+  <div class="cols">
+    <div style="flex: 1.5; display: flex; flex-direction: column; gap: 0.8em;">
+      <div class="card"><b>A</b><br>“ชานมหอมกรุณา ไข่มุกหนึบทุกคำ ความสุขแก้วละ 39 บาท วันนี้ซื้อ 1 แถม 1 เฉพาะหลังเลิกเรียน!”</div>
+      <div class="card"><b>B</b><br>“จิบความฟินส่งตรงถึงใจ 🧋 ชานมเข้มข้น ไข่มุกเด้งดึ๋ง พร้อมเติมพลังหลังเลิกเรียน — แวะมาเป็นเพื่อนกันนะ ✨”</div>
+    </div>
+    <div style="flex: 1.2; text-align: center;">
+      <img src="images/bubble_tea.png" alt="ชานมไข่มุก" style="width: 100%; max-height: 290px; object-fit: cover; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); border: 1px solid var(--line);">
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PART 1: CONCEPT ===================== -->
+
+<!-- 5 -->
+<section>
+  <span class="kicker">แนวคิด 1/4</span>
+  <h2>Generative AI คืออะไร</h2>
+  <div class="cols">
+    <div style="flex: 1.5; display: flex; flex-direction: column; gap: 0.8em;">
+      <div class="cols" style="gap: 0.8em;">
+        <div class="card"><h3>AI แบบเดิม</h3>“จำแนก / ทำนาย” จากตัวเลือกที่มี<br><span class="note">เช่น คัดกรองอีเมลสแปม, แนะนำคลิปถัดไป</span></div>
+        <div class="card"><h3>Generative AI</h3>“<b>สร้างของใหม่</b>” ขึ้นมาเอง<br><span class="note">ข้อความ · รูปภาพ · เสียง · วิดีโอ · โค้ด</span></div>
+      </div>
+      <p style="margin-top:.3em">👉 <b>Gen</b>erative = สร้าง (generate) — เราพิมพ์สิ่งที่อยากได้ แล้วมันสร้างให้</p>
+    </div>
+    <div style="flex: 1; text-align: center;">
+      <img src="images/generative_ai_concept.png" alt="Generative AI Concept" style="width: 100%; max-height: 290px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid var(--line); background: #ffffff;">
+    </div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section>
+  <span class="kicker">แนวคิด 2/4</span>
+  <h2>มันทำงานยังไง (ฉบับเข้าใจง่าย)</h2>
+  <div class="cols">
+    <div style="flex: 1.5;">
+      <ul>
+        <li>หัวใจคือการ <b>“ทายคำถัดไป”</b> (predict the next token) ทีละคำ</li>
+        <li>เหมือน <b>autocomplete</b> ในมือถือ — แต่เก่งกว่ามหาศาล</li>
+        <li>เรียนรู้รูปแบบภาษาจาก <b>ข้อความจำนวนมหาศาล</b> บนอินเทอร์เน็ต</li>
+        <li>มันไม่ได้ “เข้าใจ” แบบคน แต่ <b>คำนวณความน่าจะเป็น</b> ของคำ</li>
+      </ul>
+      <p class="q" style="margin-top: 0.5em;">ลองนึก: พิมพ์ว่า “วันนี้อากาศ…” คุณเดาคำถัดไปว่าอะไร? AI ก็ทำแบบนั้น</p>
+    </div>
+    <div style="flex: 1.1; text-align: center;">
+      <img src="images/autocomplete_concept.png" alt="Autocomplete Predictive Text" style="width: 100%; max-height: 290px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid var(--line); background: #ffffff;">
+    </div>
+  </div>
+</section>
+
+<!-- 7 -->
+<section>
+  <span class="kicker">แนวคิด 3/4</span>
+  <h2>ศัพท์ที่ต้องรู้</h2>
+  <div class="cols">
+    <div style="flex: 1.4;">
+      <div class="term" style="font-size: 0.88em; margin: 0.28em 0;"><b>Model (โมเดล)</b> “สมอง” ของ AI เช่น Gemini 3 Flash</div>
+      <div class="term" style="font-size: 0.88em; margin: 0.28em 0;"><b>Prompt (พรอมป์)</b> คำสั่ง/คำถามที่เราพิมพ์ให้ AI</div>
+      <div class="term" style="font-size: 0.88em; margin: 0.28em 0;"><b>Token (โทเคน)</b> หน่วยย่อยของข้อความที่ AI ประมวลผล</div>
+      <div class="term" style="font-size: 0.88em; margin: 0.28em 0;"><b>Context (บริบท)</b> ข้อมูลแวดล้อมที่เราป้อนให้ AI เข้าใจสถานการณ์</div>
+      <div class="term" style="font-size: 0.88em; margin: 0.28em 0;"><b>Hallucination (อาการมั่ว)</b> AI ตอบมั่นใจ แต่ <b>ผิดหรือแต่งขึ้นเอง</b></div>
+    </div>
+    <div style="flex: 1.1; text-align: center;">
+      <img src="images/glossary_terms.png" alt="AI Technical Terms Glossary" style="width: 100%; max-height: 290px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid var(--line); background: #ffffff;">
+    </div>
+  </div>
+</section>
+
+<!-- 8 -->
+<section>
+  <span class="kicker">แนวคิด 4/4</span>
+  <h2>ทำไม AI ตอบผิดได้?</h2>
+  <div class="cols">
+    <div style="flex: 1.5;">
+      <ul>
+        <li><b>ทายความน่าจะเป็น</b> ไม่ได้ “รู้จริง”</li>
+        <li>ข้อมูลที่เรียนมาอาจ <b>เก่าหรือผิด</b></li>
+        <li>คำถาม <b>กำกวม</b> → ตอบมั่ว</li>
+      </ul>
+      <p class="rule" style="margin-top:.5em; font-size: 0.76em; line-height: 1.35;">🚨 กฎเหล็กข้อ 1: <b>ตรวจสอบทุกครั้ง อย่าเชื่อ AI 100%</b> — เราจะพิสูจน์ในกิจกรรม</p>
+    </div>
+    <div style="flex: 1.1; text-align: center;">
+      <img src="images/ai_warning.png" alt="AI Error Warning Hallucination" style="width: 100%; max-height: 290px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid var(--line); background: #ffffff;">
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PART 2: GEMINI ===================== -->
+
+<!-- 9 -->
+<section>
+  <span class="kicker">เครื่องมือ 1/4</span>
+  <h2>รู้จัก Gemini</h2>
+  <div class="cols">
+    <div style="flex: 1.5;">
+      <ul>
+        <li>Generative AI ของ <b>Google</b> ใช้ฟรีที่ <b>gemini.google.com</b> (หรือแอป)</li>
+        <li>ป้อนได้หลายแบบ: <b>พิมพ์ · พูด · อัปโหลดรูปและไฟล์</b></li>
+        <li>ตอบได้หลายแบบ: ข้อความ · ตาราง · รูปภาพ · โค้ด</li>
+      </ul>
+      <p class="note" style="margin-top: 0.8em;">วันนี้ทุกกิจกรรมใช้ที่ <b>gemini.google.com</b></p>
+    </div>
+    <div style="flex: 1.2; text-align: center;">
+      <img src="images/ai_assistant.png" alt="AI Chatbot Assistant" style="width: 100%; max-height: 290px; object-fit: cover; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); border: 1px solid var(--line);">
+    </div>
+  </div>
+</section>
+
+<!-- 10 -->
+<section>
+  <span class="kicker">เครื่องมือ 2/4</span>
+  <h2>เลือกโมเดลให้ถูกงาน (ปี 2026)</h2>
+  <div class="cols">
+    <div class="card"><h3>Gemini 3 Flash</h3>เร็ว · เป็นค่าเริ่มต้น<br><span class="note">เหมาะงานทั่วไป ถาม–ตอบเร็ว</span></div>
+    <div class="card"><h3>Gemini 3.5 Flash</h3>เร็วและฉลาดขึ้น<br><span class="note">งานสร้างสรรค์/ซับซ้อนปานกลาง</span></div>
+    <div class="card"><h3>Gemini 3 Pro</h3>คิดลึก ละเอียด<br><span class="note">โจทย์ยาก คณิต วิเคราะห์</span></div>
+  </div>
+  <p style="margin-top:.6em">💡 เคล็ดลับ: งานง่ายใช้ <b>Flash</b> (เร็ว) · งานยากใช้ <b>Pro</b> (แม่นกว่า)</p>
+</section>
+
+<!-- 11 -->
+<section>
+  <span class="kicker">เครื่องมือ 3/4</span>
+  <h2>ฟีเจอร์เด็ดใน Gemini</h2>
+  <div class="cols">
+    <div style="flex: 1.4;">
+      <div class="term" style="font-size: 0.88em; margin: 0.28em 0;"><b>Canvas</b> เปลี่ยนคำตอบเป็นภาพ/เอกสาร/แบบทดสอบโต้ตอบได้</div>
+      <div class="term" style="font-size: 0.88em; margin: 0.28em 0;"><b>Gems</b> สร้าง “ผู้ช่วยส่วนตัว” เช่น ติวเตอร์คณิตของฉัน</div>
+      <div class="term" style="font-size: 0.88em; margin: 0.28em 0;"><b>Deep Research</b> ค้นคว้าลึก + อัปโหลดไฟล์ของเราเป็นแหล่งอ้างอิงได้</div>
+      <div class="term" style="font-size: 0.88em; margin: 0.28em 0;"><b>สร้างรูปภาพ</b> วาดภาพจากคำบรรยายของเรา</div>
+    </div>
+    <div style="flex: 1.2; text-align: center;">
+      <img src="images/gemini_features.png" alt="Gemini Features Powerful Digital Tools" style="width: 100%; max-height: 290px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid var(--line); background: #ffffff;">
+    </div>
+  </div>
+</section>
+
+<!-- 12 -->
+<section>
+  <span class="kicker">เครื่องมือ 4/4</span>
+  <h2>ใช้ AI อย่างมีความรับผิดชอบ</h2>
+  <div class="cols">
+    <div style="flex: 1.5;">
+      <ul>
+        <li>✅ <b>ตรวจสอบ</b>ข้อมูลที่ได้เสมอ</li>
+        <li>✅ ใช้ช่วย <b>คิด / อธิบาย / ตรวจ</b> — <span class="warn">ไม่ลอกงานทั้งดุ้น</span></li>
+        <li>✅ <b>ไม่ใส่</b>ข้อมูลส่วนตัวหรือความลับลงไป</li>
+        <li>✅ <b>บอกอ้างอิง</b>ว่าใช้ AI ช่วยตรงไหน</li>
+      </ul>
+    </div>
+    <div style="flex: 1.1; text-align: center;">
+      <img src="images/responsible_ai.png" alt="Responsible AI Ethics" style="width: 100%; max-height: 290px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid var(--line); background: #ffffff;">
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PART 3: PROMPTING ===================== -->
+
+<!-- 13 -->
+<section>
+  <span class="kicker">การเขียน Prompt 1/5</span>
+  <h2>Prompt คืออะไร</h2>
+  <div class="cols">
+    <div style="flex: 1.4;">
+      <p style="margin-top: 1em; font-size: 1.1em;">Prompt = สิ่งที่เรา <b>สั่งหรือถาม</b> AI</p>
+      <p class="rule" style="margin-top: 1.2em; font-size: 0.82em; line-height: 1.4;">⚙️ Prompt ดี → คำตอบดี · Prompt ห่วย → คำตอบห่วย <span class="note">(Garbage in, garbage out)</span></p>
+    </div>
+    <div style="flex: 1.2; text-align: center;">
+      <img src="images/prompt_concept.png" alt="Prompt Concept Typing" style="width: 100%; max-height: 290px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid var(--line); background: #ffffff;">
+    </div>
+  </div>
+</section>
+
+<!-- 14 -->
+<section>
+  <span class="kicker">การเขียน Prompt 2/5</span>
+  <h2>สูตร Prompt 3 องค์ประกอบ</h2>
+  <div class="cols">
+    <div style="flex: 1.5;">
+      <div class="term" style="font-size: 0.85em; margin: 0.2em 0;"><b>① บทบาท (Role)</b> ให้ AI สวมบทเป็นใคร</div>
+      <div class="term" style="font-size: 0.85em; margin: 0.2em 0;"><b>② งาน (Task)</b> อยากให้ทำอะไร</div>
+      <div class="term" style="font-size: 0.85em; margin: 0.2em 0;"><b>③ รูปแบบ (Format)</b> อยากได้ผลลัพธ์แบบไหน</div>
+      <p style="margin-top:.3em; font-size: 0.8em; font-weight: bold; margin-bottom: 0.2em;">ตัวอย่างครบ 3 องค์ประกอบ:</p>
+      <p class="q" style="font-size: 0.72em; padding: 0.4em 0.8em; margin: 0.2em 0 0.4em;"><b>① การศึกษา —</b> “<b>คุณเป็นติวเตอร์คณิต</b> (บทบาท) <b>ช่วยสรุปวิธีแก้สมการกำลังสอง</b> (งาน) <b>เป็นขั้นตอน 1-2-3 พร้อมตัวอย่าง 1 ข้อ</b> (รูปแบบ)”</p>
+      <p class="q" style="font-size: 0.72em; padding: 0.4em 0.8em; margin: 0.2em 0;"><b>② โปรโมต —</b> “<b>คุณเป็นนักเขียนคำโฆษณา</b> (บทบาท) <b>ช่วยคิดแคปชันโปรโมตชมรมถ่ายภาพของโรงเรียน</b> (งาน) <b>สั้น ๆ 2 ประโยค โทนสนุก มีอีโมจิ</b> (รูปแบบ)”</p>
+    </div>
+    <div style="flex: 1.1; text-align: center;">
+      <img src="images/prompt_formula.png" alt="Prompt Three Components Formula" style="width: 100%; max-height: 320px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid var(--line); background: #ffffff;">
+    </div>
+  </div>
+</section>
+
+<!-- 15 -->
+<section>
+  <span class="kicker">การเขียน Prompt 3/5</span>
+  <h2>ทำให้ Prompt ดีขึ้น</h2>
+  <div class="cols">
+    <div style="flex: 1.4;">
+      <ul>
+        <li>ให้ <b>บริบท/ตัวอย่าง</b> เช่น “เขียนให้เพื่อน ม.4 อ่านเข้าใจ”</li>
+        <li>ระบุ <b>ความยาว ภาษา โทน กลุ่มผู้อ่าน</b></li>
+        <li>ไม่พอใจ? <b>แก้แล้วถามใหม่</b> (iterate) จนกว่าจะได้</li>
+      </ul>
+    </div>
+    <div style="flex: 1.2; text-align: center;">
+      <img src="images/prompt_iteration.png" alt="Prompt Refinement Feedback Loop" style="width: 100%; max-height: 290px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid var(--line); background: #ffffff;">
+    </div>
+  </div>
+</section>
+
+<!-- 15.5 Few-Shot -->
+<section>
+  <span class="kicker">การเขียน Prompt 4/5</span>
+  <h2>การเรียนรู้แบบมีคำแนะนำ (Few-Shot)</h2>
+  <div class="cols" style="align-items: center;">
+    <div style="flex: 1.2;">
+      <p style="font-size: 0.8em; margin-bottom: 0.6em; line-height: 1.4;">นอกจากการบอกความต้องการแล้ว เรายังสามารถคุมผลลัพธ์ให้เป็นระเบียบได้โดยการให้ <b>ตัวอย่างคำตอบ</b>:</p>
+      <ul style="font-size: 0.72em; line-height: 1.55; padding-left: 1.2em;">
+        <li><b>Zero-Shot:</b> สั่งงานทันทีโดยไม่มีตัวอย่าง เช่น <i>"แปลคำสแลง..."</i> AI อาจเดารูปแบบไม่ถูกใจ</li>
+        <li><b>Few-Shot:</b> ใส่ <b>ตัวอย่างคำตอบที่ถูกต้อง</b> ไปด้วยอย่างน้อย 1-2 ข้อ เพื่อนำทาง AI</li>
+        <li><b>ช่วยอะไร?</b> ควบคุมสไตล์ ภาษา โครงสร้าง และความถูกต้องได้แม่นยำที่สุด!</li>
+      </ul>
+    </div>
+    <div style="flex: 1.4; text-align: center;">
+      <img src="images/few_shot_concept.png" alt="Few-shot vs Zero-shot Prompting Comparison" style="width: 100%; max-height: 290px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid var(--line); background: #ffffff;">
+    </div>
+  </div>
+</section>
+
+<!-- 16 -->
+<section>
+  <span class="kicker">การเขียน Prompt 5/5</span>
+  <h2>ข้อควรระวังในการเขียน Prompt</h2>
+  <div class="cols">
+    <div style="flex: 1.4;">
+      <ul>
+        <li>Prompt <b>กว้างเกินไป</b> → ได้คำตอบกลาง ๆ ไม่ตรงใจ</li>
+        <li>ภาษา <b>กำกวมหรือพิมพ์ผิด</b> → AI งง (เดี๋ยวลองในข้อ 2.5)</li>
+        <li><b>เชื่อทันที</b>โดยไม่ตรวจ → อันตราย</li>
+      </ul>
+      <p class="good" style="margin-top:.4em; font-size: 0.9em;">พร้อมแล้ว — ไปลงมือทำกัน! 🚀</p>
+    </div>
+    <div style="flex: 1.2; text-align: center;">
+      <img src="images/common_pitfalls.png" alt="Prompt Common Pitfalls Caution" style="width: 100%; max-height: 290px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid var(--line); background: #ffffff;">
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PART 4: ACTIVITIES (WORKSHEET) ===================== -->
+
+<!-- 17 ACT1 intro -->
+<section>
+  <span class="kicker">กิจกรรมที่ 1</span>
+  <h2>ฝึกเขียน Prompt 3 องค์ประกอบ 🧩</h2>
+  <p>ใช้ <b>gemini.google.com</b> · คัดลอก <b>prompt ที่ใช้</b> และ <b>คำตอบที่ Gemini ให้</b> มาวางในช่องของแต่ละข้อ</p>
+  <p class="note">ทุกช่องบันทึกอัตโนมัติ ทำต่อข้ามวันได้</p>
+  <p class="rule" style="margin-top:.5em">💡 ใต้ช่อง “Prompt ของฉัน” ทุกข้อ มีปุ่ม <b>ขอคำแนะนำปรับปรุง prompt</b> — ลองเขียนเองก่อน แล้วกดให้ <b>AI โค้ช</b> ช่วยติชม (โค้ชจะ <b>ไม่เขียน prompt ให้ทั้งหมด</b> แต่ช่วยให้คุณแก้เอง)</p>
+</section>
+
+<!-- 18 Q1.1 -->
+<section>
+  <h3>ข้อ 1.1</h3>
+  <p class="q">เขียน prompt เพื่อ <b>เชิญชวนเที่ยวจังหวัด <span data-var="province">เชียงใหม่</span></b> โดยต้องมีครบ <b>3 องค์ประกอบ</b> (บทบาท + งาน + รูปแบบ)</p>
+  <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 1.1em; align-items: start;">
+    <div style="display: flex; flex-direction: column; gap: 0.35em;">
+      <div>
+        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">① บทบาท (Role) <span id="q11p_role_feedback"></span></span>
+        <textarea class="save prompt-subfield" id="q11p_role" placeholder="คุณรับบทเป็นใคร เช่น: คุณเป็นไกด์มืออาชีพ"></textarea>
+      </div>
+      <div>
+        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">② งาน (Task) <span id="q11p_task_feedback"></span></span>
+        <textarea class="save prompt-subfield" id="q11p_task" placeholder="สั่งให้ AI ทำอะไร เช่น: ช่วยเขียนแนะนำสถานที่เที่ยวจังหวัดเชียงใหม่"></textarea>
+      </div>
+      <div>
+        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">③ รูปแบบ (Format) <span id="q11p_format_feedback"></span></span>
+        <textarea class="save prompt-subfield" id="q11p_format" placeholder="รูปแบบคำตอบ เช่น: ความยาว 2 ย่อหน้า โทนสนุกสนาน มีอีโมจิ"></textarea>
+      </div>
+    </div>
+    <div>
+      <span class="ws-label">🤖 Prompt ที่รวมให้แล้ว (คลิกเพื่อคัดลอก)</span>
+      <textarea class="save ws-field" id="q11p" readonly style="font-family:'Sarabun',sans-serif; font-size:.7em; width:100%; height:60px; border:1.5px solid var(--line); border-radius:10px; padding:.4em .6em; box-sizing:border-box; background:#f7f9fc; color:var(--blue); cursor:pointer; font-weight:600; resize:none;" onclick="this.select(); document.execCommand('copy'); alert('คัดลอก Prompt แล้ว ✓');" data-group="กิจกรรมที่ 1: ฝึกเขียน Prompt 3 องค์ประกอบ" data-label="ข้อ 1.1 — Prompt ที่ใช้"></textarea>
+      <span class="ws-label gem" style="margin-top: 0.3em;">🤖 คำตอบจาก Gemini</span>
+      <textarea class="save ws-field" id="q11o" data-label="ข้อ 1.1 — คำตอบจาก Gemini" style="height: 105px;"></textarea>
+    </div>
+  </div>
+</section>
+
+<!-- 19 Q1.2 -->
+<section>
+  <h3>ข้อ 1.2 <span class="note">(5 คะแนน)</span></h3>
+  <p class="q">แก้ prompt จากข้อ 1.1 ให้เหมาะกับผู้อ่านที่เป็น <b>นักท่องเที่ยวต่างชาติ</b> สำหรับ <b>ติดป้ายที่สนามบิน</b></p>
+  <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 1.1em; align-items: start;">
+    <div style="display: flex; flex-direction: column; gap: 0.35em;">
+      <div>
+        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">① บทบาท (Role) <span id="q12p_role_feedback"></span></span>
+        <textarea class="save prompt-subfield" id="q12p_role" placeholder="ปรับบทบาทให้เหมาะสม เช่น: คุณเป็นประชาสัมพันธ์สนามบิน"></textarea>
+      </div>
+      <div>
+        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">② งาน (Task) <span id="q12p_task_feedback"></span></span>
+        <textarea class="save prompt-subfield" id="q12p_task" placeholder="ปรับงานให้เหมาะสม เช่น: ช่วยแปล/เขียนแนะนำท่องเที่ยวสั้นๆ"></textarea>
+      </div>
+      <div>
+        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">③ รูปแบบ (Format) <span id="q12p_format_feedback"></span></span>
+        <textarea class="save prompt-subfield" id="q12p_format" placeholder="ปรับรูปแบบ เช่น: เป็นภาษาอังกฤษสั้นๆ กระชับ สำหรับขึ้นบอร์ดสนามบิน"></textarea>
+      </div>
+    </div>
+    <div>
+      <span class="ws-label">🤖 Prompt ที่รวมให้แล้ว (คลิกเพื่อคัดลอก)</span>
+      <textarea class="save ws-field" id="q12p" readonly style="font-family:'Sarabun',sans-serif; font-size:.7em; width:100%; height:60px; border:1.5px solid var(--line); border-radius:10px; padding:.4em .6em; box-sizing:border-box; background:#f7f9fc; color:var(--blue); cursor:pointer; font-weight:600; resize:none;" onclick="this.select(); document.execCommand('copy'); alert('คัดลอก Prompt แล้ว ✓');" data-label="ข้อ 1.2 — Prompt ที่ใช้"></textarea>
+      <span class="ws-label gem" style="margin-top: 0.3em;">🤖 คำตอบจาก Gemini</span>
+      <textarea class="save ws-field" id="q12o" data-label="ข้อ 1.2 — คำตอบจาก Gemini" style="height: 105px;"></textarea>
+    </div>
+  </div>
+</section>
+
+<!-- 20 Q1.3 -->
+<section>
+  <h3>ข้อ 1.3</h3>
+  <p class="q">เขียน prompt เพื่อ <b>สร้างภาพกราฟิก</b> จากเนื้อหาข้อ 1.2 โดยใช้ <b>Gemini Canvas</b></p>
+  <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 1.1em; align-items: start;">
+    <div style="display: flex; flex-direction: column; gap: 0.35em;">
+      <div>
+        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">① บทบาท (Role) <span id="q13p_role_feedback"></span></span>
+        <textarea class="save prompt-subfield" id="q13p_role" placeholder="กำหนดบทบาท เช่น: คุณเป็นนักออกแบบกราฟิกมืออาชีพ"></textarea>
+      </div>
+      <div>
+        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">② งาน (Task) <span id="q13p_task_feedback"></span></span>
+        <textarea class="save prompt-subfield" id="q13p_task" placeholder="สั่งวาดรูป เช่น: ช่วยสร้างรูปประกอบสำหรับป้ายโฆษณาตามเนื้อหาข้อ 1.2"></textarea>
+      </div>
+      <div>
+        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">③ รูปแบบ (Format) <span id="q13p_format_feedback"></span></span>
+        <textarea class="save prompt-subfield" id="q13p_format" placeholder="รูปแบบภาพ เช่น: ภาพถ่ายเสมือนจริง โทนอุ่นและสดใส คุณภาพระดับสตูดิโอ"></textarea>
+      </div>
+    </div>
+    <div>
+      <span class="ws-label">🤖 Prompt ที่รวมให้แล้ว (คลิกเพื่อคัดลอก)</span>
+      <textarea class="save ws-field" id="q13p" readonly style="font-family:'Sarabun',sans-serif; font-size:.7em; width:100%; height:60px; border:1.5px solid var(--line); border-radius:10px; padding:.4em .6em; box-sizing:border-box; background:#f7f9fc; color:var(--blue); cursor:pointer; font-weight:600; resize:none;" onclick="this.select(); document.execCommand('copy'); alert('คัดลอก Prompt แล้ว ✓');" data-label="ข้อ 1.3 — Prompt ที่ใช้"></textarea>
+      <span class="ws-label gem" style="margin-top: 0.3em;">🤖 ผลลัพธ์ / อธิบายภาพที่ได้ (หรือแปะลิงก์)</span>
+      <textarea class="save ws-field" id="q13o" data-label="ข้อ 1.3 — ผลลัพธ์จาก Canvas" style="height: 105px;"></textarea>
+    </div>
+  </div>
+</section>
+
+<!-- Q1.4 Few-Shot -->
+<section>
+  <h3>ข้อ 1.4</h3>
+  <p class="q">ลองใช้เทคนิค <b>Few-Shot Prompting (การเรียนรู้แบบมีคำแนะนำ)</b> โดยใส่ <b>ตัวอย่างการแปลศัพท์สแลงอย่างน้อย 2 ตัวอย่าง</b> ในช่องงาน (Task) เพื่อช่วย Gemini แปลคำว่า <b>“<span data-var="slang">ตึงจัด</span>”</b></p>
+  <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 1.1em; align-items: start;">
+    <div style="display: flex; flex-direction: column; gap: 0.35em;">
+      <div>
+        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">① บทบาท (Role) <span id="q14p_role_feedback"></span></span>
+        <textarea class="save prompt-subfield" id="q14p_role" placeholder="กำหนดบทบาท เช่น: คุณเป็นผู้เชี่ยวชาญด้านภาษาวัยรุ่นไทยและนักแปลคำศัพท์ภาษาถิ่น"></textarea>
+      </div>
+      <div>
+        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">② งาน (Task) <span id="q14p_task_feedback"></span></span>
+        <textarea class="save prompt-subfield" id="q14p_task" placeholder="ช่วยแปลคำศัพท์โดยมีตัวอย่างนำทาง เช่น: ช่วยแปลความหมายคำศัพท์ ตัวอย่าง: ช็อตฟีล = อารมณ์เสียเฉียบพลัน, เลิศเกิ๊น = ดีมาก คำศัพท์ที่ให้แปลคือ: [คำสแลงของคุณ]"></textarea>
+      </div>
+      <div>
+        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">③ รูปแบบ (Format) <span id="q14p_format_feedback"></span></span>
+        <textarea class="save prompt-subfield" id="q14p_format" placeholder="รูปแบบคำตอบ เช่น: อธิบายสั้นๆ คำแปลบรรทัดเดียว ไม่เวิ่นเว้อ"></textarea>
+      </div>
+    </div>
+    <div>
+      <span class="ws-label">🤖 Prompt ที่รวมให้แล้ว (คลิกเพื่อคัดลอก)</span>
+      <textarea class="save ws-field" id="q14p" readonly style="font-family:'Sarabun',sans-serif; font-size:.7em; width:100%; height:60px; border:1.5px solid var(--line); border-radius:10px; padding:.4em .6em; box-sizing:border-box; background:#f7f9fc; color:var(--blue); cursor:pointer; font-weight:600; resize:none;" onclick="this.select(); document.execCommand('copy'); alert('คัดลอก Prompt แล้ว ✓');" data-label="ข้อ 1.4 — Prompt ที่ใช้"></textarea>
+      <span class="ws-label gem" style="margin-top: 0.3em;">🤖 คำตอบจาก Gemini</span>
+      <textarea class="save ws-field" id="q14o" data-label="ข้อ 1.4 — คำตอบจาก Gemini" style="height: 105px;"></textarea>
+    </div>
+  </div>
+</section>
+
+<!-- 21 ACT2 intro -->
+<section>
+  <span class="kicker">กิจกรรมที่ 2</span>
+  <h2>เรียนรู้ และ “ตรวจสอบ” กับ AI 🔍</h2>
+  <p>ใช้ AI เป็น <b>ติวเตอร์</b> และทดสอบว่ามัน <b>เชื่อถือได้แค่ไหน</b></p>
+</section>
+
+<!-- 22 Q2.1 -->
+<section>
+  <h3>ข้อ 2.1</h3>
+  <p class="q">สมมุติว่าไม่เข้าใจเรื่อง <b>“<span data-var="topic">เพาเวอร์เซต (power set)</span>”</b> เขียน prompt เพื่อเรียนเรื่องนี้ โดยกำหนดบทบาท: <b>ฉันเป็นนักเรียน ม.4</b> และ <b>Gemini เป็นครูคณิตที่เข้มงวดแต่ใจดี</b></p>
+  <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 1.1em; align-items: start;">
+    <div style="display: flex; flex-direction: column; gap: 0.35em;">
+      <div>
+        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">① บทบาท (Role) <span id="q21p_role_feedback"></span></span>
+        <textarea class="save prompt-subfield" id="q21p_role" placeholder="สวมบทบาทครูคณิต เช่น: คุณเป็นครูคณิตศาสตร์ที่เข้มงวดแต่ใจดี"></textarea>
+      </div>
+      <div>
+        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">② งาน (Task) <span id="q21p_task_feedback"></span></span>
+        <textarea class="save prompt-subfield" id="q21p_task" placeholder="สั่งสอนหนังสือ เช่น: ช่วยสอนและอธิบายเรื่องเพาเวอร์เซตให้เข้าใจ"></textarea>
+      </div>
+      <div>
+        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">③ รูปแบบ (Format) <span id="q21p_format_feedback"></span></span>
+        <textarea class="save prompt-subfield" id="q21p_format" placeholder="รูปแบบเช่น: อธิบายเป็นขั้นๆ ด้วยภาษาง่ายๆ เหมาะสำหรับนักเรียน ม.4"></textarea>
+      </div>
+    </div>
+    <div>
+      <span class="ws-label">🤖 Prompt ที่รวมให้แล้ว (คลิกเพื่อคัดลอก)</span>
+      <textarea class="save ws-field" id="q21p" readonly style="font-family:'Sarabun',sans-serif; font-size:.7em; width:100%; height:60px; border:1.5px solid var(--line); border-radius:10px; padding:.4em .6em; box-sizing:border-box; background:#f7f9fc; color:var(--blue); cursor:pointer; font-weight:600; resize:none;" onclick="this.select(); document.execCommand('copy'); alert('คัดลอก Prompt แล้ว ✓');" data-group="กิจกรรมที่ 2: เรียนรู้และตรวจสอบกับ AI" data-label="ข้อ 2.1 — Prompt ที่ใช้"></textarea>
+      <span class="ws-label gem" style="margin-top: 0.3em;">🤖 คำตอบจาก Gemini</span>
+      <textarea class="save ws-field" id="q21o" data-label="ข้อ 2.1 — คำตอบจาก Gemini" style="height: 105px;"></textarea>
+    </div>
+  </div>
+</section>
+
+<!-- 23 Q2.2 -->
+<section>
+  <h3>ข้อ 2.2</h3>
+  <p class="q">เขียน prompt <b>ขอโจทย์ “<span data-var="topic">เพาเวอร์เซต (power set)</span>” 3 ข้อ</b> จาก Gemini</p>
+  <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 1.1em; align-items: start;">
+    <div style="display: flex; flex-direction: column; gap: 0.35em;">
+      <div>
+        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">① บทบาท (Role) <span id="q22p_role_feedback"></span></span>
+        <textarea class="save prompt-subfield" id="q22p_role" placeholder="บทบาทผู้สอน เช่น: คุณเป็นครูสอนคณิตศาสตร์"></textarea>
+      </div>
+      <div>
+        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">② งาน (Task) <span id="q22p_task_feedback"></span></span>
+        <textarea class="save prompt-subfield" id="q22p_task" placeholder="สั่งสร้างข้อสอบ เช่น: ช่วยตั้งโจทย์ฝึกฝนเรื่องเพาเวอร์เซต"></textarea>
+      </div>
+      <div>
+        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">③ รูปแบบ (Format) <span id="q22p_format_feedback"></span></span>
+        <textarea class="save prompt-subfield" id="q22p_format" placeholder="รูปแบบคำตอบ เช่น: ขอโจทย์จำนวน 3 ข้อ พร้อมเฉลยแยกไว้ด้านล่าง"></textarea>
+      </div>
+    </div>
+    <div>
+      <span class="ws-label">🤖 Prompt ที่รวมให้แล้ว (คลิกเพื่อคัดลอก)</span>
+      <textarea class="save ws-field" id="q22p" readonly style="font-family:'Sarabun',sans-serif; font-size:.7em; width:100%; height:60px; border:1.5px solid var(--line); border-radius:10px; padding:.4em .6em; box-sizing:border-box; background:#f7f9fc; color:var(--blue); cursor:pointer; font-weight:600; resize:none;" onclick="this.select(); document.execCommand('copy'); alert('คัดลอก Prompt แล้ว ✓');" data-label="ข้อ 2.2 — Prompt ที่ใช้"></textarea>
+      <span class="ws-label gem" style="margin-top: 0.3em;">🤖 โจทย์ 3 ข้อที่ได้</span>
+      <textarea class="save ws-field" id="q22o" data-label="ข้อ 2.2 — โจทย์ที่ได้จาก Gemini" style="height: 105px;"></textarea>
+    </div>
+  </div>
+</section>
+
+<!-- 24 Q2.3 -->
+<section>
+  <h3>ข้อ 2.3</h3>
+  <p class="q">ตอบโจทย์ 3 ข้อข้างต้น โดย <b>จงใจตอบผิดอย่างน้อย 1 ข้อ</b> แล้วส่งให้ Gemini ตรวจ — <b>มันจับผิดได้ไหม?</b></p>
+  <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 1.1em; align-items: start;">
+    <div style="display: flex; flex-direction: column; gap: 0.35em;">
+      <div>
+        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">① บทบาท (Role) <span id="q23p_role_feedback"></span></span>
+        <textarea class="save prompt-subfield" id="q23p_role" placeholder="ผู้ตรวจการบ้าน เช่น: คุณเป็นครูผู้ตรวจข้อสอบคณิตศาสตร์"></textarea>
+      </div>
+      <div>
+        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">② งาน (Task) <span id="q23p_task_feedback"></span></span>
+        <textarea class="save prompt-subfield" id="q23p_task" placeholder="สั่งตรวจคำตอบ เช่น: นี่คือคำตอบโจทย์ 3 ข้อของฉัน ช่วยตรวจสอบว่าถูกหรือผิด"></textarea>
+      </div>
+      <div>
+        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">③ รูปแบบ (Format) <span id="q23p_format_feedback"></span></span>
+        <textarea class="save prompt-subfield" id="q23p_format" placeholder="รูปแบบวิเคราะห์ เช่น: ช่วยบอกว่าฉันทำผิดข้อไหนอย่างละเอียด"></textarea>
+      </div>
+    </div>
+    <div>
+      <span class="ws-label">🤖 Prompt ที่รวมให้แล้ว (คลิกเพื่อคัดลอก)</span>
+      <textarea class="save ws-field" id="q23p" readonly style="font-family:'Sarabun',sans-serif; font-size:.7em; width:100%; height:60px; border:1.5px solid var(--line); border-radius:10px; padding:.4em .6em; box-sizing:border-box; background:#f7f9fc; color:var(--blue); cursor:pointer; font-weight:600; resize:none;" onclick="this.select(); document.execCommand('copy'); alert('คัดลอก Prompt แล้ว ✓');" data-label="ข้อ 2.3 — คำตอบที่ส่งให้ตรวจ"></textarea>
+      <span class="ws-label gem" style="margin-top: 0.3em;">🤖 ผลการตรวจจาก Gemini (จับผิดได้ไหม?)</span>
+      <textarea class="save ws-field" id="q23o" data-label="ข้อ 2.3 — ผลการตรวจจาก Gemini" style="height: 105px;"></textarea>
+    </div>
+  </div>
+</section>
+
+<!-- 25 Q2.4 -->
+<section>
+  <h3>ข้อ 2.4 — เปรียบเทียบโมเดล</h3>
+  <p class="q">พิมพ์ prompt <b>“<span data-var="expr">44 ÷ 8</span>”</b> ในโมเดลต่างกัน แล้วสังเกตผล</p>
+  <span class="ws-label gem">(a) ผลจาก <b>Gemini 3 Flash</b></span>
+  <textarea class="save ws-field" id="q24a" data-label="ข้อ 2.4 (a) — ผลจาก Gemini 3 Flash" style="height:60px"></textarea>
+  <span class="ws-label gem">(b) ผลจาก <b>Gemini 3 Pro</b></span>
+  <textarea class="save ws-field" id="q24b" data-label="ข้อ 2.4 (b) — ผลจาก Gemini 3 Pro" style="height:60px"></textarea>
+  <span class="ws-label">(c) ✏️ (a) กับ (b) ต่างกันอย่างไร เพราะอะไร</span>
+  <textarea class="save ws-field" id="q24c" data-label="ข้อ 2.4 (c) — ต่างกันอย่างไร เพราะอะไร" style="height:60px"></textarea>
+</section>
+
+<!-- 26 Q2.5 -->
+<section>
+  <h3>ข้อ 2.5 — ภาษากำกวม</h3>
+  <p class="q">ทดลอง prompt <b>“อธิบาย ม้าเป็นลูกตา”</b> และ <b>“อธิบาย แม่เป็นลูกตา”</b> → AI ตอบแปลกไหม? จากนั้น <b>แก้ prompt</b> ให้ Gemini เข้าใจสิ่งที่เราต้องการจริง ๆ</p>
+  <span class="ws-label gem">🤖 ผลลัพธ์ตอนแรก (prompt กำกวม)</span>
+  <textarea class="save ws-field" id="q25a" data-label="ข้อ 2.5 — ผลลัพธ์จาก prompt กำกวม" style="height:60px"></textarea>
+  <span class="ws-label">✏️ Prompt ที่แก้ใหม่ให้ชัดเจน</span>
+  <textarea class="save ws-field" id="q25b" data-label="ข้อ 2.5 — Prompt ที่แก้ใหม่" style="height:60px"></textarea>
+  <span class="ws-label gem">🤖 ผลลัพธ์หลังแก้</span>
+  <textarea class="save ws-field" id="q25c" data-label="ข้อ 2.5 — ผลลัพธ์หลังแก้ prompt" style="height:60px"></textarea>
+</section>
+
+<!-- 27 ACT3 intro -->
+<section>
+  <span class="kicker">กิจกรรมที่ 3</span>
+  <h2>AI ผู้ช่วยทำการบ้าน (อย่างถูกวิธี) 📚</h2>
+  <p>ใช้ Gemini ช่วย <b>อธิบาย / วางโครงร่าง / ติชม</b> งานของคุณ — <span class="warn">ไม่ใช่ให้มันทำให้ทั้งหมด</span></p>
+</section>
+
+<!-- 28 Q3.1 -->
+<section>
+  <h3>ข้อ 3.1</h3>
+  <p class="q">เลือกการบ้าน/หัวข้อที่กำลังเรียนอยู่ เขียน prompt ขอให้ Gemini <b>อธิบายแบบเข้าใจง่าย</b> หรือ <b>ช่วยวางโครงร่าง</b> หรือ <b>ติชมงานของฉัน</b></p>
+  <span class="ws-label">✏️ Prompt ของฉัน</span>
+  <textarea class="save ws-field" id="q31p" data-group="กิจกรรมที่ 3: AI ผู้ช่วยทำการบ้าน" data-label="ข้อ 3.1 — Prompt ที่ใช้"></textarea>
+  <span class="ws-label gem">🤖 คำตอบจาก Gemini</span>
+  <textarea class="save ws-field" id="q31o" data-label="ข้อ 3.1 — คำตอบจาก Gemini"></textarea>
+</section>
+
+<!-- 29 REFLECTION -->
+<section>
+  <span class="kicker">สะท้อนคิด</span>
+  <h3>คำถามท้ายคาบ</h3>
+  <p class="q">วันนี้ Gemini ตอบ <b>ผิดหรือมั่ว</b> ตรงไหนบ้าง? และคุณ <b>แก้ prompt อย่างไร</b> ให้ได้คำตอบดีขึ้น?</p>
+  <textarea class="save ws-field" id="qref" data-group="สะท้อนคิด (Reflection)" data-label="สิ่งที่ AI ตอบผิด และวิธีแก้ prompt ของฉัน" style="height:130px"></textarea>
+</section>
+
+<!-- 30 ACT4 -->
+<section>
+  <span class="kicker">กิจกรรมที่ 4</span>
+  <h3>สร้างผู้ช่วย AI ของตัวเอง 🤖</h3>
+  <p class="q">เลือก 1 อย่าง: สร้าง <b>Gem</b> ผู้ช่วยติวของตัวเอง <b>หรือ</b> ใช้ <b>Canvas</b> สร้างแบบทดสอบทบทวนบทเรียน</p>
+  <span class="ws-label gem">🤖 สิ่งที่ทำ + ผลลัพธ์ (หรือแปะลิงก์)</span>
+  <textarea class="save ws-field" id="qbonus" data-group="กิจกรรมที่ 4: สร้างผู้ช่วย AI" data-label="ข้อ 4.1 — Gem หรือ Canvas ที่สร้าง" style="height:80px"></textarea>
+</section>
+
+<!-- 30.5 NEXT WEEK: NOTEBOOKLM PREVIEW -->
+<section>
+  <span class="kicker">สัปดาห์ถัดไป</span>
+  <h2>เรียนรู้เร็วขึ้นด้วย NotebookLM 📓</h2>
+  <div class="cols" style="align-items: center;">
+    <div style="flex: 1.2;">
+      <p style="font-size: 0.8em; margin-bottom: 0.8em; line-height: 1.4;">สัปดาห์หน้า เราจะไปรู้จักเครื่องมือจัดระเบียบข้อมูลอัจฉริยะจาก Google:</p>
+      <ul style="font-size: 0.72em; line-height: 1.55; padding-left: 1.2em;">
+        <li>📂 <b>รวบรวมเอกสาร:</b> โยน PDF, Google Docs, ลิงก์เว็บ หรือ YouTube เข้ามาวิเคราะห์ร่วมกัน</li>
+        <li>💬 <b>คุยกับข้อมูลอย่างแม่นยำ:</b> ถามตอบจากเอกสารที่อัปโหลดเท่านั้น ไม่มั่ว (No Hallucination)</li>
+        <li>🎧 <b>สร้าง Audio Overview:</b> แปลงเอกสารข้อความให้กลายเป็นบทสนทนาพอดคาสต์เสียงโต้ตอบสุดล้ำ!</li>
+      </ul>
+    </div>
+    <div style="flex: 1.3; text-align: center;">
+      <img src="images/notebooklm_concept.png" alt="NotebookLM Concept Illustration" style="width: 100%; max-height: 290px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid var(--line); background: #ffffff;">
+    </div>
+  </div>
+</section>
+
+<!-- 31 SUBMIT -->
+<section>
+  <div class="title-wrap">
+    <span class="badge">ส่งงาน</span>
+    <h2 style="margin:.3em 0">ทำเสร็จแล้ว — ส่งใบงานกันเลย!</h2>
+    <p>① ตรวจว่ากรอก <b>ชื่อ / ชั้น / เลขที่</b> แล้ว (สไลด์ที่ 2)<br>
+       ② กดปุ่มด้านล่าง → หน้าต่างพิมพ์จะเปิดขึ้น<br>
+       ③ ที่ช่อง “ปลายทาง/Destination” เลือก <b>“บันทึกเป็น PDF” (Save as PDF)</b> แล้วกด <b>บันทึก</b></p>
+    <button class="dlbig" onclick="downloadPDF()">⬇ บันทึกใบงานเป็น PDF</button>
+    <p class="note" style="margin-top:.8em">ไฟล์จะมีเฉพาะคำตอบในใบงาน ไม่รวมสไลด์บรรยาย</p>
+  </div>
+</section>
+
+</div></div>
+
+<!-- assignment-only area, shown only during printing -->
+<div id="print-area"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script>
+  Reveal.initialize({
+    hash:false, respondToHashChanges:false, slideNumber:'c/t', controls:true, progress:true,
+    width:1280, height:800, margin:0.06, minScale:0.2, maxScale:1.5,
+    transition:'slide'
+  });
+
+  /* ---- auto-save to localStorage & Cookies ---- */
+  const SAVE_KEY='aied_w1';
+  const hint=document.getElementById('savehint'); let hintTimer;
+
+  function setCookie(name, value, days) {
+    let expires = "";
+    if (days) {
+      const date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/; SameSite=Lax";
+  }
+
+  function getCookie(name) {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(';');
+    for(let i=0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+    }
+    return null;
+  }
+
+  function loadSaved(){
+    let data={};
+    try {
+      data = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
+    } catch(e) {}
+    
+    let updated = false;
+    document.querySelectorAll('.save').forEach(el => {
+      if (data[el.id] !== undefined) {
+        el.value = data[el.id];
+      } else {
+        const cookieVal = getCookie(SAVE_KEY + '_' + el.id);
+        if (cookieVal !== null) {
+          el.value = cookieVal;
+          data[el.id] = cookieVal;
+          updated = true;
+        }
+      }
+    });
+
+    if (updated) {
+      try {
+        localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+      } catch(e) {}
+    }
+  }
+
+  function saveField(el){
+    // Save to localStorage
+    let data={};
+    try {
+      data = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
+    } catch(e) {}
+    data[el.id] = el.value;
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+    
+    // Save to Cookie
+    setCookie(SAVE_KEY + '_' + el.id, el.value, 365);
+
+    hint.style.opacity=1; clearTimeout(hintTimer);
+    hintTimer=setTimeout(()=>hint.style.opacity=0, 900);
+  }
+  window.saveField = saveField;
+
+  document.addEventListener('input', e=>{ if(e.target.classList.contains('save')) saveField(e.target); });
+  loadSaved();
+
+  /* ---- show floating download button only on the last slide ---- */
+  function updateDlBtnVisibility() {
+    const dlBtn = document.getElementById('dlbtn');
+    if (dlBtn) {
+      dlBtn.style.display = Reveal.isLastSlide() ? 'block' : 'none';
+    }
+  }
+  Reveal.on('ready', updateDlBtnVisibility);
+  Reveal.on('slidechanged', updateDlBtnVisibility);
+
+  /* ---- don't let reveal hijack arrow keys while typing ---- */
+  ['focusin','focusout'].forEach(ev=>document.addEventListener(ev, e=>{
+    if(e.target.matches('input,textarea')) Reveal.configure({keyboard: ev==='focusout'});
+  }));
+
+  /* ---- build & download the assignment-only PDF ---- */
+  function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function val(id){ const el=document.getElementById(id); return el?el.value:''; }
+  function getImgs(id){
+    try{ const d=JSON.parse(localStorage.getItem(SAVE_KEY)||'{}'); return d['img:'+id]||[]; }
+    catch(e){ return []; }
+  }
+
+  function buildAssignmentHTML(){
+    const name=val('ws-name'), cls=val('ws-class'), no=val('ws-no');
+    const si=(window.getSetInfo && window.getSetInfo())||null;
+    let html=`<div class="pdf-doc">
+      <h1>ใบงาน AI for Ed — สัปดาห์ที่ 1</h1>
+      <div class="pdf-meta">
+        <span><b>ชื่อ–สกุล:</b> ${esc(name)||'____________________'}</span>
+        <span><b>ชั้น:</b> ${esc(cls)||'________'}</span>
+        <span><b>เลขที่:</b> ${esc(no)||'____'}</span>
+        ${ si ? `<span><b>ชุดโจทย์:</b> ชุดที่ ${si.n} (จังหวัด${esc(si.province)} · ${esc(si.topic)} · ${esc(si.expr)})</span>` : '' }
+      </div>`;
+    let curGroup='';
+    document.querySelectorAll('.ws-field').forEach(f=>{
+      const g=f.getAttribute('data-group')||'';
+      if(g && g!==curGroup){ curGroup=g; html+=`<h2>${esc(g)}</h2>`; }
+      const label=f.getAttribute('data-label')||'';
+      const v=f.value||'';
+      const imgs=getImgs(f.id);
+      const ans = v ? esc(v).replace(/\n/g,'<br>')
+                    : (imgs.length ? '<span class="empty">(แนบรูปภาพด้านล่าง)</span>' : '<span class="empty">(ยังไม่ได้ตอบ)</span>');
+      let imgHtml='';
+      if(imgs.length){ imgHtml='<div class="pdf-imgs">'+imgs.map(s=>`<img src="${s}">`).join('')+'</div>'; }
+      html+=`<div class="pdf-item"><div class="pdf-label">${esc(label)}</div><div class="pdf-answer">${ans}</div>${imgHtml}</div>`;
+    });
+    html+=`</div>`;
+    return html;
+  }
+
+  function downloadPDF(){
+    const name=val('ws-name').trim();
+    if(!name){
+      alert('กรุณากรอก “ชื่อ–นามสกุล” ในสไลด์ที่ 2 ก่อนบันทึก');
+      Reveal.slide(1); return;
+    }
+    const area=document.getElementById('print-area');
+    area.innerHTML=buildAssignmentHTML();
+    document.body.classList.add('printing');
+    // let layout/fonts settle, then open the browser print dialog (choose "Save as PDF")
+    setTimeout(()=>{ try{ window.print(); }catch(e){ cleanupPrint();
+      alert('เบราว์เซอร์เปิดหน้าต่างพิมพ์ไม่ได้ในมุมมองนี้\nให้เปิดไฟล์ใบงานในเบราว์เซอร์ (เช่น Chrome) โดยตรง แล้วลองใหม่'); } }, 120);
+  }
+  function cleanupPrint(){
+    document.body.classList.remove('printing');
+    const area=document.getElementById('print-area'); if(area) area.innerHTML='';
+  }
+  window.addEventListener('afterprint', cleanupPrint);
+  window.downloadPDF=downloadPDF;
+</script>
+
+<!-- ===================== AI PROMPT COACH ===================== -->
+<script>
+(function(){
+  const SYS = `คุณคือ "AI โค้ช" ผู้ช่วยฝึกเขียน prompt สำหรับนักเรียนชั้นมัธยมศึกษาปีที่ 4 (อายุ ~15-16 ปี) ในเวิร์กช็อปวิชา AI
+
+หน้าที่ของคุณคือ "ให้คำแนะนำเพื่อให้นักเรียนแก้ prompt ด้วยตัวเอง" ไม่ใช่เขียน prompt ฉบับสมบูรณ์ให้
+
+ประเมิน prompt ของนักเรียนตามสูตร 3 องค์ประกอบที่เรียนในคาบ:
+1. บทบาท (Role) — ให้ AI สวมบทเป็นใคร
+2. งาน (Task) — อยากให้ทำอะไร ชัดเจนพอไหม
+3. รูปแบบ (Format) — อยากได้ผลลัพธ์แบบไหน (ความยาว โทน ภาษา กลุ่มผู้อ่าน)
+
+ตอบเป็นภาษาไทย สั้น กระชับ เป็นกันเอง ให้กำลังใจ ตามรูปแบบนี้เป๊ะ ๆ:
+
+บทบาท: ✅ หรือ ⚠️ — <สั้น ๆ>
+งาน: ✅ หรือ ⚠️ — <สั้น ๆ>
+รูปแบบ: ✅ หรือ ⚠️ — <สั้น ๆ>
+
+ข้อเสนอแนะ: <1-2 ข้อ บอกแนวทางทำให้ prompt ดีขึ้น ยกตัวอย่างเป็น "คำ" หรือ "วลี" ได้บางส่วน>
+
+ลองคิดต่อ: <คำถามชวนคิด 1 ข้อ>
+
+กฎสำคัญ: ห้ามเขียน prompt ฉบับเต็มที่แก้แล้วให้นักเรียนลอก ให้เพียงทิศทางและคำใบ้ ถ้า prompt ดีอยู่แล้วให้ชมและเสนอวิธีต่อยอดเล็กน้อย`;
+
+  function localCoach(text){
+    const hasRole=/(คุณเป็น|คุณคือ|สมมุติว่าคุณ|ทำตัวเป็น|ในฐานะ|รับบทเป็น|สวมบทเป็น|act as|you are|you're)/i.test(text);
+    const hasTask=/(ช่วย|เขียน|อธิบาย|สร้าง|สรุป|แปล|ออกแบบ|วางโครงร่าง|แต่ง|แนะนำ|เปรียบเทียบ|ยกตัวอย่าง|จง|ขอให้|ทำให้|วิเคราะห์|ตรวจ|\?|？)/.test(text);
+    const hasFormat=/(ย่อหน้า|ข้อ|ตาราง|คำ|ประโยค|โทน|น้ำเสียง|สำหรับ|ภาษา|รายการ|bullet|list|สั้น|ยาว|กระชับ|ละเอียด|อีโมจิ|emoji|วัยรุ่น|นักเรียน|ระดับ|ความยาว|bullet)/i.test(text);
+    const mark=b=>b?'✅':'⚠️';
+    let tips=[];
+    if(!hasRole) tips.push('เพิ่ม “บทบาท” ให้ AI เช่น ขึ้นต้นด้วย “คุณเป็น…” (ไกด์ / ครู / นักเขียน)');
+    if(!hasTask) tips.push('ระบุ “งาน” ให้ชัดด้วยคำกริยา เช่น เขียน / อธิบาย / สรุป / ออกแบบ');
+    if(!hasFormat) tips.push('บอก “รูปแบบ” ที่อยากได้ เช่น ความยาว (กี่ย่อหน้า) โทน ภาษา และกลุ่มผู้อ่าน');
+    if(tips.length===0) tips.push('ครบทั้ง 3 องค์ประกอบแล้ว! ลองเพิ่ม “ตัวอย่าง” หรือ “บริบท” เพื่อให้คำตอบตรงใจยิ่งขึ้น');
+    const q = !hasFormat ? 'ถ้าผู้อ่านคือคนละกลุ่ม (เช่น เด็ก vs ผู้ใหญ่) prompt ควรเปลี่ยนตรงไหน?'
+            : !hasRole ? 'ถ้าให้ AI สวมบทผู้เชี่ยวชาญคนละแบบ คำตอบจะต่างไหม?'
+            : 'มีรายละเอียดอะไรอีกที่ถ้าใส่เพิ่ม จะทำให้คำตอบดีขึ้น?';
+    return `บทบาท: ${mark(hasRole)} ${hasRole?'มีการกำหนดบทบาท':'ยังไม่พบการกำหนดบทบาท'}
+งาน: ${mark(hasTask)} ${hasTask?'ระบุงานชัด':'งานยังไม่ชัดเจน'}
+รูปแบบ: ${mark(hasFormat)} ${hasFormat?'มีการระบุรูปแบบ/ผู้อ่าน':'ยังไม่ระบุรูปแบบผลลัพธ์'}
+
+ข้อเสนอแนะ: ${tips.join(' · ')}
+
+ลองคิดต่อ: ${q}`;
+  }
+
+  async function coach(field, btn, box){
+    const text=(field.value||'').trim();
+    box.classList.remove('err');
+    if(!text){
+      box.style.display='block'; box.classList.add('err');
+      box.textContent='✏️ ลองเขียน prompt ของคุณในช่องด้านบนก่อน แล้วค่อยกดขอคำแนะนำนะ';
+      return;
+    }
+    const orig=btn.textContent;
+    btn.disabled=true; btn.textContent='🤖 กำลังคิด…';
+    box.style.display='block'; box.classList.remove('err');
+    box.innerHTML='<span class="coach-head">AI โค้ช</span>กำลังอ่าน prompt ของคุณ…';
+    let resultText='', offline=false;
+    try{
+      const res=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          model:'claude-sonnet-4-20250514',
+          max_tokens:1000,
+          system:SYS,
+          messages:[{role:'user',content:'นี่คือ prompt ของนักเรียน:\n\n"""'+text+'"""\n\nช่วยให้คำแนะนำตามรูปแบบที่กำหนด'}]
+        })
+      });
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const data=await res.json();
+      resultText=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n').trim();
+      if(!resultText) throw new Error('empty');
+    }catch(e){
+      offline=true;
+      resultText=localCoach(text);
+    }finally{
+      btn.disabled=false; btn.textContent=orig;
+    }
+    box.innerHTML='';
+    const head=document.createElement('span'); head.className='coach-head';
+    head.textContent='💡 คำแนะนำจาก AI โค้ช';
+    const body=document.createElement('div'); body.textContent=resultText;
+    box.appendChild(head); box.appendChild(body);
+    if(offline){
+      const foot=document.createElement('span'); foot.className='coach-foot';
+      foot.textContent='(โหมดพื้นฐาน — เปิดใบงานในแอป Claude เพื่อรับคำแนะนำจาก AI เต็มรูปแบบ)';
+      box.appendChild(foot);
+    }
+  }
+
+  function attach(field){
+    const btn=document.createElement('button');
+    btn.className='coach-btn'; btn.type='button';
+    btn.textContent='💡 ขอคำแนะนำปรับปรุง prompt';
+    const box=document.createElement('div'); box.className='coach-box';
+    btn.addEventListener('click',()=>coach(field,btn,box));
+    field.insertAdjacentElement('afterend', box);
+    field.insertAdjacentElement('afterend', btn);
+  }
+
+  function init(){
+    document.querySelectorAll('.ws-field').forEach(f=>{
+      const lbl=f.getAttribute('data-label')||'';
+      if(lbl.indexOf('Prompt')!==-1) attach(f);
+    });
+  }
+  if(document.readyState!=='loading') init();
+  else document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+
+<!-- ===================== IMAGE ATTACH / PASTE ===================== -->
+<script>
+(function(){
+  const KEY='aied_w1';
+  const MAXDIM=1280;            // resize cap (px)
+  const QUALITY=0.82;           // jpeg quality
+  function readAll(){ try{return JSON.parse(localStorage.getItem(KEY)||'{}');}catch(e){return {};} }
+  function getImgs(id){ return readAll()['img:'+id]||[]; }
+  function setImgs(id,arr){
+    const d=readAll(); d['img:'+id]=arr;
+    try{ localStorage.setItem(KEY, JSON.stringify(d)); return true; }
+    catch(e){ alert('พื้นที่จัดเก็บในเครื่องเต็ม — รูปอาจมีขนาดใหญ่หรือมีหลายรูปเกินไป\nลองลบรูปเก่าบางรูปออกก่อนนะ'); return false; }
+  }
+
+  function compress(file){
+    return new Promise((res,rej)=>{
+      const r=new FileReader();
+      r.onerror=()=>rej(new Error('read'));
+      r.onload=()=>{
+        const img=new Image();
+        img.onerror=()=>rej(new Error('decode'));
+        img.onload=()=>{
+          let w=img.naturalWidth, h=img.naturalHeight;
+          if(w>MAXDIM||h>MAXDIM){ const k=Math.min(MAXDIM/w, MAXDIM/h); w=Math.round(w*k); h=Math.round(h*k); }
+          const c=document.createElement('canvas'); c.width=w; c.height=h;
+          c.getContext('2d').drawImage(img,0,0,w,h);
+          try{ res(c.toDataURL('image/jpeg', QUALITY)); }catch(e){ rej(e); }
+        };
+        img.src=r.result;
+      };
+      r.readAsDataURL(file);
+    });
+  }
+
+  async function addFiles(id, files, tray){
+    const list=[...files].filter(f=>f && f.type && f.type.indexOf('image/')===0);
+    if(!list.length) return;
+    const arr=getImgs(id);
+    for(const f of list){ try{ arr.push(await compress(f)); }catch(e){} }
+    if(setImgs(id,arr)) renderTray(id,tray);
+  }
+
+  function renderTray(id,tray){
+    const arr=getImgs(id); tray.innerHTML='';
+    arr.forEach((src,i)=>{
+      const t=document.createElement('div'); t.className='img-thumb';
+      const im=document.createElement('img'); im.src=src; im.alt='แนบรูป';
+      const rm=document.createElement('button'); rm.className='rm'; rm.type='button';
+      rm.textContent='✕'; rm.title='ลบรูปนี้';
+      rm.addEventListener('click',()=>{ const a=getImgs(id); a.splice(i,1); setImgs(id,a); renderTray(id,tray); });
+      t.appendChild(im); t.appendChild(rm); tray.appendChild(t);
+    });
+  }
+
+  function attach(field){
+    const id=field.id;
+    const btn=document.createElement('button'); btn.className='img-btn'; btn.type='button';
+    btn.textContent='📎 แนบรูป / วางรูป';
+    const hint=document.createElement('span'); hint.className='img-hint';
+    hint.textContent='หรือคัดลอกรูปแล้ววางในช่อง (Ctrl/⌘ + V)';
+    const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
+    inp.multiple=true; inp.style.display='none';
+    const tray=document.createElement('div'); tray.className='img-tray';
+
+    btn.addEventListener('click',()=>inp.click());
+    inp.addEventListener('change',()=>{ addFiles(id, inp.files, tray); inp.value=''; });
+    field.addEventListener('paste',e=>{
+      const items=e.clipboardData && e.clipboardData.items;
+      if(!items) return;
+      const imgs=[...items].filter(it=>it.kind==='file' && it.type.indexOf('image/')===0)
+                           .map(it=>it.getAsFile());
+      if(imgs.length){ e.preventDefault(); addFiles(id, imgs, tray); }
+    });
+
+    // order after the field: button, hint, then tray below
+    field.insertAdjacentElement('afterend', tray);
+    field.insertAdjacentElement('afterend', hint);
+    field.insertAdjacentElement('afterend', inp);
+    field.insertAdjacentElement('afterend', btn);
+    renderTray(id,tray);
+  }
+
+  function init(){
+    document.querySelectorAll('.ws-field').forEach(f=>{
+      const lbl=f.getAttribute('data-label')||'';
+      if(lbl.indexOf('Prompt')===-1) attach(f);   // image attach on answer/result fields
+    });
+  }
+  if(document.readyState!=='loading') init();
+  else document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+
+<!-- ===================== PROBLEM SETS (anti-copy) ===================== -->
+<script>
+(function(){
+  // 5 tweaked sets — auto-assigned by seat number (เลขที่). Same structure, different specifics.
+  const SETS=[
+    {province:'เชียงใหม่', topic:'เพาเวอร์เซต (power set)', expr:'44 ÷ 8', slang:'ตึงจัด'},
+    {province:'ภูเก็ต',    topic:'สมการกำลังสอง',          expr:'123 × 7', slang:'ช็อตฟีล'},
+    {province:'ขอนแก่น',   topic:'ฟังก์ชันเชิงเส้น',        expr:'2^10', slang:'ตัวมารดา'},
+    {province:'กระบี่',    topic:'ความน่าจะเป็นเบื้องต้น',  expr:'17% ของ 250', slang:'เลิศเกิ๊น'},
+    {province:'น่าน',      topic:'เลขยกกำลังและราก',       expr:'√225', slang:'ฉ่ำ'}
+  ];
+
+  function setIndexOf(noStr){
+    const n=parseInt(String(noStr||'').replace(/[^0-9]/g,''),10);
+    if(!n || n<1) return null;
+    return (n-1) % SETS.length;       // เลขที่ 1→ชุด1, 6→ชุด1, ...
+  }
+  function applySet(i){
+    const s=SETS[i];
+    document.querySelectorAll('[data-var="province"]').forEach(e=>e.textContent=s.province);
+    document.querySelectorAll('[data-var="topic"]').forEach(e=>e.textContent=s.topic);
+    document.querySelectorAll('[data-var="expr"]').forEach(e=>e.textContent=s.expr);
+    document.querySelectorAll('[data-var="slang"]').forEach(e=>e.textContent=s.slang);
+  }
+  function refresh(){
+    const noEl=document.getElementById('ws-no');
+    const lbl=document.getElementById('setlabel');
+    const i=setIndexOf(noEl?noEl.value:'');
+    if(i===null){ applySet(0); if(lbl) lbl.textContent='— (กรอก “เลขที่” ก่อน เพื่อรับชุดโจทย์ของคุณ)'; return; }
+    applySet(i);
+    const s=SETS[i];
+    if(lbl) lbl.textContent='ชุดที่ '+(i+1)+' · จังหวัด'+s.province+' · คณิต: '+s.topic+' · โจทย์คำนวณ: '+s.expr;
+  }
+
+  // expose for the PDF builder
+  window.getSetInfo=function(){
+    const noEl=document.getElementById('ws-no');
+    const i=setIndexOf(noEl?noEl.value:'');
+    if(i===null) return null;
+    return { n:i+1, province:SETS[i].province, topic:SETS[i].topic, expr:SETS[i].expr, slang:SETS[i].slang };
+  };
+
+  function init(){
+    const noEl=document.getElementById('ws-no');
+    if(noEl) noEl.addEventListener('input', refresh);
+    refresh();
+  }
+  if(document.readyState!=='loading') init();
+  else document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+
+<!-- ===================== PROMPT SPLIT BUILDER AND VALIDATION ===================== -->
+<script>
+(function(){
+  const promptIds = ['q11p', 'q12p', 'q13p', 'q14p', 'q21p', 'q22p', 'q23p'];
+  
+  function validateField(promptId, type, val) {
+    if (!val) return { ok: false, text: '⚠️ ยังไม่ได้กรอก' };
+    
+    if (type === 'role') {
+      const hasRole = /(คุณเป็น|คุณคือ|สมมุติว่าคุณ|ทำตัวเป็น|ในฐานะ|รับบทเป็น|สวมบทเป็น|act as|you are|you're)/i.test(val);
+      if (!hasRole) return { ok: false, text: '⚠️ ควรใช้คำระบุบทบาท เช่น "คุณเป็น..."' };
+      return { ok: true, text: '✅ ระบุบทบาทแล้ว' };
+    }
+    
+    if (type === 'task') {
+      if (promptId === 'q14p') {
+        const hasExample = /(ตัวอย่าง|เช่น|=|:|->|—)/.test(val);
+        if (!hasExample) return { ok: false, text: '⚠️ ควรมีตัวอย่างสอน AI เช่น "ตึงจัด = เจ๋งมาก"' };
+      }
+      const hasTask = /(ช่วย|เขียน|อธิบาย|สร้าง|สรุป|แปล|ออกแบบ|วางโครงร่าง|แต่ง|แนะนำ|เปรียบเทียบ|ยกตัวอย่าง|จง|ขอให้|ทำให้|วิเคราะห์|ตรวจ|\?|อังกฤษ|english)/.test(val);
+      if (!hasTask) return { ok: false, text: '⚠️ ควรระบุสิ่งที่ให้ทำ เช่น "ช่วยแปล..."' };
+      return { ok: true, text: '✅ ระบุงานแล้ว' };
+    }
+    
+    if (type === 'format') {
+      const hasFormat = /(ย่อหน้า|ข้อ|ตาราง|คำ|ประโยค|โทน|น้ำเสียง|สำหรับ|ภาษา|รายการ|bullet|list|สั้น|ยาว|กระชับ|ละเอียด|อีโมจิ|emoji|วัยรุ่น|นักเรียน|ระดับ|ความยาว)/i.test(val);
+      if (!hasFormat) return { ok: false, text: '⚠️ ควรระบุรูปแบบ เช่น "ความยาว...", "มีอีโมจิ"' };
+      return { ok: true, text: '✅ ระบุรูปแบบแล้ว' };
+    }
+    
+    return { ok: true, text: '✅ เรียบร้อย' };
+  }
+
+  function updateCombined(promptId) {
+    const roleEl = document.getElementById(promptId + '_role');
+    const taskEl = document.getElementById(promptId + '_task');
+    const formatEl = document.getElementById(promptId + '_format');
+    const combEl = document.getElementById(promptId);
+    if (!roleEl || !taskEl || !formatEl || !combEl) return;
+
+    const roleVal = roleEl.value.trim();
+    const taskVal = taskEl.value.trim();
+    const formatVal = formatEl.value.trim();
+
+    // Validate and update label feedback
+    const roleCheck = validateField(promptId, 'role', roleVal);
+    const taskCheck = validateField(promptId, 'task', taskVal);
+    const formatCheck = validateField(promptId, 'format', formatVal);
+
+    updateFeedbackDisplay(promptId + '_role_feedback', roleCheck);
+    updateFeedbackDisplay(promptId + '_task_feedback', taskCheck);
+    updateFeedbackDisplay(promptId + '_format_feedback', formatCheck);
+
+    // Concatenate the final prompt
+    let combined = "";
+    if (roleVal) combined += roleVal;
+    if (taskVal) {
+      if (combined) combined += " ";
+      combined += taskVal;
+    }
+    if (formatVal) {
+      if (combined) combined += " ";
+      combined += formatVal;
+    }
+
+    if (combEl.value !== combined) {
+      combEl.value = combined;
+      if (window.saveField) window.saveField(combEl);
+    }
+  }
+
+  function updateFeedbackDisplay(elementId, result) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    el.textContent = result.text;
+    el.style.color = result.ok ? 'var(--good)' : 'var(--warn)';
+    el.style.fontSize = '0.75em';
+    el.style.fontWeight = '600';
+  }
+
+  function init(){
+    promptIds.forEach(id => {
+      ['role', 'task', 'format'].forEach(type => {
+        const el = document.getElementById(id + '_' + type);
+        if (el) {
+          el.addEventListener('input', () => updateCombined(id));
+        }
+      });
+      // Initial update on load
+      updateCombined(id);
+    });
+  }
+
+  // Bind to page load and expose globally
+  if (document.readyState !== 'loading') {
+    setTimeout(init, 150);
+  } else {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(init, 150));
+  }
+  window.updateCombined = updateCombined;
+})();
+</script>
+</body>
+</html>

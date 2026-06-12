@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI for Ed — สัปดาห์ที่ 2: Google AI Studio & NotebookLM</title>
+
+<!-- reveal.js core -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+<!-- Thai fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --ink:#1a2235; --muted:#5b6678; --line:#dfe4ec;
+  --blue:#1a73e8; --purple:#7b41d8; --teal:#0aa3a3;
+  --bg1:#f7f9fc; --card:#ffffff; --soft:#eef3fb;
+  --warn:#c2410c; --good:#0f8a4f;
+}
+.reveal{ font-family:'Sarabun','Noto Sans Thai',sans-serif; color:var(--ink); font-size:30px; }
+.reveal .slides{ text-align:left; }
+.reveal h1,.reveal h2,.reveal h3{ font-family:'Sarabun','Noto Sans Thai',sans-serif; color:var(--ink); font-weight:700; text-transform:none; letter-spacing:0; line-height:1.2; }
+.reveal h1{ font-size:1.9em; }
+.reveal h2{ font-size:1.35em; }
+.reveal h3{ font-size:1.15em; color:var(--blue); }
+.reveal p{ line-height:1.6; }
+.reveal ul{ display:block; }
+.reveal li{ margin:.5em 0; line-height:1.55; }
+.reveal strong{ color:var(--purple); }
+.reveal section{ height:100%; overflow-y:auto; }
+.reveal section::-webkit-scrollbar { width:6px; }
+.reveal section::-webkit-scrollbar-track { background:transparent; }
+.reveal section::-webkit-scrollbar-thumb { background:var(--line); border-radius:99px; }
+.reveal section::-webkit-scrollbar-thumb:hover { background:var(--muted); }
+.reveal .slides section{ padding:6px 18px; box-sizing:border-box; }
+.reveal h2{ margin-bottom:.5em; }
+
+/* accent header bar on each slide */
+.reveal .slides section > .kicker{
+  display:inline-block; font-size:.62em; font-weight:700; letter-spacing:.06em;
+  color:#fff; background:linear-gradient(90deg,var(--blue),var(--purple));
+  padding:.18em .8em; border-radius:999px; margin-bottom:.5em;
+}
+.reveal .q{ background:var(--soft); border-left:5px solid var(--blue);
+  padding:.7em 1em; border-radius:10px; font-size:.92em; line-height:1.55; margin:.55em 0 .75em; }
+.reveal .note{ color:var(--muted); font-size:.7em; }
+.reveal .rule{ background:#fff6ed; border:1px solid #ffd8b8; color:var(--warn);
+  border-radius:10px; padding:.45em .8em; font-size:.8em; font-weight:600; }
+.reveal .good{ color:var(--good); font-weight:700; }
+.reveal .warn{ color:var(--warn); font-weight:600; }
+
+/* title slide */
+.title-wrap{ text-align:center; height:100%; display:flex; flex-direction:column;
+  justify-content:center; align-items:center; }
+.title-wrap .badge{ font-size:.7em; color:#fff; background:linear-gradient(90deg,var(--blue),var(--purple));
+  padding:.3em 1.1em; border-radius:999px; font-weight:700; }
+.title-wrap h1{ background:linear-gradient(90deg,var(--blue),var(--purple));
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; margin:.25em 0; }
+.title-wrap .sub{ font-size:1.05em; color:var(--ink); font-weight:600; }
+.title-wrap .meta{ color:var(--muted); font-size:.8em; margin-top:.6em; }
+
+/* two-column helper */
+.cols{ display:flex; gap:1.3em; align-items:flex-start; }
+.cols > div{ flex:1; }
+.card{ background:var(--card); border:1px solid var(--line); border-radius:14px;
+  padding:.85em 1.05em; box-shadow:0 2px 10px rgba(20,30,60,.05); line-height:1.55; }
+.card h3{ margin-top:0; }
+.pill{ display:inline-block; background:var(--soft); color:var(--blue);
+  border-radius:8px; padding:.08em .5em; font-size:.8em; font-weight:600; margin:.1em; }
+
+.term{ display:flex; gap:.6em; margin:.5em 0; align-items:baseline; }
+.term > b:first-child{ color:var(--purple); min-width:230px; display:inline-block; }
+
+/* worksheet fields */
+.ws-label{ display:block; font-size:.72em; font-weight:700; color:var(--muted);
+  margin:.45em 0 .15em; }
+textarea.ws-field, input.save{
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:.7em; color:var(--ink);
+  width:100%; border:1.5px solid var(--line); border-radius:10px; padding:.5em .7em;
+  background:#fcfdff; box-sizing:border-box; resize:vertical; }
+textarea.ws-field{ height:90px; line-height:1.35; }
+textarea.ws-field:focus, input.save:focus{ outline:none; border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(26,115,232,.12); }
+input.save{ height:auto; }
+
+/* thin scrollbar for all textareas */
+textarea::-webkit-scrollbar {
+  width: 5px;
+}
+textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+textarea::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 99px;
+}
+textarea::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+.info-grid{ display:grid; grid-template-columns:1fr; gap:.3em; max-width:620px; }
+.info-row{ display:flex; gap:.8em; }
+.info-row > div{ flex:1; }
+
+/* download button (floating) */
+#dlbtn{ position:fixed; top:14px; right:16px; z-index:60;
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:15px; font-weight:700;
+  color:#fff; background:linear-gradient(90deg,var(--blue),var(--purple));
+  border:none; border-radius:999px; padding:10px 18px; cursor:pointer;
+  box-shadow:0 4px 14px rgba(76,40,160,.35); display:none; }
+#dlbtn:hover{ filter:brightness(1.05); }
+#dlbtn:active{ transform:translateY(1px); }
+#savehint{ position:fixed; top:54px; right:18px; z-index:60; font-size:11px;
+  color:var(--good); font-family:'Sarabun',sans-serif; opacity:0; transition:opacity .3s; }
+.dlbig{ font-size:.9em; font-weight:700; color:#fff;
+  background:linear-gradient(90deg,var(--blue),var(--purple)); border:none;
+  border-radius:12px; padding:.5em 1.1em; cursor:pointer; box-shadow:0 4px 14px rgba(76,40,160,.3);
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; }
+
+/* assignment print area — hidden on screen, shown only when printing */
+#print-area{ display:none; }
+.pdf-doc{ font-family:'Sarabun','Noto Sans Thai',sans-serif; color:#11131a; padding:6px 4px; }
+.pdf-doc h1{ font-size:22px; margin:0 0 4px; color:#1a73e8; }
+.pdf-doc .pdf-meta{ display:flex; gap:18px; font-size:13px; border-bottom:2px solid #1a73e8;
+  padding-bottom:8px; margin-bottom:12px; flex-wrap:wrap; }
+.pdf-doc h2{ font-size:15px; margin:16px 0 6px; color:#7b41d8; border-left:4px solid #7b41d8; padding-left:8px; }
+.pdf-item{ margin:8px 0; page-break-inside:avoid; }
+.pdf-label{ font-size:12.5px; font-weight:700; color:#333; margin-bottom:3px; }
+.pdf-answer{ font-size:12.5px; line-height:1.5; border:1px solid #c9d2e0; border-radius:6px;
+  padding:7px 9px; white-space:pre-wrap; min-height:18px; background:#fbfcfe; }
+.pdf-answer .empty{ color:#aab2c0; }
+@page{ size:A4; margin:14mm; }
+@media print{
+  body.printing > *:not(#print-area){ display:none !important; }
+  body.printing #print-area{ display:block !important; }
+  body.printing{ background:#fff !important; }
+}
+.pdf-imgs img{ display:block; max-width:100%; max-height:420px; margin-top:6px;
+  border:1px solid #c9d2e0; border-radius:6px; page-break-inside:avoid; }
+
+/* ---- image attach / paste ---- */
+.img-btn{ display:inline-flex; align-items:center; gap:.3em; margin-top:.35em;
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:.6em; font-weight:700;
+  color:var(--blue); background:var(--soft); border:1.5px solid #cfe0fb;
+  border-radius:999px; padding:.4em .9em; cursor:pointer; }
+.img-btn:hover{ filter:brightness(.98); }
+.img-hint{ font-size:.55em; color:var(--muted); margin-left:.55em; }
+.img-tray{ display:flex; flex-wrap:wrap; gap:.5em; margin-top:.4em; }
+.img-thumb{ position:relative; width:96px; height:96px; border:1px solid var(--line);
+  border-radius:8px; overflow:hidden; background:#fafbff; }
+.img-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+.img-thumb .rm{ position:absolute; top:2px; right:2px; width:20px; height:20px;
+  border:none; border-radius:50%; background:rgba(20,30,60,.7); color:#fff;
+  font-size:13px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.img-thumb .rm:hover{ background:var(--warn); }
+</style>
+</head>
+<body>
+
+<button id="dlbtn" onclick="downloadPDF()">⬇ บันทึกใบงานเป็น PDF</button>
+<div id="savehint">บันทึกแล้ว ✓</div>
+
+<div class="reveal"><div class="slides">
+
+<!-- 1 TITLE -->
+<section>
+  <div class="title-wrap">
+    <span class="badge">AI for Ed · สัปดาห์ที่ 2</span>
+    <h1>Google AI Studio & NotebookLM</h1>
+    <div class="sub" style="margin-top: 0.4em; color: var(--muted)">ควบคุมพฤติกรรม AI ด้วย System Prompt · ค้นหาข้อมูลที่มีอ้างอิง</div>
+  </div>
+</section>
+
+<!-- 2 STUDENT INFO -->
+<section>
+  <span class="kicker">เริ่มต้น</span>
+  <h2>กรอกข้อมูล</h2>
+  <div class="info-grid">
+    <div>
+      <span class="ws-label">ชื่อ–นามสกุล</span>
+      <input class="save" id="ws-name" type="text" placeholder="เช่น สมหญิง ใจกล้า">
+    </div>
+    <div class="info-row">
+      <div><span class="ws-label">ชั้น</span><input class="save" id="ws-class" type="text" placeholder="ม.6/1"></div>
+      <div><span class="ws-label">เลขที่</span><input class="save" id="ws-no" type="text" placeholder="เช่น 7"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 AGENDA -->
+<section>
+  <span class="kicker">วันนี้เราจะทำอะไร</span>
+  <h2>แผนการเรียน</h2>
+  <div class="cols">
+    <div style="flex: 1.6; display: flex; gap: 1.0em;">
+      <div style="flex: 1;">
+        <ul>
+          <li><b>1.</b> รู้จัก Google AI Studio (หน้าอินเทอร์เฟซและการตั้งค่าเบื้องหลัง)</li>
+          <li><b>2.</b> การสลับรุ่นโมเดล (Gemini Flash vs Gemini Pro)</li>
+          <li><b>3.</b> ค่า Temperature (การควบคุมความสร้างสรรค์)</li>
+          <li><b>4.</b> กิจกรรมที่ 1 — ทดลองค่า Temperature และรุ่น Model (Flash vs Pro)</li>
+        </ul>
+      </div>
+      <div style="flex: 1;">
+        <ul>
+          <li><b>5.</b> Web Search Grounding (ค้นข้อมูลบนเว็บแบบเรียลไทม์)</li>
+          <li><b>6.</b> กิจกรรมที่ 2 — เปรียบเทียบเปิด/ปิดเครื่องมือต่อเน็ต</li>
+          <li><b>7.</b> เจาะลึกคลังข้อมูล NotebookLM (การจัดการหลายแหล่งข้อมูล)</li>
+          <li><b>8.</b> กิจกรรมที่ 3 — สืบค้นคลังปัญญาประดิษฐ์สร้างชิ้นงาน</li>
+        </ul>
+      </div>
+    </div>
+    <div style="flex: 1; text-align: center;">
+      <div class="card" style="background: linear-gradient(135deg, var(--soft), #fff); border-color: var(--blue); min-height: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <span style="font-size: 2.2em; margin-bottom: 3px;">🛠️</span>
+        <b style="color: var(--blue)">ควบคุมระบบ AI ด้วยตนเอง</b>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PART 1: GOOGLE AI STUDIO ===================== -->
+
+<!-- 4 CONCEPT 1 -->
+<section>
+  <span class="kicker">แนวคิด 1/6: รู้จัก Google AI Studio</span>
+  <h2>รู้จัก Google AI Studio</h2>
+  <div class="cols">
+    <div style="flex: 1.5;">
+      <ul>
+        <li>พื้นที่ทดลอง (Playground) ของ Google ที่ให้นักพัฒนาใช้งานระบบโมเดลภาษาขนาดใหญ่ฟรี</li>
+        <li>ช่วยให้มองเห็นพฤติกรรมการควบคุมโมเดลอย่างละเอียดก่อนที่เราจะนำไปขยายผลเป็น <b>Agentic AI</b> (ระบบที่โมเดล AI ควบคุมสั่งการเครื่องมือทำงานภายนอก)</li>
+        <li>สามารถสลับความเร็ว/ความละเอียดของโมเดล (Model Selection), ล็อคกฎระเบียบ (System Instructions), หรือปรับค่า Temperature ในการเลือกคำได้</li>
+      </ul>
+      <p style="margin-top:.3em">👉 เข้าใช้งานที่: <a href="https://aistudio.google.com" target="_blank" style="color: var(--blue); text-decoration: underline;">aistudio.google.com</a></p>
+    </div>
+    <div style="flex: 1.1;">
+      <div class="card" style="min-height: 120px;">
+        <h3>📍 แผงควบคุมสำคัญ</h3>
+        <ul>
+          <li style="font-size: 0.85em"><b>Model:</b> Flash (เร็ว) vs Pro (คิดลึก)</li>
+          <li style="font-size: 0.85em"><b>System Instructions:</b> สั่งกฎเหล็กถาวร</li>
+          <li style="font-size: 0.85em"><b>Temperature:</b> ควบคุมจินตนาการและการเดาสุ่มเลือกคำ</li>
+          <li style="font-size: 0.85em"><b>Google Search Tool:</b> เปิดปิดการสืบค้นสด</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4A LECTURE: PLAYGROUND VS CHAT -->
+<section>
+  <span class="kicker">ทำไมต้อง AI Studio?</span>
+  <h2>Playground vs. Consumer Chatbots</h2>
+  <div class="cols">
+    <div style="flex: 1.3;">
+      <ul>
+        <li><b>Gemini Chat (ทั่วไป):</b> ออกแบบสำหรับผู้ใช้งานทั่วไป มีประวัติแชต มีฟิลเตอร์กรองคำตอบแบบสุภาพ และปรับค่าเบื้องหลังไม่ได้เลย</li>
+        <li><b>Google AI Studio (Playground):</b> ออกแบบสำหรับผู้พัฒนาโปรแกรมและครีเอเตอร์ เข้าถึงโครงสร้างโมเดลโดยตรง</li>
+        <li><b>ข้อดีของ Playground:</b>
+          <ul style="padding-left: 1.0em; font-size: 0.82em;">
+            <li>ไม่มีบทสนทนาทักทายเยิ่นเย้อ คืนค่าความจริงตรงไปตรงมา</li>
+            <li>ตั้งค่า Safety Settings ควบคุมความปลอดภัยได้ด้วยตนเอง</li>
+            <li>ดู Token Usage ได้เรียลไทม์ ทำให้ประเมินต้นทุนได้</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div style="flex: 1.0; text-align: center;">
+      <div class="card" style="background: linear-gradient(135deg, #fff, var(--soft)); border-left: 5px solid var(--blue); min-height: 180px; text-align: left;">
+        <h3 style="font-size: 0.95em; color: var(--blue); margin-top: 0;">🛠️ หน้าทดลองของนักพัฒนา</h3>
+        <p style="font-size: 0.72em; line-height: 1.45; color: var(--muted); margin: 0;">
+          การเขียนโปรแกรม AI ในยุคถัดไป (AI Agent) จะเริ่มจากการเขียนกฎและควบคุมพฤติกรรมในหน้า Playground นี้ก่อนส่งต่อให้โค้ดโปรแกรมภายนอกทำงาน
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 CONCEPT 2 -->
+<section>
+  <span class="kicker">แนวคิด 2/6: ค่า Temperature (คุมความสุ่มเดาคำ)</span>
+  <h2>ค่า Temperature & รุ่นโมเดล</h2>
+  <div class="cols">
+    <div style="flex: 1.4;">
+      <ul>
+        <li><b>ค่า Temperature (0.0 ถึง 2.0):</b> คุมความเดาสุ่มคำตอบของ AI
+          <ul style="padding-left: 1.0em;">
+            <li><b>Temp ต่ำ (ใกล้ 0.2):</b> เน้นระเบียบ คงเส้นคงวา เหมาะกับงานเลข โค้ด หรืองานแปล</li>
+            <li><b>Temp สูง (ใกล้ 1.5):</b> สุ่มหยิบคำแปลกๆ เพิ่มจินตนาการ ตลก บ้าบิ่น เหมาะแต่งกลอน คิดมุกตลก</li>
+          </ul>
+        </li>
+        <li><b>รุ่นโมเดล (Model Selection):</b>
+          <ul style="padding-left: 1.0em;">
+            <li><b>Gemini Flash:</b> โมเดลประมวลผลเร็ว ตอบสนองไว ประหยัดพลังงาน</li>
+            <li><b>Gemini Pro:</b> โมเดลขนาดใหญ่ คิดวิเคราะห์เชิงลึก เหมาะสำหรับโจทย์ตรรกะซับซ้อน</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div style="flex: 1.2;">
+      <div class="card" style="border-left: 5px solid var(--purple); min-height: 140px;">
+        <h3>⚙️ กฎควบคุมบทบาท (System Prompt)</h3>
+        <p style="font-size: 0.82em; line-height: 1.4; color: var(--muted); margin: 0.3em 0;">
+          เป็นคำสั่งถาวรที่คุมไม่ให้ AI หลุดบทบาท เช่น "ห้ามคุยเล่นนอกจากแปลภาษาอังกฤษ" หรือ "ต้องตอบสไตล์วัยรุ่นพูดสุภาพลงท้ายครับกระผม"
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4B LECTURE: GEMINI MODELS COMPARISON -->
+<section>
+  <span class="kicker">เจาะลึกโมเดล</span>
+  <h2>สเปกโมเดล AI: Gemini Flash vs. Gemini Pro</h2>
+  <div class="cols" style="align-items: center;">
+    <div style="flex: 1.1;">
+      <img src="images/flash_vs_pro.png" alt="Gemini Flash vs Pro Comparison Chart" style="width: 100%; border-radius: 10px; border: 1px solid var(--line); box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+    </div>
+    <div style="flex: 1.3; display: flex; flex-direction: column; gap: 0.5em;">
+      <div class="card" style="border-top: 4px solid var(--blue); padding: 0.7em;">
+        <h3 style="font-size: 1.0em; color: var(--blue); margin: 0.1em 0;">Gemini Flash (เร็ว)</h3>
+        <p style="font-size: 0.7em; color: var(--muted); line-height: 1.4; margin: 0.2em 0;">
+          <b>จุดเด่น:</b> ความเร็วสูง ตอบสนองทันที ประหยัดพลังงาน
+          <br><b>เหมาะกับงาน:</b> สรุปบทความสั้น, งานแปลภาษา, คุยโต้ตอบทั่วไป, คัดแยกข้อมูล
+        </p>
+      </div>
+      <div class="card" style="border-top: 4px solid var(--purple); padding: 0.7em;">
+        <h3 style="font-size: 1.0em; color: var(--purple); margin: 0.1em 0;">Gemini Pro (คิดลึก)</h3>
+        <p style="font-size: 0.7em; color: var(--muted); line-height: 1.4; margin: 0.2em 0;">
+          <b>จุดเด่น:</b> การคิดวิเคราะห์เชิงเหตุผลระดับสูง คำนวณ และแก้โจทย์ตรรกะเชิงลึก
+          <br><b>เหมาะกับงาน:</b> เขียนโปรแกรมซับซ้อน, วิเคราะห์โจทย์ตรรกะและคณิตศาสตร์, ตีความเอกสารยาว
+        </p>
+      </div>
+      <p class="note" style="margin: 0.1em 0 0 0.5em;">💡 <b>คำแนะนำ:</b> เลือกรุ่น Flash / Pro เวอร์ชันล่าสุดที่ปรากฏในเมนูของ Google AI Studio เสมอ</p>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- 5A LECTURE: TEMPERATURE PROBABILITY -->
+<section>
+  <span class="kicker">ทฤษฎีการสร้างคำ (Temperature)</span>
+  <h2>เจาะลึก Temperature: การควบคุมความสร้างสรรค์</h2>
+  <div class="cols" style="align-items: center;">
+    <div style="flex: 1.1;">
+      <img src="images/temperature_probability_chart.png" alt="AI Temperature Probability Chart" style="width: 100%; border-radius: 10px; border: 1px solid var(--line); box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+    </div>
+    <div style="flex: 1.2;">
+      <ul>
+        <li><b>เบื้องหลัง:</b> AI ทำงานโดยการคำนวณ <i>"คำถัดไปที่น่าจะดีที่สุด"</i> จากความน่าจะเป็น</li>
+        <li><b>เมื่อค่า Temperature ต่ำ (0.2):</b> AI จะเลือกเฉพาะคำที่มีคะแนนความน่าจะเป็นสูงสุดเท่านั้น ทำให้ตอบคงเส้นคงวา คาดเดาง่าย เหมาะกับงานคำนวณ เขียนโค้ด หรือวิเคราะห์ข้อมูล</li>
+        <li><b>เมื่อค่า Temperature สูง (1.5):</b> AI จะสุ่มเลือกคำที่มีคะแนนรองลงมาด้วย ทำให้คำตอบมีความหลากหลาย แปลกใหม่ เหมาะสำหรับงานแต่งกลอนและงานสร้างสรรค์</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 5B LECTURE: SYSTEM INSTRUCTIONS -->
+<section>
+  <span class="kicker">แนวคิด 3/6: กฎคุมพฤติกรรม (System Instructions)</span>
+  <h2>กฎเหล็ก System Instructions: กำกับระบบ AI</h2>
+  <div class="cols" style="align-items: center;">
+    <div style="flex: 1.1;">
+      <img src="images/system_instructions.png" alt="System Instructions Concept Diagram" style="width: 100%; border-radius: 10px; border: 1px solid var(--line); box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+    </div>
+    <div style="flex: 1.3; display: flex; flex-direction: column; gap: 0.4em;">
+      <ul>
+        <li style="font-size: 0.82em;"><b>หน้าที่:</b> กำหนดกรอบพฤติกรรมที่ AI <b>ต้องทำตามตลอดเวลา</b> ไม่ให้หลุดบทบาท แม้โดนหลอกถาม (ป้องกัน Prompt Injection ได้ระดับหนึ่ง)</li>
+        <li style="font-size: 0.82em;"><b>โครงสร้างกฎเหล็กที่ดี:</b>
+          <ul style="padding-left: 1.0em; font-size: 0.9em; line-height: 1.4;">
+            <li><b style="color:var(--blue)">Role (บทบาท):</b> คุณคือผู้ช่วยสอนเคมี ม.6 / ปี 1</li>
+            <li><b style="color:var(--purple)">Rule (ข้อห้าม):</b> ห้ามบอกเฉลยตรงๆ ให้แนะแนวคิด</li>
+            <li><b style="color:var(--teal)">Format (รูปแบบ):</b> ตอบสั้นๆ เป็นข้อๆ</li>
+          </ul>
+        </li>
+      </ul>
+      <div class="card" style="background: #fff6ed; border-color: #ffd8b8; color: var(--warn); padding: 0.6em; font-size: 0.72em; line-height: 1.35;">
+        <b>⚠️ ตัวอย่างการตั้งกฎเหล็ก:</b>
+        <p style="margin: 0.2em 0 0; color: var(--ink);">
+          <i>"คุณคือยอดนักสืบโคนันที่เก่งในการแก้ปัญหา แต่ติดแทรกวลี ความจริงมีเพียงหนึ่งเดียว ในทุกการตอบคำถาม"</i>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 CONCEPT 3: UI INFOGRAPHIC -->
+<section>
+  <span class="kicker">คู่มือวิธีใช้งาน</span>
+  <h2>ขั้นตอนการใช้งาน Google AI Studio</h2>
+  <div style="text-align: center;">
+    <img src="images/ai_studio_guide.png" alt="Google AI Studio UI Infographic Guide" style="max-height: 380px; width: auto; border-radius: 10px; border: 1px solid var(--line); box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+  </div>
+  <p class="note" style="text-align: center; margin-top: 0.3em;">คลิกกล่อง System Instructions (1), เลือกโมเดล (2), ปรับระดับ Temperature (3) และเปิดเครื่องมือ Google Search (4)</p>
+</section>
+
+<!-- ===================== ACTIVITY 1: CREATIVE PLAYGROUND ===================== -->
+
+<!-- 7 ACT1 INTRO -->
+<section>
+  <span class="kicker">กิจกรรมที่ 1.1 (⏱ 15 นาที)</span>
+  <h2>กิจกรรมที่ 1.1: ทดลองปรับ Temperature</h2>
+  <div class="cols">
+    <div style="flex: 1.4;">
+      <p style="font-size: 0.88em;">เปิดหน้าเว็บ <b>aistudio.google.com</b> เลือก Chat Prompt และใช้โมเดล <b>Gemini Flash</b> (หรือรุ่นล่าสุด) ทดลองสั่งให้ AI เขียนบทกลอนหรือคำผวนตามหัวข้อที่ได้รับสุ่มตามเลขที่ของคุณ</p>
+      <div class="rule">
+        ⚠️ เงื่อนไขในการเปรียบเทียบ (กดรัน 2-3 ครั้งต่อรอบ):
+        <ul style="margin: 0.2em 0; padding-left: 1.1em; font-size: 0.80em; line-height: 1.4;">
+          <li><b>รอบที่ 1 (Temp = 0.2):</b> รัน 2-3 ครั้ง จะพบว่าคำตอบนิ่งคงเส้นคงวาและเหมือนเดิมเกือบ 100%</li>
+          <li><b>รอบที่ 2 (Temp = 1.5):</b> รัน 2-3 ครั้ง คำตอบจะเปลี่ยนคำและไอเดียไปเรื่อยๆ คาดเดาไม่ได้</li>
+          <li><b>ทดสอบ Prompt Injection:</b> ใส่ System Instruction ยอดนักสืบโคนัน (จากหน้าสไลด์ก่อน) แล้วลองหลอกล่อให้ตอบคำถามเพื่อดูว่า AI จะหลุดบทบาทหรือไม่</li>
+        </ul>
+      </div>
+    </div>
+    <div style="flex: 1.2;">
+      <div class="card" style="border-left: 5px solid var(--teal); min-height: 120px;">
+        <h3>🔍 โจทย์สร้างคำประจำตัวของคุณ</h3>
+        <p style="font-size: 0.9em; margin: 0.3em 0; line-height: 1.45;" class="good" id="act1-creative-label">— (กรอกเลขที่ในหน้า 2 ก่อน)</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 Q2.1 CREATIVE WORKSPACE -->
+<section>
+  <h3>ข้อ 1.1 — ปรับค่า Temperature</h3>
+  <p class="q">ป้อนโจทย์ความสร้างสรรค์ <b data-var="creativeTask">...</b> และทดลองเปรียบเทียบผล</p>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.1em; align-items: start;">
+    <div style="display: flex; flex-direction: column; gap: 0.4em;">
+      <div>
+        <span class="ws-label">✏️ พรอมต์หลักที่ป้อนถามจริง (ใน AI Studio):</span>
+        <textarea class="save ws-field" id="q21_prompt" data-group="กิจกรรมที่ 1: ควบคุม Temperature และรุ่น Model AI" data-label="ข้อ 1.1 — พรอมต์แต่งประพันธ์ที่ใช้" style="height: 45px; font-weight: 600; color: var(--blue)" placeholder="พิมพ์พรอมต์ที่ใช้..."></textarea>
+      </div>
+      <div>
+        <span class="ws-label">❄️ ผลลัพธ์ที่ค่า Temperature ต่ำ (Temp = 0.2)</span>
+        <textarea class="save ws-field" id="q21_play_low" data-group="กิจกรรมที่ 1: ควบคุม Temperature และรุ่น Model AI" data-label="ข้อ 1.1 — ผลลัพธ์กลอน/คำผวนที่ Temp 0.2" style="height: 70px;" placeholder="คัดลอกผลงานที่ Temp 0.2 มาใส่..."></textarea>
+        <div id="q21_play_low_img_tray" class="img-tray"></div>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0.4em;">
+      <div>
+        <span class="ws-label">🔥 ผลลัพธ์ที่ค่า Temperature สูง (Temp = 1.5)</span>
+        <textarea class="save ws-field" id="q21_play_high" data-group="กิจกรรมที่ 1: ควบคุม Temperature และรุ่น Model AI" data-label="ข้อ 1.1 — ผลลัพธ์กลอน/คำผวนที่ Temp 1.5" style="height: 70px;" placeholder="คัดลอกผลงานที่ Temp 1.5 มาใส่..."></textarea>
+        <div id="q21_play_high_img_tray" class="img-tray"></div>
+      </div>
+      <div>
+        <span class="ws-label">✏️ สรุปจุดต่างในความพริ้วไหว สัมผัส หรือความหมายกลอนที่ได้:</span>
+        <textarea class="save ws-field" id="q21_diff" data-group="กิจกรรมที่ 1: ควบคุม Temperature และรุ่น Model AI" data-label="ข้อ 1.1 — การเปรียบเทียบผลลัพธ์สองค่า Temperature" style="height: 45px;" placeholder="ตัวอย่าง: Temp 0.2 ตรงหลักภาษาแต่จืดชืด, Temp 1.5 มีจินตนาการสูง คำแปลกตาแต่หลุดกรอบ..."></textarea>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8A Q1.2 MODEL COMPARISON WORKSPACE -->
+<section>
+  <span class="kicker">กิจกรรมที่ 1.2 (⏱ 10 นาที)</span>
+  <h3>ข้อ 1.2 — สลับรุ่น Model (Flash vs Pro)</h3>
+  <p class="q">ป้อนโจทย์คิดวิเคราะห์: <b data-var="reasoningPrompt">...</b> ตั้งค่า Temp = 1.0 เท่ากันทั้งสองรอบ<br><span style="font-size: 0.6em; color: var(--warn); display: block; margin-top: 0.25em;">⚠️ คำแนะนำ: สำหรับ Gemini Flash ให้เลือกเวอร์ชันเก่าที่สุดในเมนู (เช่น 1.5 Flash) เพื่อให้เห็นจุดบกพร่องทางตรรกะได้ชัดเจนยิ่งขึ้น (เนื่องจากรุ่นใหม่กว่าตอบแม่นยำเกินไปจนเปรียบเทียบยาก)</span></p>
+  <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.1em; align-items: start;">
+    <div style="display: flex; flex-direction: column; gap: 0.4em;">
+      <div style="display: flex; gap: 0.5em;">
+        <div style="flex: 2.2;">
+          <span class="ws-label">⚡ ผลลัพธ์ Model Gemini Flash (คัดลอกคำตอบบางส่วน):</span>
+          <textarea class="save ws-field" id="q12_ans_flash" data-group="กิจกรรมที่ 1: ควบคุม Temperature และรุ่น Model AI" data-label="ข้อ 1.2 — ผลลัพธ์ของ Gemini Flash" style="height: 60px;" placeholder="คัดลอกผลลัพธ์จากรุ่น Flash..."></textarea>
+        </div>
+        <div style="flex: 1;">
+          <span class="ws-label">⏱ เวลารอ (วิ):</span>
+          <input class="save ws-field" id="q12_time_flash" data-group="กิจกรรมที่ 1: ควบคุม Temperature และรุ่น Model AI" data-label="ข้อ 1.2 — เวลารอคำตอบของ Gemini Flash" type="text" placeholder="เช่น 1.5 วินาที" style="font-size: 0.75em; padding: 0.45em 0.6em;">
+        </div>
+      </div>
+      <div style="display: flex; gap: 0.5em;">
+        <div style="flex: 2.2;">
+          <span class="ws-label">🧠 ผลลัพธ์ Model Gemini Pro (คัดลอกคำตอบบางส่วน):</span>
+          <textarea class="save ws-field" id="q12_ans_pro" data-group="กิจกรรมที่ 1: ควบคุม Temperature และรุ่น Model AI" data-label="ข้อ 1.2 — ผลลัพธ์ของ Gemini Pro" style="height: 60px;" placeholder="คัดลอกผลลัพธ์จากรุ่น Pro..."></textarea>
+        </div>
+        <div style="flex: 1;">
+          <span class="ws-label">⏱ เวลารอ (วิ):</span>
+          <input class="save ws-field" id="q12_time_pro" data-group="กิจกรรมที่ 1: ควบคุม Temperature และรุ่น Model AI" data-label="ข้อ 1.2 — เวลารอคำตอบของ Gemini Pro" type="text" placeholder="เช่น 4.8 วินาที" style="font-size: 0.75em; padding: 0.45em 0.6em;">
+        </div>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0.4em;">
+      <div>
+        <span class="ws-label">✏️ สรุปจุดต่าง (ความรวดเร็วในการคิด vs ความลึกซึ้ง/ถูกต้องของคำตอบ):</span>
+        <textarea class="save ws-field" id="q12_analysis" data-group="กิจกรรมที่ 1: ควบคุม Temperature และรุ่น Model AI" data-label="ข้อ 1.2 — วิเคราะห์ความลึกของคำตอบของสองโมเดล" style="height: 140px;" placeholder="พิมพ์ผลวิเคราะห์ เช่น Flash ตอบไวแต่ให้เหตุผลผิดขั้นที่ 2, ส่วน Pro ใช้เวลานานกว่าแต่ไล่เรียงตรรกะถูกต้องทุกบรรทัด..."></textarea>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PART 2: WEB GROUNDING TOOL ===================== -->
+
+<!-- 9 CONCEPT 4 -->
+<section>
+  <span class="kicker">แนวคิด 4/6: ค้นข้อมูลแบบเรียลไทม์ (Web Search Grounding)</span>
+  <h2>ปูพื้นฐาน: เครื่องมือค้นเว็บ (Web Search)</h2>
+  <div class="cols">
+    <div style="flex: 1.4;">
+      <ul>
+        <li><b>การประยุกต์ใช้เครื่องมือ (Tool Use):</b> ผลลัพธ์ของ AI มีขีดจำกัดที่วันอัปเดตข้อมูล ในโลก <b>Agentic AI</b> เราจะให้ AI สามารถเลือกหยิบแอปฯ อื่นมาทำงานร่วมด้วย</li>
+        <li><b>ตัวสืบค้นเน็ต (Web Search Grounding):</b> ใน Google AI Studio เราสามารถติ๊กเลือกให้ AI ติดอาวุธสืบค้น Google Search สดๆ ในทุกคำถาม</li>
+        <li><b>ความโปร่งใส:</b> AI จะแนบผลลัพธ์ค้นหาและแสดงลิงก์แหล่งที่มาของข่าวสารปัจจุบัน เพื่อลดปัญหาการมโนคำตอบ (Hallucination)</li>
+      </ul>
+    </div>
+    <div style="flex: 1.2;">
+      <div class="card" style="border-left: 5px solid var(--blue); min-height: 120px;">
+        <h3>💡 ประโยชน์ของ Grounding Tool</h3>
+        <p style="font-size: 0.85em; line-height: 1.45; color: var(--muted); margin: 0.35em 0;">
+          ไม่จำเป็นต้องเทรนสอนโมเดลใหม่เพื่อให้อัปเดตเรื่องล่าสุด เพียงแค่ต่อท่อให้ AI สรุปสาระสำคัญจาก Google Search สดๆ ก็ตอบข้อมูลปัจจุบันได้อย่างถูกต้องแม่นยำ
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 9A LECTURE: WEB GROUNDING FLOW -->
+<section>
+  <span class="kicker">ความจริงอ้างอิงเน็ต</span>
+  <h2>เบื้องหลังการทำงานของ Web Search Grounding</h2>
+  <div class="cols" style="align-items: center;">
+    <div style="flex: 1.15;">
+      <img src="images/web_grounding_flow.png" alt="Web Search Grounding Flow Diagram" style="width: 100%; border-radius: 10px; border: 1px solid var(--line); box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+    </div>
+    <div style="flex: 1.2;">
+      <ul>
+        <li><b>ขจัดปัญหาการมโน (Hallucination):</b> เมื่อเปิดใช้ตัวค้นเว็บ AI จะหยุดการดึงคำตอบจากความจำเก่าเพียงอย่างเดียว</li>
+        <li><b>กระบวนการ 4 ขั้นตอน:</b>
+          <ol style="padding-left: 1.1em; font-size: 0.82em; line-height: 1.45;">
+            <li>แปลงพรอมต์ผู้ใช้เป็นคำค้นหาหลัก</li>
+            <li>ส่งคำค้นไปเรียกฐานข้อมูล Google Search สดๆ</li>
+            <li>ดึงเนื้อหาเว็บล่าสุดมาวางในความจำชั่วคราว</li>
+            <li>เรียบเรียงคำตอบโดยมีลิงก์ตรวจสอบได้</li>
+          </ol>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 10 ACT2 INTRO -->
+<section>
+  <span class="kicker">กิจกรรมที่ 2 (⏱ 15 นาที)</span>
+  <h2>กิจกรรมที่ 2: Web Search in AI</h2>
+  <div class="cols">
+    <div style="flex: 1.4;">
+      <p style="font-size: 0.88em;">สร้างแชตใหม่ใน Google AI Studio เลือก <b>Gemini Flash</b> (หรือรุ่นล่าสุด) ลองถามคำถามเรียลไทม์ตามธีมสุ่มตามเลขที่ของคุณ</p>
+      <div class="rule">
+        ⚠️ วิธีสลับการทดลอง:
+        <ul style="margin: 0.2em 0; padding-left: 1.1em; font-size: 0.85em;">
+          <li><b>รอบที่ 1:</b> ปิดสวิตช์ <b>Google Search</b> ด้านขวามือ และถามคำถาม ดูการยอมรับสารภาพหรือการเดาผิดของ AI</li>
+          <li><b>รอบที่ 2:</b> เปิดสวิตช์ <b>Google Search</b> เพื่อเชื่อมเครื่องมือสืบค้น และบันทึกคำตอบปัจจุบันที่ได้</li>
+        </ul>
+      </div>
+    </div>
+    <div style="flex: 1.2;">
+      <div class="card" style="border-left: 5px solid var(--purple); min-height: 120px;">
+        <h3>📂 โจทย์คำถามปัจจุบันประจำเลขที่ของคุณ</h3>
+        <p style="font-size: 0.9em; margin: 0.3em 0; line-height: 1.45;" class="good" id="act2-search-label">— (กรอกเลขที่ในหน้า 2 ก่อน)</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 Q2.2 SEARCH SHEET -->
+<section>
+  <h3>ข้อ 2.1 — ค้นหาความจริงสดบนเว็บ</h3>
+  <p class="q">ป้อนโจทย์ค้นปัจจุบันเรื่อง <b data-var="searchQuery">...</b> ทั้งแบบเปิดและปิดสวิตช์ Google Search</p>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.1em; align-items: start;">
+    <div style="display: flex; flex-direction: column; gap: 0.4em;">
+      <div>
+        <span class="ws-label">❌ ผลเมื่อปิดเครื่องมือสืบค้นสด (Web Search = OFF)</span>
+        <textarea class="save ws-field" id="q22_search_off" data-group="กิจกรรมที่ 2: Web Search in AI" data-label="ข้อ 2.1 — ผลลัพธ์เมื่อปิด Web Search" style="height: 95px;" placeholder="คัดลอกคำตอบเมื่อไม่มีเครื่องมือต่อเน็ต..."></textarea>
+      </div>
+      <div>
+        <span class="ws-label">✏️ การต่อยอดให้ AI ดึงเครื่องมือภายนอกทำงานมีข้อดีอย่างไร?</span>
+        <textarea class="save ws-field" id="q22_diff" data-group="กิจกรรมที่ 2: Web Search in AI" data-label="ข้อ 2.1 — วิเคราะห์ความต่างจากการใช้เครื่องมือ" style="height: 65px;" placeholder="พิมพ์เหตุผลในมุมมองของการได้ข้อมูลอัปเดตและลดการมโน (Hallucinate)..."></textarea>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0.4em;">
+      <div>
+        <span class="ws-label">✅ ผลเมื่อเปิดเครื่องมือสืบค้นสด (Web Search = ON)</span>
+        <textarea class="save ws-field" id="q22_search_on" data-group="กิจกรรมที่ 2: Web Search in AI" data-label="ข้อ 2.1 — ผลลัพธ์เมื่อเปิด Web Search" style="height: 95px;" placeholder="คัดลอกคำตอบและพิกัดข่าวสารเรียลไทม์ที่ถูกต้อง..."></textarea>
+        <div id="q22_search_on_img_tray" class="img-tray"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PART 3: NOTEBOOKLM ===================== -->
+
+<!-- 12 CONCEPT 6 -->
+<section>
+  <span class="kicker">แนวคิด 5/6: คลังข้อมูลส่วนตัวอิงเอกสาร (NotebookLM)</span>
+  <h2>การสร้างชุดข้อมูลอ้างอิงด้วย NotebookLM</h2>
+  <div class="cols">
+    <div style="flex: 1.5;">
+      <ul>
+        <li><b>คลังความรู้แบบอิงเอกสาร (Source-Grounded AI):</b> NotebookLM ต่างจากแชตบอตทั่วไปตรงที่มันจะตอบความจริงจาก <b>"แหล่งข้อมูลที่เราป้อนเท่านั้น"</b> ป้องกันการมโนข้อมูลหลอกลวง</li>
+        <li><b>ใส่ข้อมูลหลายแบบ (Multi-source):</b> เราสามารถกดสร้างสมุดบันทึกและโยนไฟล์ Google Docs, บทความบนเว็บ ลิงก์ YouTube หรือข้อความคัดลอกมาผสมรวมเป็นคลังเดียวกันเพื่อศึกษาหาจุดเชื่อมโยงได้</li>
+        <li><b>ระบุหลักฐาน (Citations):</b> แสดงตัวเลขสีกรมท่าเชื่อมตรงไปยังบรรทัดเอกสารจริงทันทีเพื่อยืนยัน</li>
+      </ul>
+      <p style="margin-top:.3em">👉 เข้าใช้งานที่: <a href="https://notebooklm.google.com" target="_blank" style="color: var(--blue); text-decoration: underline;">notebooklm.google.com</a></p>
+    </div>
+    <div style="flex: 1.1;">
+      <div class="card" style="background:#f0fbfb; border-color:#b9e6e6; min-height: 140px;">
+        <h3>📍 สร้างสื่อจากข้อมูลจริง</h3>
+        <p style="font-size: 0.85em; line-height: 1.45; color: var(--muted); margin: 0.35em 0;">
+          นักเรียนสามารถสั่งให้ NotebookLM สรุปขอบเขตเนื้อหาเพื่อไปสร้างสิ่งต่างๆ เช่น:
+          <br>1. <b>โครงร่าง Slide Deck</b>
+          <br>2. <b>แบบทดสอบท้ายบท (Quiz)</b>
+          <br>3. <b>Infographics</b>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12A LECTURE: RAG EXPLAINED -->
+<section>
+  <span class="kicker">แนวคิดเอกสารส่วนตัว</span>
+  <h2>Background: RAG คืออะไร?</h2>
+  <div class="cols" style="align-items: center;">
+    <div style="flex: 1.05;">
+      <img src="images/rag_open_book_analogy.png" alt="RAG Open-Book vs Close-Book Analogy Diagram" style="width: 100%; border-radius: 10px; border: 1px solid var(--line); box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+    </div>
+    <div style="flex: 1.25;">
+      <h3 style="margin-top:0; font-size:1.1em;">💡 Retrieval-Augmented Generation (RAG)</h3>
+      <ul>
+        <li><b>สอบปิดตำรา (Close-Book):</b> AI ทั่วไปดึงข้อมูลจากความรู้เก่าในหัว ซึ่งมีโอกาสลืม สับสน หรือมั่ว (Hallucination) ได้ง่าย</li>
+        <li><b>สอบเปิดตำรา (Open-Book / RAG):</b> NotebookLM จะค้นหาข้อมูลที่ตรงจุดจากเอกสารที่เราโยนให้ก่อน จากนั้นจึงให้โมเดลอ่านและเรียบเรียงคำตอบ</li>
+        <li><b>ผลลัพธ์:</b> แม่นยำขึ้นมาก และตรวจสอบกลับได้ทุกประโยคผ่าน Citation อ้างอิง</li>
+        <li><b>ปลอดภัยระดับสูง (Private RAG):</b> ข้อมูลทั้งหมดจะเก็บเป็นความลับ ไม่รั่วไหล และไม่ถูกนำไปใช้เทรนโมเดลสาธารณะเด็ดขาด</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 13 CONCEPT 7: UI INFOGRAPHIC -->
+<section>
+  <span class="kicker">คู่มือวิธีใช้งาน</span>
+  <h2>ขั้นตอนการใช้งาน NotebookLM</h2>
+  <div style="text-align: center;">
+    <img src="images/notebooklm_guide.png" alt="Google NotebookLM UI Infographic Guide" style="max-height: 380px; width: auto; border-radius: 10px; border: 1px solid var(--line); box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+  </div>
+  <p class="note" style="text-align: center; margin-top: 0.3em;">(1) ระบุเอกสารอ้างอิง, (2) เปิดแชตถามตอบ, (3) สังเกตตัวเลข Citations อ้างอิง, (4) กดปุ่มแผง Studio แปลงเป็นเอกสารช่วยจำ</p>
+</section>
+
+<!-- 13A LECTURE: NOTEBOOKLM SOURCES -->
+<section>
+  <span class="kicker">แนวคิด 6/6: แหล่งข้อมูลของ NotebookLM</span>
+  <h2>NotebookLM ใส่ข้อมูลจากแหล่งใดได้บ้าง?</h2>
+  <div class="cols" style="align-items: center;">
+    <div style="flex: 1.15;">
+      <img src="images/notebooklm_sources.png" alt="NotebookLM Document Sources Diagram" style="width: 100%; border-radius: 10px; border: 1px solid var(--line); box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+    </div>
+    <div style="flex: 1.25; display: flex; flex-direction: column; gap: 0.4em;">
+      <div class="card" style="border-top: 3px solid var(--blue); padding: 0.6em;">
+        <h3 style="margin:0; font-size:0.85em; color:var(--blue);">📂 เอกสารส่วนตัว & ลิงก์ออนไลน์</h3>
+        <p style="font-size: 0.65em; margin: 0.2em 0; line-height:1.35;">อัปโหลด <b>PDF, Docs, Slides, Text</b> หรือใส่ <b>Web URL, YouTube Link</b> (ดึงคำบรรยายคลิปให้อัตโนมัติ)</p>
+      </div>
+      <div class="card" style="border-top: 3px solid var(--purple); padding: 0.6em;">
+        <h3 style="margin:0; font-size:0.85em; color:var(--purple);">✏️ ข้อความคัดลอกมาวาง</h3>
+        <p style="font-size: 0.65em; margin: 0.2em 0; line-height:1.35;">คัดลอกเนื้อหาบางส่วนจากหน้าเว็บหรือแอปฯ อื่นมาวางแปะ (Copy-Paste) ได้ทันที</p>
+      </div>
+      <div class="card" style="border-left: 4px solid var(--warn); background: #fffcf8; padding: 0.5em 0.7em;">
+        <h3 style="margin:0; font-size:0.75em; color:var(--warn);">⚠️ ข้อควรระวัง:</h3>
+        <p style="font-size: 0.6em; margin: 0.15em 0; line-height:1.3; color: var(--ink);">AI ตอบเฉพาะในขอบเขตแหล่งข้อมูล หากไม่มีข้อมูลจะปฏิเสธการตอบเพื่อป้องกันการมโน (Hallucination)</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 13B LECTURE: REAL-WORLD APPLICATIONS -->
+<section>
+  <span class="kicker">ตัวอย่างการใช้งาน</span>
+  <h2>ตัวอย่างการใช้ NotebookLM ทบทวนและสร้างชิ้นงาน</h2>
+  <div class="cols">
+    <div style="flex: 1.5;">
+      <ul>
+        <li><b>1. จำลองข้อสอบ (Exam Prep):</b> โยนชีตสรุปวิชาเรียน + ข้อสอบเก่าเข้าไป แล้วสั่ง AI: <i>"ช่วยตั้งควิซถามตอบ 5 ข้อทบทวนเรื่อง..."</i> เพื่อทดสอบตัวเอง</li>
+        <li><b>2. ตกผลึกโครงงานวิจัย (Research Buddy):</b> ใส่บทความวิชาการหรือข้อมูลวิจัย 5-6 เรื่องที่ขัดแย้งกัน เพื่อให้ AI ช่วยหาจุดเชื่อมโยง ข้อดี-ข้อเสีย หรือความต่าง</li>
+        <li><b>3. เจาะประเด็นคลิปยาว (YouTube Transcript study):</b> ใส่ลิงก์วิดีโอเลกเชอร์ 2 ชั่วโมงในวิชาประวัติศาสตร์หรือวิทยาศาสตร์ แล้วสั่งให้ AI สรุปเป็นหัวข้อสไลด์ได้ทันที</li>
+      </ul>
+      <p style="margin-top: .4em; font-size: 0.8em;">💡 <b>เคล็ดลับ:</b> สามารถรวมแหล่งข้อมูลต่างประเภทกัน (เช่น YouTube + PDF + Google Docs) ในสมุดเล่มเดียวกันได้สูงสุดถึง 50 แหล่งข้อมูล!</p>
+    </div>
+    <div style="flex: 1.0; text-align: center;">
+      <div class="card" style="background: linear-gradient(135deg, var(--soft), #fff); border-color: var(--purple); min-height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1.2em;">
+        <span style="font-size: 2.5em; margin-bottom: 5px;">🎓</span>
+        <b style="color: var(--purple); font-size: 0.9em;">เพื่อนเรียนอัจฉริยะส่วนตัว</b>
+        <p style="font-size: 0.7em; color: var(--muted); margin: 0.3em 0 0;">เรียนรู้ลึกซึ้ง ตรวจสอบหลักฐานได้จริงด้วย Citations</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 13C LECTURE: AUDIO OVERVIEW -->
+<section>
+  <span class="kicker">พอดคาสต์อัจฉริยะ</span>
+  <h2>แปลงหนังสือเป็นพอดคาสต์: Audio Overview</h2>
+  <div class="cols">
+    <div style="flex: 1.4;">
+      <ul>
+        <li><b>รูปแบบพอดคาสต์คู่:</b> AI จะสร้างเสียงผู้ดำเนินรายการชายและหญิง สนทนาสรุปประเด็นหลักจากเอกสารของคุณ รองรับภาษาไทยและภาษาอื่นๆ กว่า 80 ภาษาอย่างเป็นธรรมชาติ</li>
+        <li><b>ความฉลาดในการเล่าเรื่อง:</b> ไม่ใช่การอ่านออกเสียงเอกสารแบบคำต่อคำ แต่เป็นการทำความเข้าใจเนื้อหา แล้วนำมาวิเคราะห์ ถกเถียง ยกตัวอย่างเปรียบเทียบตลกๆ ให้ฟังง่าย</li>
+        <li><b>ประโยชน์ต่อการศึกษา:</b>
+          <ul style="padding-left: 1.0em; font-size: 0.8em; line-height: 1.45;">
+            <li>ช่วยนักเรียน/นักศึกษากลุ่ม Auditory Learner ที่เรียนรู้ได้ดีผ่านการฟัง</li>
+            <li>ใช้เปิดฟังทบทวนบทเรียนระหว่างเดินทางหรือพักสายตา</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div style="flex: 1.1;">
+      <div class="card" style="border-left: 5px solid var(--purple); min-height: 160px;">
+        <h3 style="margin-top:0; font-size:1.0em; color:var(--purple);">🎧 วิธีการสร้าง Audio Overview</h3>
+        <p style="font-size: 0.72em; line-height: 1.45; color: var(--muted); margin:0.3em 0;">
+          ในสมุดบันทึก NotebookLM ให้เปิดแผง <b>Studio</b> ด้านขวามือ จากนั้นในส่วนของ Audio Overview ให้กดปุ่ม <b>Generate</b> รอระบบประมวลผลประมาณ 3-5 นาที
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 13D LECTURE: CITATIONS AND TRUST -->
+<section>
+  <span class="kicker">ความโปร่งใสของข้อมูล</span>
+  <h2>ความโปร่งใสในข้อมูล: การตรวจตรา Citation</h2>
+  <div class="cols">
+    <div style="flex: 1.4;">
+      <ul>
+        <li><b>Citation (การอ้างอิง):</b> เมื่อถามคำถาม AI จะไม่ตอบขึ้นมาลอยๆ แต่จะแสดงตัวเลขนำทางสีกรมท่า (เช่น <span class="pill" style="font-size:0.7em; background:var(--soft);">[1]</span> หรือ <span class="pill" style="font-size:0.7em; background:var(--soft);">[2]</span>) ไว้ท้ายคำตอบ</li>
+        <li><b>คลิกเพื่อพิสูจน์:</b> เมื่อนักเรียนคลิกที่ตัวเลขเหล่านั้น หน้าจอฝั่งซ้ายจะเด้งและไฮไลต์ข้อความในไฟล์ต้นฉบับจริงให้ทันที</li>
+        <li><b>ฝึกฝนทักษะการตรวจสอบ:</b>
+          <ul style="padding-left: 1.0em; font-size: 0.8em; line-height: 1.45;">
+            <li>ฝึกให้นักเรียนไม่เชื่อข่าวสารง่ายๆ จนกว่าจะมีแหล่งอ้างอิงที่เชื่อถือได้</li>
+            <li>ประหยัดเวลาการทำรายงาน ไม่ต้องนั่งพลิกหน้าหนังสือหาที่มา</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div style="flex: 1.1; display: flex; align-items: center;">
+      <div class="card" style="border-left: 5px solid var(--teal); min-height: 120px; background: #f0fbfb;">
+        <h3 style="margin-top:0; font-size:1.0em; color:var(--teal);">หลักการใช้ AI ในการทำรายงาน/วิจัย</h3>
+        <p style="font-size: 0.75em; line-height: 1.45; color: var(--muted); margin: 0.3em 0;">
+          คำตอบ AI ที่ไม่มี Citation อ้างอิงแหล่งที่มา = มีโอกาสมโนข้อมูล (Hallucination)
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 14 ACT3 INTRO -->
+<section>
+  <span class="kicker">กิจกรรมที่ 3 (⏱ 20 นาที)</span>
+  <h2>กิจกรรมที่ 3: คลังข้อมูล NotebookLM</h2>
+  <div class="cols">
+    <div style="flex: 1.3;">
+      <p style="font-size: 0.88em;">สร้าง Notebook ขึ้นใหม่ใน NotebookLM อัปโหลดบทความภาษาไทยตามหัวข้อวิจัยที่ได้รับสุ่มตามเลขที่ จากนั้นลองทำสองกิจกรรมเพื่อประเมินความฉลาดของ AI:</p>
+      <div class="rule" style="font-size: 0.78em; line-height: 1.4;">
+        ⚙️ ลำดับกิจกรรมศึกษาเปรียบเทียบ:
+        <br><b>กิจกรรมที่ 3.1: แชตจับผิด AI ทั่วไป vs NotebookLM</b>
+        <br>ลองคิด "คำถามนอกเรื่อง/คำถามแปลกๆ" ที่ไม่มีวันระบุในไฟล์ แล้วถามเปรียบเทียบระหว่าง NotebookLM กับ Gemini ทั่วไป สังเกตการแสดงตัวตนขอบเขต
+        <br><b>กิจกรรมที่ 3.2: สั่งขึ้นรูปชิ้นงานสร้างสรรค์</b>
+        <br>พิมพ์สั่งให้ NotebookLM นำความรู้จากคลังไฟล์ไปสร้างสรรค์ โครงร่างสไลด์, แบบทดสอบควิซ, และแผนผังอินโฟกราฟิก
+      </div>
+    </div>
+    <div style="flex: 1.2;">
+      <div class="card" style="border-left: 5px solid var(--purple); min-height: 120px;">
+        <h3>📂 หัวข้องาน</h3>
+        <p style="font-size: 0.9em; margin: 0.3em 0; line-height: 1.4;" class="good" id="act3-topic-label">— (กรอกเลขที่ในหน้า 2 ก่อน)</p>
+        <span class="note" id="act3-desc-label">รายละเอียดคำวิจัยและคำถามหลอกล่อ...</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 15 Q2.3 NOTEBOOKLM WORKSPACE 1 -->
+<section>
+  <h3>ข้อ 3.1 — ประชันความแม่นยำ (Gemini vs NotebookLM)</h3>
+  <p class="q">เปรียบเทียบการถามตอบใน NotebookLM อิงเอกสาร <b data-var="topic">...</b> เทียบกับ Gemini ทั่วไป</p>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.1em; align-items: start;">
+    <div style="display: flex; flex-direction: column; gap: 0.4em;">
+      <div>
+        <span class="ws-label">🔮 1. ทำนายผลลัพธ์: คิดว่าสองระบบนี้จะตอบต่างกันอย่างไรเมื่อเจอคำถามนอกบทเรียน?</span>
+        <textarea class="save ws-field" id="q23_predict" data-group="กิจกรรมที่ 3: แชตวิจัยคลังข้อมูลเปรียบเทียบ" data-label="ข้อ 3.1 — การทำนายผลลัพธ์ล่วงหน้า" style="height: 45px; font-weight: 600; color: var(--purple);" placeholder="พิมพ์ความคาดหวัง เช่น NotebookLM น่าจะปฏิเสธ ส่วน Gemini น่าจะพยายามตอบมโนขึ้นมา..."></textarea>
+      </div>
+      <div>
+        <span class="ws-label">❓ ถามหลอกล่อ: <span id="q23_fake_query_lbl" style="color:var(--purple); font-weight:600;">—</span></span>
+        <span class="ws-label">❌ 2. คำตอบจาก NotebookLM (ขอบเขตอิงไฟล์):</span>
+        <textarea class="save ws-field" id="q23_lm_out" data-group="กิจกรรมที่ 3: แชตวิจัยคลังข้อมูลเปรียบเทียบ" data-label="ข้อ 3.1 — ผลแชตคุกคามนอกบทเรียนใน NotebookLM" style="height: 60px;" placeholder="คัดลอกปฏิกิริยาของ NotebookLM หรือคำบอกปัดมาใส่..."></textarea>
+        <div id="q23_lm_out_img_tray" class="img-tray"></div>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0.4em;">
+      <div>
+        <span class="ws-label">🤖 3. คำตอบจาก Gemini ทั่วไป (ใช้ความจำกว้างดึงเน็ต):</span>
+        <textarea class="save ws-field" id="q23_gemini_out" data-group="กิจกรรมที่ 3: แชตวิจัยคลังข้อมูลเปรียบเทียบ" data-label="ข้อ 3.1 — ผลแชตคุกคามนอกบทเรียนใน Gemini" style="height: 60px;" placeholder="คัดลอกการตอบมโนหรือข้อมูลจริงทั่วไปของ Gemini มาใส่..."></textarea>
+      </div>
+      <div>
+        <span class="ws-label">🏷️ 4. ป้อนคำถามจริงตามเนื้อหาหลัก สังเกตปุ่มเลข Citation และอธิบาย:</span>
+        <textarea class="save ws-field" id="q23_citation" data-group="กิจกรรมที่ 3: แชตวิจัยคลังข้อมูลเปรียบเทียบ" data-label="ข้อ 3.1 — รายละเอียดอ้างอิง Citation" style="height: 60px;" placeholder="ตัวอย่าง: มีปุ่มเลข [1] ปรากฏขึ้น พอกดดูจะชี้อ้างอิงตรงไปยังประโยค '...' ในเอกสาร"></textarea>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 16 Q2.3 NOTEBOOKLM WORKSPACE 2 -->
+<section>
+  <h3>ข้อ 3.2</h3>
+  <p class="q">สั่งให้ NotebookLM สรุปสาระสำคัญตามหัวข้อ <b data-var="topic">...</b> ออกมาเป็นแผนโครงงานวิชาการ</p>
+  <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 1.1em; align-items: start;">
+    <div style="display: flex; flex-direction: column; gap: 0.4em;">
+      <div>
+        <span class="ws-label">📊 1. โครงร่างสไลด์นำเสนอ (Slide Deck Outline):</span>
+        <textarea class="save ws-field" id="q23_slide_deck" data-group="กิจกรรมที่ 3: แชตวิจัยคลังข้อมูลเปรียบเทียบ" data-label="ข้อ 3.2 — โครงร่าง Slide Deck จาก NotebookLM" style="height: 100px;" placeholder="คัดลอกหัวข้อสไลด์ 3-5 สไลด์ที่ AI ร่างมาวาง..."></textarea>
+        <div id="q23_slide_deck_img_tray" class="img-tray"></div>
+      </div>
+      <div>
+        <span class="ws-label">✏️ 2. โครงร่าง Infographic จัดระเบียบความเข้าใจ:</span>
+        <textarea class="save ws-field" id="q23_infographic" data-group="กิจกรรมที่ 3: แชตวิจัยคลังข้อมูลเปรียบเทียบ" data-label="ข้อ 3.2 — แผนภาพจัดระเบียบ Infographic" style="height: 75px;" placeholder="คัดลอกไอเดียจัดระเบียบแผนภูมิ เช่น ขั้นตอน 1-2-3 หรือแผนผังความสัมพันธ์..."></textarea>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0.4em;">
+      <div>
+        <span class="ws-label">📝 3. แบบทดสอบทวนความเข้าใจ (Quiz 2-3 ข้อพร้อมเฉลย):</span>
+        <textarea class="save ws-field" id="q23_quiz" data-group="กิจกรรมที่ 3: แชตวิจัยคลังข้อมูลเปรียบเทียบ" data-label="ข้อ 3.2 — ชุดข้อสอบทบทวนความรู้ Quiz" style="height: 140px;" placeholder="คัดลอกคำถามและเฉลยสั้นที่สร้างจาก NotebookLM มาใส่ที่นี่..."></textarea>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 16A LECTURE: AI LIMITS AND ETHICS -->
+<section>
+  <span class="kicker">จริยธรรมปัญญาประดิษฐ์</span>
+  <h2>ข้อจำกัดของ AI และจริยธรรมการใช้งาน</h2>
+  <div class="cols">
+    <div style="flex: 1.3;">
+      <ul>
+        <li><b>AI ไม่ใช่ศาสตราจารย์:</b> แม้จะมี Grounding หรืออิงเอกสาร แต่ AI ก็ยังอาจสรุปผิดพลาดหรือมองข้ามประเด็นสำคัญได้ นักเรียนต้องเป็น <b>"ผู้ควบคุมและตรวจสอบเสมอ"</b></li>
+        <li><b>จริยธรรมในการเรียนรู้:</b>
+          <ul style="padding-left: 1.0em; font-size: 0.82em; line-height: 1.45;">
+            <li><b style="color:var(--good)">การใช้ที่ถูกวิถี:</b> ให้ AI ช่วยสรุป, วางโครงร่าง, ฝึกหัดคำควิซ, หรือค้นคำตอบประกอบการอ่านของตัวเอง</li>
+            <li><b style="color:var(--warn)">ข้อห้ามทางวิชาการ:</b> ห้ามคัดลอกบทสรุปทั้งหมดของ AI ไปส่งครูโดยไม่ผ่านการคิดทบทวนหรือลงมือทำด้วยตนเอง</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div style="flex: 1.1; display: flex; align-items: center;">
+      <div class="card" style="background: #fff6ed; border-color: #ffd8b8; color: var(--warn); min-height: 150px; font-size: 0.82em; line-height: 1.5;">
+        <b>⚠️ ข้อคิดเตือนใจ:</b>
+        <p style="margin: 0.3em 0 0; color: var(--ink);">
+          AI เป็นตัวคูณความสามารถ (Leverage) ของคนที่มีรากความรู้ หากส่งงานที่ AI ทำล้วนๆ โดยไม่มีความเข้าใจเลย เมื่อถึงการสอบในห้องเรียนจริง นักเรียนจะไม่สามารถทำโจทย์ได้เลย
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PART 4: REFLECTION ===================== -->
+
+<!-- 17 REFLECTION -->
+<section>
+  <span class="kicker">สรุปการเรียนรู้</span>
+  <h2>สะท้อนความคิดท้ายคาบเรียน</h2>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.1em; align-items: start;">
+    <div style="display: flex; flex-direction: column; gap: 0.4em;">
+      <div>
+        <span class="ws-label">✏️ 1. การใช้งาน Temperature ที่ต่างกัน หรือการใช้ Google Search Grounding ช่วยให้ได้คำตอบดีขึ้นอย่างไร?</span>
+        <textarea class="save ws-field" id="q24_ref_studio" data-group="การสะท้อนคิดท้ายคาบ" data-label="การสะท้อนคิดประเด็น AI Studio" style="height: 150px;" placeholder="พิมพ์คำอธิบายคำตอบของคุณที่นี่..."></textarea>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0.4em;">
+      <div>
+        <span class="ws-label">✏️ 2. นักเรียนจะนำการใช้คลังข้อมูลและการอ้างอิงบน NotebookLM ไปช่วยทบทวนตำราเรียนก่อนสอบได้อย่างไรบ้าง?</span>
+        <textarea class="save ws-field" id="q24_ref_notebook" data-group="การสะท้อนคิดท้ายคาบ" data-label="การสะท้อนคิดประเด็น NotebookLM" style="height: 150px;" placeholder="พิมพ์คำอธิบายคำตอบของคุณที่นี่..."></textarea>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 18 DOWNLOAD SUBMISSION -->
+<section>
+  <span class="kicker">ส่งงาน</span>
+  <h2>บันทึกและส่งใบงานของคุณ</h2>
+  <p style="margin-top: 0.8em;">
+    <button class="dlbig" onclick="downloadPDF()">⬇ บันทึกใบงานเป็น PDF เพื่อส่งครู</button>
+  </p>
+  <p class="note" style="color: var(--warn); font-weight: 600; margin-top: 0.5em;">🚨 กรุณาตรวจสอบให้แน่ใจว่ากรอก "ชื่อ-นามสกุล" ในหน้า 2 เรียบร้อยแล้ว ปุ่มพิมพ์จึงจะยอมเปิดทำงาน</p>
+</section>
+
+</div></div>
+
+<!-- assignment print area layout -->
+<div id="print-area"></div>
+
+<!-- reveal.js javascript setup -->
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script>
+  Reveal.initialize({
+    hash:false, respondToHashChanges:false, slideNumber:'c/t', controls:true, progress:true,
+    width:1280, height:800, margin:0.06, minScale:0.2, maxScale:1.5,
+    transition:'slide'
+  });
+
+  const SAVE_KEY = 'aied_w2';
+
+  function saveField(el) {
+    const data = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
+    data[el.id] = el.value;
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+    const hint = document.getElementById('savehint');
+    if (hint) {
+      hint.style.opacity = 1;
+      setTimeout(() => { hint.style.opacity = 0; }, 800);
+    }
+  }
+
+  function loadSaved() {
+    const data = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
+    Object.keys(data).forEach(k => {
+      if (k.indexOf('img:') === 0) return; // handled by image setup
+      const el = document.getElementById(k);
+      if (el) {
+        el.value = data[k];
+      }
+    });
+  }
+
+  window.saveField = saveField;
+  document.addEventListener('input', e => { if (e.target.classList.contains('save')) saveField(e.target); });
+  loadSaved();
+
+  /* ---- show floating download button only on the last slide ---- */
+  function updateDlBtnVisibility() {
+    const dlBtn = document.getElementById('dlbtn');
+    if (dlBtn) {
+      dlBtn.style.display = Reveal.isLastSlide() ? 'block' : 'none';
+    }
+  }
+  Reveal.on('ready', updateDlBtnVisibility);
+  Reveal.on('slidechanged', updateDlBtnVisibility);
+
+  /* ---- don't let reveal hijack arrow keys while typing ---- */
+  ['focusin', 'focusout'].forEach(ev => document.addEventListener(ev, e => {
+    if (e.target.matches('input,textarea')) Reveal.configure({ keyboard: ev === 'focusout' });
+  }));
+
+  /* ---- build & download the assignment-only PDF ---- */
+  function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function val(id) { const el = document.getElementById(id); return el ? el.value : ''; }
+  function getImgs(id) {
+    try { const d = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}'); return d['img:' + id] || []; }
+    catch (e) { return []; }
+  }
+
+  function buildAssignmentHTML() {
+    const name = val('ws-name'), cls = val('ws-class'), no = val('ws-no');
+    const si = (window.getSetInfo && window.getSetInfo()) || null;
+    let html = `<div class="pdf-doc">
+      <h1>ใบงาน AI for Ed — สัปดาห์ที่ 2</h1>
+      <div class="pdf-meta">
+        <span><b>ชื่อ–สกุล:</b> ${esc(name) || '____________________'}</span>
+        <span><b>ชั้น:</b> ${esc(cls) || '________'}</span>
+        <span><b>เลขที่:</b> ${esc(no) || '____'}</span>
+        ${ si ? `<span><b>ชุดโจทย์ประจำตัว:</b> ชุดที่ ${si.n} (วิชาสรุป: ${esc(si.subject)} · บทสร้างสรรค์: ${esc(si.creativeTask)})</span>` : '' }
+      </div>`;
+    let curGroup = '';
+    document.querySelectorAll('.ws-field').forEach(f => {
+      const g = f.getAttribute('data-group') || '';
+      if (g && g !== curGroup) { curGroup = g; html += `<h2>${esc(g)}</h2>`; }
+      const label = f.getAttribute('data-label') || '';
+      const v = f.value || '';
+      const imgs = getImgs(f.id);
+      const ans = v ? esc(v).replace(/\n/g, '<br>')
+                    : (imgs.length ? '<span class="empty">(แนบรูปภาพด้านล่าง)</span>' : '<span class="empty">(ยังไม่ได้ตอบ)</span>');
+      let imgHtml = '';
+      if (imgs.length) { imgHtml = '<div class="pdf-imgs">' + imgs.map(s => `<img src="${s}">`).join('') + '</div>'; }
+      html += `<div class="pdf-item"><div class="pdf-label">${esc(label)}</div><div class="pdf-answer">${ans}</div>${imgHtml}</div>`;
+    });
+    html += `</div>`;
+    return html;
+  }
+
+  function downloadPDF() {
+    const name = val('ws-name').trim();
+    if (!name) {
+      alert('กรุณากรอก “ชื่อ–นามสกุล” ในสไลด์ที่ 2 ก่อนบันทึกใบงาน');
+      Reveal.slide(1); return;
+    }
+    const area = document.getElementById('print-area');
+    area.innerHTML = buildAssignmentHTML();
+    document.body.classList.add('printing');
+    setTimeout(() => {
+      try { window.print(); }
+      catch (e) {
+        cleanupPrint();
+        alert('เบราว์เซอร์เปิดหน้าพิมพ์ไม่ได้\nให้ดับเบิลคลิกเปิดไฟล์ html นี้ใน Chrome หรือ Edge โดยตรง แล้วลองใหม่ครับ');
+      }
+    }, 150);
+  }
+
+  function cleanupPrint() {
+    document.body.classList.remove('printing');
+    const area = document.getElementById('print-area'); if (area) area.innerHTML = '';
+  }
+  window.addEventListener('afterprint', cleanupPrint);
+  window.downloadPDF = downloadPDF;
+</script>
+
+<!-- ===================== IMAGE ATTACH / PASTE ===================== -->
+<script>
+(function(){
+  const MAXDIM = 1000;            // image cap (px) for localStorage limit
+  const QUALITY = 0.8;            // jpeg quality
+  function readAll() { try { return JSON.parse(localStorage.getItem(SAVE_KEY) || '{}'); } catch (e) { return {}; } }
+  function getImgs(id) { return readAll()['img:' + id] || []; }
+  function setImgs(id, arr) {
+    const d = readAll(); d['img:' + id] = arr;
+    try { localStorage.setItem(SAVE_KEY, JSON.stringify(d)); return true; }
+    catch (e) { alert('พื้นที่จัดเก็บในเบราว์เซอร์เต็ม — รูปอาจมีขนาดใหญ่เกินไป ลองลบรูปอื่นออกก่อนนะครับ'); return false; }
+  }
+
+  function compress(file) {
+    return new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onerror = () => rej(new Error('read'));
+      r.onload = () => {
+        const img = new Image();
+        img.onerror = () => rej(new Error('decode'));
+        img.onload = () => {
+          let w = img.naturalWidth, h = img.naturalHeight;
+          if (w > MAXDIM || h > MAXDIM) { const k = Math.min(MAXDIM/w, MAXDIM/h); w = Math.round(w*k); h = Math.round(h*k); }
+          const c = document.createElement('canvas'); c.width = w; c.height = h;
+          c.getContext('2d').drawImage(img, 0, 0, w, h);
+          try { res(c.toDataURL('image/jpeg', QUALITY)); } catch (e) { rej(e); }
+        };
+        img.src = r.result;
+      };
+      r.readAsDataURL(file);
+    });
+  }
+
+  async function addFiles(id, files, tray) {
+    const list = [...files].filter(f => f && f.type && f.type.indexOf('image/') === 0);
+    if (!list.length) return;
+    const arr = getImgs(id);
+    for (const f of list) { try { arr.push(await compress(f)); } catch (e) {} }
+    if (setImgs(id, arr)) renderTray(id, tray);
+  }
+
+  function renderTray(id, tray) {
+    const arr = getImgs(id); tray.innerHTML = '';
+    arr.forEach((src, i) => {
+      const t = document.createElement('div'); t.className = 'img-thumb';
+      const im = document.createElement('img'); im.src = src; im.alt = 'แนบรูป';
+      const rm = document.createElement('button'); rm.className = 'rm'; rm.type = 'button';
+      rm.textContent = '✕';
+      rm.addEventListener('click', () => { const a = getImgs(id); a.splice(i, 1); setImgs(id, a); renderTray(id, tray); });
+      t.appendChild(im); t.appendChild(rm); tray.appendChild(t);
+    });
+  }
+
+  function attach(field) {
+    const id = field.id;
+    const btn = document.createElement('button'); btn.className = 'img-btn'; btn.type = 'button';
+    btn.textContent = '📎 แนบรูป / วางรูป';
+    const hint = document.createElement('span'); hint.className = 'img-hint';
+    hint.textContent = 'หรือคัดลอกรูปแล้ววางในช่อง (Ctrl/⌘ + V)';
+    const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*';
+    inp.multiple = true; inp.style.display = 'none';
+    const tray = document.getElementById(id + '_img_tray') || document.createElement('div');
+    if (!tray.className) tray.className = 'img-tray';
+
+    btn.addEventListener('click', () => inp.click());
+    inp.addEventListener('change', () => { addFiles(id, inp.files, tray); inp.value = ''; });
+    field.addEventListener('paste', e => {
+      const items = e.clipboardData && e.clipboardData.items;
+      if (!items) return;
+      const imgs = [...items].filter(it => it.kind === 'file' && it.type.indexOf('image/') === 0)
+                           .map(it => it.getAsFile());
+      if (imgs.length) { e.preventDefault(); addFiles(id, imgs, tray); }
+    });
+
+    field.insertAdjacentElement('afterend', tray);
+    field.insertAdjacentElement('afterend', hint);
+    field.insertAdjacentElement('afterend', inp);
+    field.insertAdjacentElement('afterend', btn);
+    renderTray(id, tray);
+  }
+
+  function init() {
+    const targets = ['q21_play_low', 'q21_play_high', 'q22_search_on', 'q23_lm_out', 'q23_slide_deck'];
+    targets.forEach(tid => {
+      const el = document.getElementById(tid);
+      if (el) attach(el);
+    });
+  }
+  if (document.readyState !== 'loading') init();
+  else document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+
+<!-- ===================== PROBLEM SETS (anti-copy) ===================== -->
+<script>
+(function(){
+  const SETS = [
+    {
+      topic: 'โลกดาราศาสตร์และการย้ายถิ่นฐานสู่ดาวอังคาร',
+      desc: 'ศึกษาอุปสรรคทางชีวภาพ การเดินทาง และแผนการสร้างอาณานิคมบนดาวอังคาร',
+      creativeTask: 'แต่งกลอน 4 สุภาพ เกี่ยวกับ "ชานมไข่มุกแสนอร่อย"',
+      searchQuery: 'สภาพอากาศและอุณหภูมิในอำเภอเมืองจังหวัดเชียงใหม่วันนี้',
+      fakeQuery: 'สูตรลับความอร่อยของข้าวหมูแดงประตูน้ำคืออะไรและมีขั้นตอนการทำอย่างไร?',
+      subject: 'ดาราศาสตร์และอวกาศ',
+      reasoningPrompt: 'มีคนกล่าวว่า "ถ้าดาวอังคารมีแรงโน้มถ่วงน้อยกว่าโลก แสดงว่าถ้าเราส่งพัสดุจากโลกไปดาวอังคาร น้ำหนักของมันจะลดลง ดังนั้นค่าขนส่งทางไปรษณีย์ไปดาวอังคารจะถูกกว่าส่งบนโลก" จงหาข้อผิดพลาดทางฟิสิกส์และตรรกะในประโยคนี้เป็นข้อๆ',
+      sources: [
+        'https://www.nsm.or.th/nsm/blog/moving-to-mars',
+        'https://www.bbc.com/thai/articles/c411n9018ezo'
+      ]
+    },
+    {
+      topic: 'ประวัติศาสตร์เทคโนโลยีและการปฏิวัติอุตสาหกรรม',
+      desc: 'ศึกษาเกี่ยวกับการเปลี่ยนผ่านด้วยเครื่องจักรไอน้ำ คอมพิวเตอร์ และผลกระทบต่อสังคมมนุษย์',
+      creativeTask: 'แต่งคำผวนตลกๆ เกี่ยวกับ "การบ้านที่เยอะแยะจนทำไม่ทัน"',
+      searchQuery: 'ราคาทองคำแท่ง 96.5% ในประเทศไทย ณ วันนี้ (ล่าสุด)',
+      fakeQuery: 'ทำไมหมีแพนด้าถึงชอบกินใบไผ่มากกว่าเนื้อสัตว์ มีกลไกทางร่างกายอะไรพิเศษหรือเปล่า?',
+      subject: 'ประวัติศาสตร์เทคโนโลยี',
+      reasoningPrompt: 'สมชายพูดว่า "ในเมื่อการปฏิวัติอุตสาหกรรมเปลี่ยนงานมือเป็นเครื่องจักร และทำให้ผลิตเสื้อผ้าได้เร็วขึ้น 10 เท่า แสดงว่าทุกคนในอังกฤษในทศวรรษ 1850 จะมีเสื้อผ้าใส่มากกว่าเดิม 10 เท่าพอดี" คำกล่าวนี้มีช่องโหว่ทางเศรษฐศาสตร์และสังคมตรงไหนบ้าง? จงอธิบาย',
+      sources: [
+        'https://www.silpa-mag.com/history/article_79089',
+        'https://web.tcdc.or.th/th/Articles/Detail/industrial-revolution'
+      ]
+    },
+    {
+      topic: 'ร่างกายและชีววิทยาการนอนหลับกับกลไกสมอง',
+      desc: 'ศึกษาเกี่ยวกับกระบวนการทำงานของสมอง คลื่นสมองขณะนอนหลับ และประโยชน์ของการนอนหลับที่มีต่อการเรียนรู้',
+      creativeTask: 'แต่งกลอน 4 สุภาพ เกี่ยวกับ "น้องแมวส้มจอมกวนที่ชอบทำลายข้าวของ"',
+      searchQuery: 'ผลการแข่งขันฟุตบอลพรีเมียร์ลีกคู่ล่าสุดเมื่อคืนนี้',
+      fakeQuery: 'กฎกติกาการตัดสินการล้ำหน้าในการแข่งขันฟุตบอลพรีเมียร์ลีกมีประวัติมาอย่างไร?',
+      subject: 'ชีววิทยาการนอนหลับ',
+      reasoningPrompt: 'ถ้าคนเราเรียนรู้ขณะนอนหลับได้ 100% แสดงว่าเราควรเปิดเทปบันทึกเสียงบทเรียนวิชาเลขทิ้งไว้ตอนนอน 8 ชั่วโมงทุกคืนแทนการตื่นมาเรียนหนังสือเพื่อประหยัดเวลา จงหาข้อบกพร่องเชิงชีววิทยาและประสิทธิภาพของการให้เหตุผลนี้',
+      sources: [
+        'https://www.si.mahidol.ac.th/sidoctor/e-pl/articledetail.asp?id=1258',
+        'https://www.chula.ac.th/highlight/118314/'
+      ]
+    },
+    {
+      topic: 'วิวัฒนาการของวรรณกรรมแฟนตาซีและโลกเวทมนตร์',
+      desc: 'ศึกษากำเนิดของนวนิยายแฟนตาซี การสร้าง World-building และตัวละครต้นแบบ (Archetypes) ของการผจญภัย',
+      creativeTask: 'แต่งคำผวนตลกๆ เกี่ยวกับ "อาหารกลางวันโรงเรียนสุดแปลก"',
+      searchQuery: 'ข่าวเทคโนโลยีหรือปัญญาประดิษฐ์เด่นในไทยวันนี้',
+      fakeQuery: 'วิธีการปลูกต้นมะม่วงอกร่องในเขตกรุงเทพฯ ให้มีผลหวานกรอบชื่นใจต้องดูแลอย่างไร?',
+      subject: 'วรรณกรรมแฟนตาซี',
+      reasoningPrompt: 'นักเขียนคนหนึ่งกล่าวว่า "นวนิยายแฟนตาซีทุกเรื่องต้องมีตัวเอกเป็นผู้มีเวทมนตร์และต้องมีสัตว์วิเศษตัวใหญ่เสมอ ถ้าไม่มีสิ่งเหล่านี้ก็ไม่ใช่แนวแฟนตาซี" จงวิเคราะห์ว่าคำกล่าวนี้มีจุดบกพร่องในเชิงคำนิยามและการสร้างโลก (World-building) อย่างไรบ้าง พร้อมยกตัวอย่างแย้ง',
+      sources: [
+        'https://www.the101.world/fantasy-literature-evolution/',
+        'https://www.arts.chula.ac.th/complit/articles/fantasy-archetypes'
+      ]
+    },
+    {
+      topic: 'วิทยาศาสตร์การกีฬาและกลไกของสรีระ',
+      desc: 'ศึกษาเกี่ยวกับกลศาสตร์ฟิสิกส์ของการเคลื่อนไหวร่างกาย การใช้พลังงาน และกล้ามเนื้อในการกระโดดและวิ่งเร็ว',
+      creativeTask: 'แต่งกลอน 4 สุภาพ เกี่ยวกับ "การเล่นเกมออนไลน์ตอนกลางคืนกับแก๊งเพื่อน"',
+      searchQuery: 'ราคาน้ำมันขายปลีก (แก๊สโซฮอล์ 95) ในกรุงเทพฯ วันนี้',
+      fakeQuery: 'ประวัติศาสตร์และปูมหลังการสถาปนากรุงศรีอยุธยาตอนต้นในรัชสมัยสมเด็จพระรามาธิบดีที่ 1',
+      subject: 'วิทยาศาสตร์การกีฬา',
+      reasoningPrompt: 'สมบัติบอกว่า "เนื่องจากพลังงานจลน์แปรผันตามมวลและความเร็วยกกำลังสอง (E_k = 1/2 m v^2) ดังนั้นถ้านักวิ่งระยะสั้นเพิ่มน้ำหนักตัว (มวล) ขึ้นเป็น 2 เท่า เขาก็จะวิ่งได้แรงขึ้นและเข้าเส้นชัยเร็วขึ้นเป็น 2 เท่า" จงชี้จุดบกพร่องของการใช้สูตรฟิสิกส์นี้อธิบายสรีระการวิ่ง',
+      sources: [
+        'https://www.nsm.or.th/nsm/blog/physics-of-sports',
+        'https://www.si.mahidol.ac.th/th/healthdetail.asp?id=1130'
+      ]
+    }
+  ];
+
+  function setIndexOf(noStr) {
+    const n = parseInt(String(noStr || '').replace(/[^0-9]/g, ''), 10);
+    if (!n || n < 1) return null;
+    return (n - 1) % SETS.length;
+  }
+
+  function applySet(i) {
+    const s = SETS[i];
+    document.querySelectorAll('[data-var="topic"]').forEach(e => e.textContent = s.topic);
+    document.querySelectorAll('[data-var="creativeTask"]').forEach(e => e.textContent = s.creativeTask);
+    document.querySelectorAll('[data-var="searchQuery"]').forEach(e => e.textContent = s.searchQuery);
+    document.querySelectorAll('[data-var="reasoningPrompt"]').forEach(e => e.textContent = s.reasoningPrompt);
+    const fakeQEl = document.getElementById('q23_fake_query_lbl');
+    if (fakeQEl) fakeQEl.textContent = s.fakeQuery;
+  }
+
+  function refresh() {
+    const noEl = document.getElementById('ws-no');
+    const act1Creative = document.getElementById('act1-creative-label');
+    const act2Search = document.getElementById('act2-search-label');
+    const act3Topic = document.getElementById('act3-topic-label');
+    const act3Desc = document.getElementById('act3-desc-label');
+
+    const i = setIndexOf(noEl ? noEl.value : '');
+    if (i === null) {
+      applySet(0);
+      if (act1Creative) act1Creative.textContent = '— (ระบุเลขที่ก่อน)';
+      if (act2Search) act2Search.textContent = '— (ระบุเลขที่ก่อน)';
+      if (act3Topic) act3Topic.textContent = '— (ระบุเลขที่ก่อน)';
+      if (act3Desc) act3Desc.innerHTML = 'รายละเอียดข้อมูลที่ต้องอัปโหลด...';
+      return;
+    }
+    
+    applySet(i);
+    const s = SETS[i];
+    if (act1Creative) act1Creative.textContent = s.creativeTask;
+    if (act2Search) act2Search.textContent = s.searchQuery;
+    if (act3Topic) act3Topic.textContent = s.topic;
+    if (act3Desc) {
+      let urlsHtml = `<span style="color: var(--warn); font-weight: 600; font-size: 0.9em;">👉 ให้ค้นหาจากเว็บ 5 รายการ</span>`;
+      act3Desc.innerHTML = `${s.desc}<br><div style="margin-top: 8px;">${urlsHtml}</div>`;
+    }
+  }
+
+  window.getSetInfo = function() {
+    const noEl = document.getElementById('ws-no');
+    const i = setIndexOf(noEl ? noEl.value : '');
+    if (i === null) return null;
+    return {
+      n: i + 1,
+      subject: SETS[i].subject,
+      creativeTask: SETS[i].creativeTask
+    };
+  };
+
+  function init() {
+    const noEl = document.getElementById('ws-no');
+    if (noEl) noEl.addEventListener('input', refresh);
+    refresh();
+  }
+  if (document.readyState !== 'loading') init();
+  else document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+</body>
+</html>

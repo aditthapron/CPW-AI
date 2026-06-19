@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI for Ed — สัปดาห์ที่ 3: Generative AI Image & Video</title>
+
+<!-- reveal.js core -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+<!-- Thai fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --ink: #1a2235; --muted: #5b6678; --line: #dfe4ec;
+  --blue: #1a73e8; --purple: #7b41d8; --teal: #0aa3a3;
+  --bg1: #f7f9fc; --card: #ffffff; --soft: #eef3fb;
+  --warn: #c2410c; --good: #0f8a4f;
+  --accent-grad: linear-gradient(90deg, var(--blue), var(--purple));
+}
+.reveal { font-family:'Sarabun','Noto Sans Thai','Outfit',sans-serif; color:var(--ink); font-size:28px; }
+.reveal .slides { text-align:left; }
+.reveal h1, .reveal h2, .reveal h3 { font-family:'Sarabun','Noto Sans Thai','Outfit',sans-serif; color:var(--ink); font-weight:700; text-transform:none; letter-spacing:0; line-height:1.35; }
+.reveal h1 { font-size:1.8em; margin-bottom: 0.5em; }
+.reveal h2 { font-size:1.35em; margin-bottom: 0.6em; }
+.reveal h3 { font-size:1.15em; color:var(--blue); margin-bottom: 0.4em; }
+.reveal p { line-height:1.75; margin-bottom: 0.7em; }
+.reveal ul { display:block; margin-bottom: 0.7em; }
+.reveal li { margin:.5em 0; line-height:1.65; }
+.reveal strong { color:var(--purple); }
+.reveal section { height:100%; overflow-y:auto; }
+.reveal section::-webkit-scrollbar { width:6px; }
+.reveal section::-webkit-scrollbar-track { background:transparent; }
+.reveal section::-webkit-scrollbar-thumb { background:var(--line); border-radius:99px; }
+.reveal section::-webkit-scrollbar-thumb:hover { background:var(--muted); }
+.reveal .slides section { padding:8px 20px; box-sizing:border-box; }
+.reveal h2 { margin-bottom:.4em; }
+
+/* accent header bar on each slide */
+.reveal .slides section > .kicker {
+  display:inline-block; font-size:.6em; font-weight:700; letter-spacing:.05em;
+  color:#fff; background:var(--accent-grad);
+  padding:.2em .9em; border-radius:999px; margin-bottom:.4em;
+}
+.reveal .q { background:var(--soft); border-left:5px solid var(--blue);
+  padding:.6em .9em; border-radius:10px; font-size:.9em; line-height:1.5; margin:.5em 0 .7em; }
+.reveal .note { color:var(--muted); font-size:.65em; }
+.reveal .rule { background:#fff6ed; border:1px solid #ffd8b8; color:var(--warn);
+  border-radius:10px; padding:.4em .8em; font-size:.78em; font-weight:600; }
+.reveal .good { color:var(--good); font-weight:700; }
+.reveal .warn { color:var(--warn); font-weight:600; }
+.reveal code { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; font-size:.85em;
+  background:var(--soft); color:var(--blue); padding:.06em .42em; border-radius:6px; white-space:nowrap; }
+
+/* title slide */
+.title-wrap { text-align:center; height:100%; display:flex; flex-direction:column;
+  justify-content:center; align-items:center; }
+.title-wrap .badge { font-size:.68em; color:#fff; background:var(--accent-grad);
+  padding:.3em 1.2em; border-radius:999px; font-weight:700; }
+.title-wrap h1 { background:var(--accent-grad);
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; margin:.2em 0; }
+.title-wrap .sub { font-size:1.0em; color:var(--ink); font-weight:600; }
+.title-wrap .meta { color:var(--muted); font-size:.75em; margin-top:.5em; }
+
+/* two-column helper */
+.cols { display:flex; gap:1.2em; align-items:flex-start; }
+.cols > div { flex:1; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:14px;
+  padding:.8em 1.0em; box-shadow:0 2px 8px rgba(20,30,60,.04); line-height:1.5; }
+.card h3 { margin-top:0; }
+.pill { display:inline-block; background:var(--soft); color:var(--blue);
+  border-radius:8px; padding:.08em .5em; font-size:.78em; font-weight:600; margin:.1em; }
+
+/* table styling inside reveal */
+.reveal table { width:100%; border-collapse:collapse; margin:.5em 0; font-size:.7em; }
+.reveal th { background:var(--soft); font-weight:700; border:1px solid var(--line); padding:6px 12px; }
+.reveal td { border:1px solid var(--line); padding:6px 12px; }
+
+/* worksheet fields */
+.ws-label { display:block; font-size:.7em; font-weight:700; color:var(--muted);
+  margin:.4em 0 .15em; }
+textarea.ws-field, input.save, select.save {
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:.7em; color:var(--ink);
+  width:100%; border:1.5px solid var(--line); border-radius:10px; padding:.5em .7em;
+  background:#fcfdff; box-sizing:border-box; resize:vertical !important; overflow:auto !important; }
+textarea.ws-field { min-height:120px; line-height:1.5; }
+textarea.ws-field:focus, input.save:focus, select.save:focus { outline:none; border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(26,115,232,.12); }
+input.save { height:auto; }
+select.save { height:auto; padding:.4em .6em; }
+
+/* thin scrollbar for all textareas */
+textarea::-webkit-scrollbar { width: 5px; }
+textarea::-webkit-scrollbar-track { background: transparent; }
+textarea::-webkit-scrollbar-thumb { background: var(--line); border-radius: 99px; }
+textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+.info-grid { display:grid; grid-template-columns:1fr; gap:.3em; max-width:620px; }
+.info-row { display:flex; gap:.8em; }
+.info-row > div { flex:1; }
+
+/* download button (floating) */
+#dlbtn { position:fixed; top:14px; right:16px; z-index:60;
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:15px; font-weight:700;
+  color:#fff; background:var(--accent-grad);
+  border:none; border-radius:999px; padding:10px 18px; cursor:pointer;
+  box-shadow:0 4px 14px rgba(76,40,160,.3); display:none; }
+#dlbtn:hover { filter:brightness(1.05); }
+#dlbtn:active { transform:translateY(1px); }
+#savehint { position:fixed; top:54px; right:18px; z-index:60; font-size:11px;
+  color:var(--good); font-family:'Sarabun',sans-serif; opacity:0; transition:opacity .3s; }
+.dlbig { font-size:.9em; font-weight:700; color:#fff;
+  background:var(--accent-grad); border:none;
+  border-radius:12px; padding:.5em 1.1em; cursor:pointer; box-shadow:0 4px 14px rgba(76,40,160,.25);
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; }
+
+/* assignment print area — hidden on screen, shown only when printing */
+#print-area { display:none; }
+.pdf-doc { font-family:'Sarabun','Noto Sans Thai',sans-serif; color:#11131a; padding:6px 4px; }
+.pdf-doc h1 { font-size:22px; margin:0 0 4px; color:#1a73e8; }
+.pdf-doc .pdf-meta { display:flex; gap:18px; font-size:13px; border-bottom:2px solid #1a73e8;
+  padding-bottom:8px; margin-bottom:12px; flex-wrap:wrap; }
+.pdf-doc h2 { font-size:15px; margin:16px 0 6px; color:#7b41d8; border-left:4px solid #7b41d8; padding-left:8px; }
+.pdf-item { margin:8px 0; page-break-inside:avoid; }
+.pdf-label { font-size:12.5px; font-weight:700; color:#333; margin-bottom:3px; }
+.pdf-answer { font-size:12.5px; line-height:1.5; border:1px solid #c9d2e0; border-radius:6px;
+  padding:7px 9px; white-space:pre-wrap; min-height:18px; background:#fbfcfe; }
+.pdf-answer .empty { color:#aab2c0; }
+@page { size:A4; margin:14mm; }
+@media print {
+  body.printing > *:not(#print-area) { display:none !important; }
+  body.printing #print-area { display:block !important; }
+  body.printing { background:#fff !important; }
+}
+.pdf-imgs img { display:block; max-width:100%; max-height:420px; margin-top:6px;
+  border:1px solid #c9d2e0; border-radius:6px; page-break-inside:avoid; }
+
+/* image attach / paste helper */
+.img-btn { display:inline-flex; align-items:center; gap:.3em; margin-top:.35em;
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:.6em; font-weight:700;
+  color:var(--blue); background:var(--soft); border:1.5px solid #cfe0fb;
+  border-radius:999px; padding:.4em .9em; cursor:pointer; }
+.img-btn:hover { filter:brightness(.98); }
+.img-hint { font-size:.55em; color:var(--muted); margin-left:.55em; }
+.img-tray { display:flex; flex-wrap:wrap; gap:.5em; margin-top:.4em; }
+.img-thumb { position:relative; width:96px; height:96px; border:1px solid var(--line);
+  border-radius:8px; overflow:hidden; background:#fafbff; }
+.img-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+.img-thumb .rm { position:absolute; top:2px; right:2px; width:20px; height:20px;
+  border:none; border-radius:50%; background:rgba(20,30,60,.7); color:#fff;
+  font-size:13px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.img-thumb .rm:hover { background:var(--warn); }
+
+/* ---- live inline feedback ---- */
+.fb { font-size:.62em; line-height:1.45; margin-top:.35em; padding:.4em .65em; border-radius:9px; display:none; }
+.fb.show { display:block; }
+.fb-ok   { background:#eafaf1; color:#0f6b3f; border:1px solid #b8e6cd; }
+.fb-warn { background:#fff4ec; color:#b4480c; border:1px solid #ffd2b3; }
+.fb-tip  { background:#eef3fb; color:#2a4a86; border:1px solid #cfe0fb; }
+
+/* ---- submission readiness panel ---- */
+.check-panel { max-width:780px; margin:0.3em auto 0; }
+.prog-meta { display:flex; justify-content:space-between; font-size:.64em; color:var(--muted);
+  font-weight:700; margin:.2em .2em .35em; }
+.prog-wrap { background:var(--soft); border-radius:999px; height:15px; overflow:hidden; border:1px solid var(--line); }
+.prog-bar  { height:100%; width:0%; border-radius:999px; background:var(--accent-grad); transition:width .35s ease; }
+.check-msg { text-align:center; font-size:.74em; font-weight:700; margin:.5em 0 .55em; color:var(--ink); }
+.check-grid { display:grid; grid-template-columns:1fr 1fr; gap:.4em; }
+.check-row { display:flex; align-items:flex-start; gap:.5em; font-size:.66em; line-height:1.4;
+  padding:.4em .65em; border:1px solid var(--line); border-radius:10px; background:#fff; }
+.check-row .ic { font-size:1.1em; line-height:1.3; flex:0 0 auto; }
+.check-row .body { flex:1; min-width:0; }
+.check-row .ttl { font-weight:700; color:var(--ink); }
+.check-row .sub { color:var(--muted); font-size:.92em; }
+.check-row .tip { display:block; color:#b4480c; font-size:.92em; margin-top:.15em; }
+.check-row.done { background:#f4fbf7; border-color:#cdeadb; }
+</style>
+</head>
+<body>
+
+<button id="dlbtn" onclick="downloadPDF()">⬇ บันทึกใบงานเป็น PDF</button>
+<div id="savehint">บันทึกแล้ว ✓</div>
+
+<div class="reveal"><div class="slides">
+
+<!-- 1 TITLE -->
+<section>
+  <div class="title-wrap">
+    <span class="badge">AI for Ed · สัปดาห์ที่ 3</span>
+    <h1>Generative AI Image & Video</h1>
+    <div class="sub" style="margin-top: 0.4em; color: var(--muted)">สูตรสร้างภาพ · ทฤษฎี Aspect Ratio & Style · เทคนิค Inpainting · โมชันวิดีโอ</div>
+  </div>
+</section>
+
+<!-- 2 STUDENT INFO -->
+<section>
+  <span class="kicker">เริ่มต้นคลาส</span>
+  <h2>ระบุข้อมูลผู้เรียน</h2>
+  <p style="font-size: 0.85em;">กรอกข้อมูลผู้เรียนด้านล่าง เพื่อเปิดใช้งานระบบและจับคู่โจทย์แบบสุ่มอัตโนมัติประจำตัวเลขที่นั่งของนักเรียน</p>
+  <div class="info-grid">
+    <div>
+      <span class="ws-label">ชื่อ–นามสกุล</span>
+      <input class="save" id="ws-name" type="text" placeholder="เช่น นายสมชาย ตั้งใจเรียน">
+    </div>
+    <div class="info-row">
+      <div><span class="ws-label">ชั้น</span><input class="save" id="ws-class" type="text" placeholder="ม.6/2"></div>
+      <div><span class="ws-label">เลขที่นั่งสอบ/เรียน</span><input class="save" id="ws-no" type="text" placeholder="ระบุตัวเลข เช่น 15"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 AGENDA -->
+<section>
+  <span class="kicker">สาระสำคัญวันนี้</span>
+  <h2>แผนการเรียนในวันนี้</h2>
+  <div class="cols">
+    <div style="flex: 1.5;">
+      <ul>
+        <li><b>1. Prompt Formula (สูตรคำสั่ง):</b> เรียนรู้ 5 แกนหลักเพื่อเขียนพรอมต์รูปภาพให้คมชัด ตรงตามใจคิด</li>
+        <li><b>2. Aspect Ratio & Style (สัดส่วนและสไตล์):</b> หลักความเหมาะสมของขนาดสื่อและการจัดมู้ดโทนศิลปะ</li>
+        <li><b>3. Inpainting (การแก้ไขรูปภาพเฉพาะจุด):</b> ลบวัตถุที่ไม่ต้องการออก และสั่งวาดวัตถุชิ้นใหม่เข้าแทนที่</li>
+        <li><b>4. Image-to-Video (การทำภาพเคลื่อนไหว):</b> กำกับทิศทางการเคลื่อนกล้องเพื่อปั้นวิดีโอ 3-5 วินาที</li>
+        <li><b>5. Creative Campaign (โปรเจกต์สร้างสรรค์):</b> รวมทุกทักษะออกแบบแคมเปญแบรนด์ไทย พร้อมเรียนรู้จริยธรรมการใช้ภาพ AI</li>
+      </ul>
+    </div>
+    <div style="flex: 1.0;">
+      <div class="card" style="background: linear-gradient(135deg, var(--soft), #fff); border-color: var(--teal); text-align: center; padding: 1.4em;">
+        <span style="font-size: 2.8em; display:block; margin-bottom:10px;">🎨</span>
+        <b style="color: var(--teal); font-size: 0.85em;">สร้างผลงานเสมือนศิลปินดิจิทัล</b>
+        <p style="font-size: 0.65em; color: var(--muted); margin: 0.4em 0 0;">เรียนรู้เครื่องมือ Gemini และ OpenArt.ai อย่างสร้างสรรค์และมีจริยธรรม</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PART 1: PROMPT FORMULA ===================== -->
+
+<!-- 4 LECTURE 1.1.1 -->
+<section>
+  <span class="kicker">แนวคิด 1/5 (ตอนที่ 1): สูตรการเขียนคำสั่ง</span>
+  <h2>สูตรพรอมต์ที่ดี: วัตถุ & สไตล์ศิลปะ (Subject & Style)</h2>
+  <div class="cols">
+    <div style="flex: 1.2;">
+      <p style="font-size: 0.8em; line-height: 1.6; margin-bottom: 0.5em;">
+        หากเขียนพรอมต์คำสั่งแบบลอยๆ ผลลัพธ์ที่ได้จะพึ่งพาโชคชะตาและการเดาของ AI เป็นหลัก แกนเริ่มต้นในการสร้างสรรค์ภาพจึงประกอบด้วย:
+      </p>
+      <ul style="font-size: 0.72em; padding-left: 1.1em; line-height: 1.6; margin-bottom: 0.5em;">
+        <li><b>1. Subject (ตัววัตถุหลัก):</b> สิ่งหลักที่ต้องการให้อยู่ในภาพ เช่น รถยนต์ไฟฟ้าบินได้, มังกร, หีบสมบัติ</li>
+        <li><b>2. Style (รูปแบบศิลปะ):</b> ทัศนียภาพหรือวัสดุที่ใช้ เช่น ภาพถ่ายจริง (Photorealistic), ภาพวาดสีน้ำ (Watercolor), โมเดลดินน้ำมันสตอปโมชัน (Claymation)</li>
+      </ul>
+      <div class="card" style="border-left: 5px solid var(--blue); padding: 0.5em 0.8em; font-size: 0.68em; line-height: 1.45;">
+        <b style="color: var(--blue);">💡 เคล็ดลับการเลือก Style:</b>
+        <p style="margin: 0.2em 0 0; color: var(--muted);">ระบุคำสำคัญเช่น "3D render, Octane Render style, smooth surfaces" เพื่อเพิ่มมิติความสวยงามทันสมัย</p>
+      </div>
+    </div>
+    <div style="flex: 1.0; text-align: center;">
+      <img src="images/lecture1_subject_style.png" alt="Subject & Style" style="max-height: 380px; border-radius: 12px; box-shadow: 0 4px 12px rgba(20,30,60,0.12); object-fit: cover;">
+    </div>
+  </div>
+</section>
+
+<!-- 4.2 LECTURE 1.1.2 -->
+<section>
+  <span class="kicker">แนวคิด 1/5 (ตอนที่ 2): สูตรการเขียนคำสั่ง</span>
+  <h2>สูตรพรอมต์ที่ดี: รายละเอียด แสง และมุมกล้อง</h2>
+  <div class="cols">
+    <div style="flex: 1.2;">
+      <p style="font-size: 0.8em; line-height: 1.6; margin-bottom: 0.5em;">
+        เพื่อเติมมิติของภาพให้น่าสนใจและมีความรู้สึกสมจริง (Cinematic) จำเป็นต้องคุมแกนรายละเอียด แสงเงา และความสูงต่ำของเลนส์:
+      </p>
+      <ul style="font-size: 0.72em; padding-left: 1.1em; line-height: 1.6; margin-bottom: 0.5em;">
+        <li><b>3. Details (รายละเอียดฉากหลัง):</b> ระบุสภาพแวดล้อมให้ชัด เช่น เมืองหลวงกรุงเทพฯ ตึกระฟ้า แม่น้ำ</li>
+        <li><b>4. Lighting (แสงและเงา):</b> แสงแดดยามเช้าที่นุ่มนวล (Soft morning sunlight), แสงไฟนีออน Cyberpunk หรือ แสงเงาจัดจ้านจากสตูดิโอ</li>
+        <li><b>5. Camera Angle (มุมกล้อง):</b> ถ่ายมุมกว้าง (Wide-angle), มุมสูงมองลงมา (Bird's eye view), ระยะใกล้ (Macro close-up)</li>
+      </ul>
+      <div class="card" style="border-left: 5px solid var(--purple); padding: 0.5em 0.8em; font-size: 0.68em; line-height: 1.45;">
+        <b style="color: var(--purple);">💡 เคล็ดลับการคุมแสง:</b>
+        <p style="margin: 0.2em 0 0; color: var(--muted);">แสง (Lighting) คือตัวกำหนดอารมณ์ของชิ้นงาน การใส่ "cinematic lighting" หรือ "studio lighting" จะยกระดับภาพให้เป็นมืออาชีพ</p>
+      </div>
+    </div>
+    <div style="flex: 1.0; text-align: center;">
+      <img src="images/lecture1_details_light.png" alt="Details & Lighting" style="max-height: 380px; border-radius: 12px; box-shadow: 0 4px 12px rgba(20,30,60,0.12); object-fit: cover;">
+    </div>
+  </div>
+</section>
+
+<!-- 5 LECTURE 1.2.1 -->
+<section>
+  <span class="kicker">แนวคิด 2/5 (ตอนที่ 1): วิวัฒนาการคำสั่ง</span>
+  <h2>วิวัฒนาการคำสั่ง: จากคำเดี่ยวสู่สไตล์เด่น (Prompt Evolution)</h2>
+  <div class="cols">
+    <div style="flex: 1.2;">
+      <p style="font-size: 0.8em; line-height: 1.6; margin-bottom: 0.5em;">
+        มาดูความเปลี่ยนแปลงเมื่อเราป้อนคำสั่งสร้างภาพทีละสเต็ป ผ่าน "Gemini Banana" ( Imagen 3 ) เพื่อเปรียบเทียบความแตกต่างทางสายตาอย่างเห็นได้ชัด:
+      </p>
+      <div style="display:flex; flex-direction:column; gap:0.4em; font-size:0.7em;">
+        <div class="card" style="padding:0.4em 0.8em;"><b style="color:var(--warn)">1. ระบุแค่วัตถุ (Basic Subject):</b> "A futuristic flying car"</div>
+        <div class="card" style="padding:0.4em 0.8em;"><b style="color:var(--purple)">2. ระบุสไตล์ภาพหลัก (+Style):</b> "A watercolor illustration of a futuristic flying car"</div>
+      </div>
+      <div class="card" style="border-left: 5px solid var(--blue); padding: 0.5em 0.8em; font-size: 0.65em; line-height: 1.4; margin-top: 0.5em;">
+        <b style="color: var(--blue);">💡 สังเกตความต่าง:</b>
+        <p style="margin: 0.2em 0 0; color: var(--muted);">เมื่อระบุ "+Style" (ภาพระบายสีน้ำ) AI จะจำกัดวัสดุและวิธีการนำเสนองานศิลปะให้ชัดเจนและไม่เดาสุ่มสไตล์</p>
+      </div>
+    </div>
+    <div style="flex: 1.0; text-align: center;">
+      <img src="images/lecture1_evolution_basic.png" alt="Evolution Basic" style="max-height: 380px; border-radius: 12px; box-shadow: 0 4px 12px rgba(20,30,60,0.12); object-fit: cover;">
+    </div>
+  </div>
+</section>
+
+<!-- 5.2 LECTURE 1.2.2 -->
+<section>
+  <span class="kicker">แนวคิด 2/5 (ตอนที่ 2): วิวัฒนาการคำสั่ง</span>
+  <h2>วิวัฒนาการคำสั่ง: เติมฉาก รายละเอียด และแสงเงา</h2>
+  <div class="cols">
+    <div style="flex: 1.2;">
+      <p style="font-size: 0.8em; line-height: 1.6; margin-bottom: 0.5em;">
+        เมื่อนำข้อจำกัดด้านฉากหลัง ทิศทางแสง และการวางมุมกล้องมารวมเข้าด้วยกัน ภาพจะออกมามีชีวิตชีวาและเล่าเรื่องได้ตรงความต้องการที่สุด:
+      </p>
+      <div class="card" style="padding:0.5em 0.8em; font-size:0.7em; line-height: 1.5; margin-bottom: 0.5em;">
+        <b style="color:var(--blue)">3. พรอมต์สมบูรณ์ (+Details, Environment & Lighting):</b> 
+        <p style="margin:0.2em 0 0; font-family: ui-monospace, monospace; color: var(--purple); font-size: 0.9em;">
+          "A watercolor illustration of a futuristic flying car soaring over Bangkok skyscrapers, soft morning sunlight, cinematic composition"
+        </p>
+      </div>
+      <div class="card" style="background:#fffcf8; border-color:#ffd8b8; padding: 0.5em 0.8em; font-size: 0.65em; line-height: 1.45;">
+        <b style="color: var(--warn);">💡 เคล็ดลับน่ารู้สำหรับภาษาอังกฤษ:</b>
+        <p style="margin: 0.2em 0 0; color: var(--muted);">
+          โมเดลสร้างภาพเข้าใจภาษาอังกฤษแม่นที่สุด คิดไม่ออกให้พิมพ์บอก <b>Gemini Chat</b> ช่วยแปลและเรียบเรียงพรอมต์ภาษาอังกฤษตามสูตรให้ก่อนได้!
+        </p>
+      </div>
+    </div>
+    <div style="flex: 1.0; text-align: center;">
+      <img src="images/lecture1_evolution_final.png" alt="Evolution Final" style="max-height: 380px; border-radius: 12px; box-shadow: 0 4px 12px rgba(20,30,60,0.12); object-fit: cover;">
+    </div>
+  </div>
+</section>
+
+<!-- 6 ACT 1 INTRO -->
+<section>
+  <span class="kicker">กิจกรรมที่ 1 (⏱ 20 นาที)</span>
+  <h2>กิจกรรมที่ 1: วิวัฒนาการเขียน Prompt รูปภาพ</h2>
+  <div class="cols">
+    <div style="flex: 1.4;">
+      <p style="font-size: 0.82em;">ให้นักเรียนเปิดหน้าเว็บ Chatbot Gemini (gemini.google.com) แล้วทดลองป้อน Prompt วิวัฒนาการรูปภาพ "รถยนต์ไฟฟ้าบินได้แห่งอนาคต (Futuristic flying car)" ตาม Style จำลองของตนเอง</p>
+      <div class="rule" style="font-size:0.72em; line-height:1.6;">
+        ⚙️ ลำดับการทดลอง:
+        <br>1. ป้อน Prompt เปล่า (Basic) และบันทึกคำค้น
+        <br>2. ป้อน Prompt ระบุ Style (เช่น Watercolor, Cyberpunk, Claymation ตามที่กำหนด)
+        <br>3. ใส่แสงเงาและมุมกล้องให้สวยงาม
+        <br>4. บันทึกรูปภาพสุดท้าย (ดาวน์โหลดรูปจาก Gemini) และแนบส่งงาน
+      </div>
+    </div>
+    <div style="flex: 1.1;">
+      <div class="card" style="border-left: 5px solid var(--teal); min-height:150px;">
+        <h3 style="font-size: 0.95em; color: var(--teal); margin: 0;">📌 สไตล์ที่กลุ่มของคุณต้องใช้</h3>
+        <p style="font-size: 0.82em; margin: 0.3em 0;" class="good" id="act1-style-theme">— (ระบุเลขที่นั่งก่อน)</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 ACT 1 WORKSPACE -->
+<section>
+  <h3>ข้อ 1 — ผลลัพธ์วิวัฒนาการสร้างรูปภาพ</h3>
+  <p class="q">วิวัฒนาการคำสั่ง "รถยนต์ไฟฟ้าบินได้" สไตล์ <b data-var="styleTheme">...</b> ด้วย Gemini</p>
+  <div style="display: grid; grid-template-columns: 1.1fr 1fr; gap: 1.0em; align-items: start;">
+    <div style="display: flex; flex-direction: column; gap: 0.4em;">
+      <div>
+        <span class="ws-label">✏ 1. Prompt เวอร์ชันสมบูรณ์ (ภาษาอังกฤษ) ที่ใช้สั่ง Gemini:</span>
+        <textarea class="save ws-field" id="q31_prompt" data-group="กิจกรรมที่ 1: พรอมต์สร้างภาพรถบินได้" data-label="ข้อ 1.1 — พรอมต์เวอร์ชันสมบูรณ์" style="height: 130px; font-weight: 600; color: var(--blue);" placeholder="คัดลอก Prompt ตัวสมบูรณ์มาใส่ที่นี่..."></textarea>
+        <div class="fb" id="fb_q31_prompt"></div>
+      </div>
+      <div>
+        <span class="ws-label">📸 2. แนบรูปถ่ายผลงานสุดท้ายหลังจากเจนเสร็จ:</span>
+        <textarea class="save ws-field" id="q31_result_pic" data-group="กิจกรรมที่ 1: พรอมต์สร้างภาพรถบินได้" data-label="ข้อ 1.1 — ภาพรถบินได้สไตล์ที่ระบุ" style="height: 100px;" placeholder="คัดลอกภาพแล้ววาง (Ctrl/⌘ + V) ที่นี่ หรือกดแนบไฟล์รูป..."></textarea>
+        <div id="q31_result_pic_img_tray" class="img-tray"></div>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0.4em;">
+      <div>
+        <span class="ws-label">✏️ 3. สรุปวิเคราะห์พัฒนาการความต่างของภาพจากระดับ 1 สู่ระดับ 3:</span>
+        <textarea class="save ws-field" id="q31_analysis" data-group="กิจกรรมที่ 1: พรอมต์สร้างภาพรถบินได้" data-label="ข้อ 1.2 — สรุปความแตกต่างและพัฒนาการรูปภาพ" style="height: 180px;" placeholder="อธิบายเปรียบเทียบ เช่น เมื่อระบุแสงเงายามเช้าและมุมกว้าง ภาพดูสมบูรณ์มีชีวิตชีวากว่าเดิมมาก สัดส่วนภาพบิดเบี้ยวน้อยลง..."></textarea>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PART 2: ASPECT RATIOS & SCENARIOS ===================== -->
+
+<!-- 8 LECTURE 2.1.1 -->
+<section>
+  <span class="kicker">แนวคิด 3/5 (ตอนที่ 1): ขนาดภาพ</span>
+  <h2>ทฤษฎี Aspect Ratio ของรูปภาพกับวัตถุประสงค์ของสื่อ</h2>
+  <div class="cols" style="align-items: center;">
+    <div style="flex: 1.2;">
+      <table style="font-size:0.55em; line-height:1.55; margin: 0;">
+        <thead>
+          <tr>
+            <th>สัดส่วน (Ratio)</th>
+            <th>ชื่อเรียกทั่วไป</th>
+            <th>ความเหมาะสมในการโฆษณา / งานสื่อสาร</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>16:9 / 21:9</b></td>
+            <td>Widescreen (แนวนอน)</td>
+            <td>ใช้ทำปกคลิป YouTube, หน้าสไลด์นำเสนอผลงาน, ป้ายบิลบอร์ดริมทางด่วน</td>
+          </tr>
+          <tr>
+            <td><b>9:16</b></td>
+            <td>Portrait (แนวตั้ง)</td>
+            <td>ใช้โฆษณาใน TikTok, IG/Facebook Stories, YouTube Shorts</td>
+          </tr>
+          <tr>
+            <td><b>1:1</b></td>
+            <td>Square (สี่เหลี่ยมจตุรัส)</td>
+            <td>ใช้ทำภาพโปรไฟล์โลโก้ร้าน, โพสต์รวมในไอจี, หน้าปกเพลง</td>
+          </tr>
+          <tr>
+            <td><b>4:3 / 3:2</b></td>
+            <td>Classic Frame (ปกติ)</td>
+            <td>ใช้สำหรับถ่ายรูปภาพบุคคลเชิงสารคดี โฆษณาพิมพ์นิตยสารกระดาษ</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="flex: 1.0; text-align: center;">
+      <img src="images/lecture2_ratios.png" alt="Aspect Ratios" style="max-height: 380px; border-radius: 12px; box-shadow: 0 4px 12px rgba(20,30,60,0.12); object-fit: cover;">
+    </div>
+  </div>
+</section>
+
+<!-- 8.2 LECTURE 2.1.2 -->
+<section>
+  <span class="kicker">แนวคิด 3/5 (ตอนที่ 2): ขนาดภาพ</span>
+  <h2>ความเข้าใจเรื่องความขัดแย้งทางสายตา (Visual Friction)</h2>
+  <div class="cols">
+    <div style="flex: 1.2;">
+      <p style="font-size: 0.8em; line-height: 1.6; margin-bottom: 0.5em;">
+        <b>ทำไมการเจาะจงสัดส่วนจึงสำคัญ?</b> สัดส่วนและขนาดภาพที่ไม่ถูกต้องจะสร้างความน่าหงุดหงิด (Visual friction) แก่ผู้พบเห็นอย่างรุนแรง เช่น:
+      </p>
+      <ul style="font-size: 0.72em; padding-left: 1.1em; line-height: 1.6; margin-bottom: 0.5em;">
+        <li>การเอาโพสต์แนวนอนไปยัดลงในคลิปแนวตั้ง TikTok ส่งผลให้ภาพโดนบีบอัดจนมีแถบดำเหลือพื้นที่ว่าง และเนื้อหาดูเล็กจิ๋วทันที</li>
+        <li>การครอบตัดแบบผิดสัดส่วน (Stretched/Distorted) ทำให้สิ่งของแบนหรือบิดเบี้ยวจนเสียความน่าเชื่อถือทางธุรกิจ</li>
+      </ul>
+      <div class="card" style="border-top: 4px solid var(--purple); padding:0.6em 0.8em; font-size: 0.68em; line-height: 1.45;">
+        <h3 style="font-size: 0.9em; color:var(--purple); margin:0 0 0.15em;">🎯 ความสำคัญต่อธุรกิจ</h3>
+        <p style="margin:0; color: var(--muted);">
+          ในโลกโซเชียลมีเดียที่แข่งขันสูง หากผู้ใช้รู้สึกขัดตาแม้เพียงเสี้ยววินาที พวกเขาจะเลื่อนหนีคลิปนั้นและเปลี่ยนไปดูสื่ออื่นทันที
+        </p>
+      </div>
+    </div>
+    <div style="flex: 1.0; text-align: center;">
+      <img src="images/lecture2_friction.png" alt="Visual Friction" style="max-height: 380px; border-radius: 12px; box-shadow: 0 4px 12px rgba(20,30,60,0.12); object-fit: cover;">
+    </div>
+  </div>
+</section>
+
+<!-- 9 ACT 2 INTRO -->
+<section>
+  <span class="kicker">กิจกรรมที่ 2 (⏱ 15 นาที)</span>
+  <h2>กิจกรรมที่ 2: แมตช์สัดส่วนและสไตล์สื่อโฆษณา</h2>
+  <div class="cols">
+    <div style="flex: 1.4;">
+      <p style="font-size: 0.85em;">ให้นักเรียนสวมบทบาทเป็น <b>ผู้ออกแบบสื่อโฆษณาระดับมืออาชีพ (Creative Designer)</b> โดยเปิดโจทย์จำลองตามสถานการณ์ของชุดเลขที่นั่งของตนเอง แล้วประเมินทิศทางเชิงธุรกิจเพื่อป้อนสั่ง AI:</p>
+      <div class="card" style="border-left: 5px solid var(--purple); background: #fbf9ff; padding: 0.6em 0.8em;">
+        <h3 style="font-size: 0.85em; color: var(--purple); margin: 0 0 0.2em;">📰 โจทย์สถานการณ์จำลองของคุณ:</h3>
+        <p style="font-size: 0.75em; line-height: 1.6; margin: 0;" class="warn" id="act2-scenario-desc">— (ระบุเลขที่นั่งในหน้า 2 ก่อนเพื่อดึงโจทย์สุ่ม)</p>
+      </div>
+    </div>
+    <div style="flex: 1.1;">
+      <div class="card" style="border-top: 4px solid var(--teal); min-height: 150px;">
+        <h3 style="font-size: 0.9em; color: var(--teal); margin: 0 0 0.2em;">💡 การเขียนขนาดภาพในพรอมต์</h3>
+        <p style="font-size: 0.68em; line-height: 1.6; color: var(--muted); margin:0;">
+          ในโมเดลสร้างรูปภาพ เช่น OpenArt.ai เราสามารถคลิกเลือกปุ่ม Aspect Ratio ในเมนูได้เลย หรือใส่คีย์เวิร์ดต่อท้ายภาพ เช่น <code>widescreen 16:9 format</code> หรือ <code>9:16 aspect ratio</code> เพื่อจำกัดกรอบงาน
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 ACT 2 WORKSPACE -->
+<section>
+  <h3>ข้อ 2 — ใบสั่งสเปคสื่อโฆษณาจำลอง</h3>
+  <p class="q">วิเคราะห์แผนการสร้างสื่อสำหรับโจทย์: <b data-var="scenarioName">...</b></p>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.0em; align-items: start;">
+    <div style="display: flex; flex-direction: column; gap: 0.4em;">
+      <div>
+        <span class="ws-label">📐 1. อัตราส่วนสัดส่วนภาพ (Aspect Ratio) ที่เหมาะสมที่สุดสำหรับสื่อนี้:</span>
+        <select class="save ws-field" id="q32_ratio" data-group="กิจกรรมที่ 2: ออกแบบสื่อโฆษณาจำลอง" data-label="ข้อ 2.1 — สัดส่วนภาพที่เลือก" style="height: 40px; font-weight:700; color:var(--blue);">
+          <option value="">-- กรุณาเลือกสัดส่วนภาพ --</option>
+          <option value="16:9 แนวนอน (Widescreen)">16:9 แนวนอน (Widescreen)</option>
+          <option value="9:16 แนวตั้ง (Portrait)">9:16 แนวตั้ง (Portrait)</option>
+          <option value="1:1 สี่เหลี่ยมจตุรัส (Square)">1:1 สี่เหลี่ยมจตุรัส (Square)</option>
+          <option value="4:3 คลาสสิกเฟรม (Classic Photo)">4:3 คลาสสิกเฟรม (Classic Photo)</option>
+        </select>
+        <div class="fb" id="fb_q32_ratio"></div>
+      </div>
+      <div>
+        <span class="ws-label">🎨 2. สไตล์ภาพและศิลปะที่เลือกใช้ให้เข้ากับแบรนด์:</span>
+        <select class="save ws-field" id="q32_style" data-group="กิจกรรมที่ 2: ออกแบบสื่อโฆษณาจำลอง" data-label="ข้อ 2.1 — สไตล์ภาพที่เลือก" style="height: 40px; font-weight:700; color:var(--purple);">
+          <option value="">-- กรุณาเลือกสไตล์ภาพ --</option>
+          <option value="Photorealistic (ภาพถ่ายจริงแบบโปร)">Photorealistic (ภาพถ่ายจริงแบบโปร)</option>
+          <option value="3D Isometric Render (ภาพ 3 มิติสไตล์โมเดลน่ารัก)">3D Isometric Render (ภาพ 3 มิติสไตล์โมเดลน่ารัก)</option>
+          <option value="Watercolor (ภาพวาดสีน้ำนุ่มนวล)">Watercolor (ภาพวาดสีน้ำนุ่มนวล)</option>
+          <option value="Anime / Ghibli style (ลายเส้นการ์ตูนสดใส)">Anime / Ghibli style (ลายเส้นการ์ตูนสดใส)</option>
+          <option value="Minimal Flat Illustration (ภาพประกอบลายเส้นแบน)">Minimal Flat Illustration (ภาพประกอบลายเส้นแบน)</option>
+        </select>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0.4em;">
+      <div>
+        <span class="ws-label">✏️ 3. เขียนร่าง Prompt ภาษาอังกฤษเต็มพิกัด สำหรับนำไปกดเจนภาพ:</span>
+        <textarea class="save ws-field" id="q32_prompt" data-group="กิจกรรมที่ 2: ออกแบบสื่อโฆษณาจำลอง" data-label="ข้อ 2.2 — ร่างพรอมต์สร้างรูปภาพภาษาอังกฤษ" style="height: 140px;" placeholder="พิมพ์พรอมต์ภาษาอังกฤษที่ระบุสัดส่วนภาพและสไตล์ตามที่เลือก เช่น 'A professional photorealistic studio shot of an organic strawberry juice carton, water droplets on surface, 9:16 aspect ratio...'"></textarea>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PART 3: INPAINTING & EDITING ===================== -->
+
+<!-- 11 LECTURE 3.1.1 -->
+<section>
+  <span class="kicker">แนวคิด 4/5 (ตอนที่ 1): การแก้ไขภาพเฉพาะจุด</span>
+  <h2>เทคนิค Inpainting (Generative Fill) ด้วย AI</h2>
+  <div class="cols">
+    <div style="flex: 1.2;">
+      <p style="font-size: 0.8em; line-height: 1.6; margin-bottom: 0.5em;">
+        <b>Inpainting (การเติมเนื้อหาภาพใหม่):</b> เทคนิคการระบายสีแปรงทับ (Brush Masking) บนวัตถุที่ต้องการเปลี่ยน เพื่อให้ AI ลบวัตถุเดิมออกแล้ววาดวัตถุชิ้นใหม่เข้าแทนที่อย่างสมจริง โดยไม่ต้องวาดใหม่ทั้งภาพ
+      </p>
+      <div class="card" style="border-left: 5px solid var(--blue); padding: 0.6em 0.8em; font-size: 0.68em; line-height: 1.45;">
+        <h3 style="font-size: 0.85em; color: var(--blue); margin: 0 0 0.25em;">🛠️ เครื่องมือที่นิยมใช้:</h3>
+        <ul style="padding-left:1.0em; margin: 0;">
+          <li><b>OpenArt.ai (Magic Brush):</b> ใช้แปรงระบายบริเวณที่ไม่ต้องการ จากนั้นพิมพ์ Prompt ภาษาอังกฤษครอบคลุมสิ่งที่อยากให้ขึ้นแทนที่</li>
+          <li><b>Gemini (Conversational Edit):</b> แนบรูปเข้าไปในแชตแล้วคุยสั่งได้ทันที เช่น <i>"ช่วยเปลี่ยนแก้วกาแฟในรูปให้กลายเป็นขวดน้ำเกลือแร่..."</i></li>
+        </ul>
+      </div>
+    </div>
+    <div style="flex: 1.0; text-align: center;">
+      <img src="images/lecture3_inpainting_tool.png" alt="Inpainting Tool" style="max-height: 380px; border-radius: 12px; box-shadow: 0 4px 12px rgba(20,30,60,0.12); object-fit: cover;">
+    </div>
+  </div>
+</section>
+
+<!-- 11.2 LECTURE 3.1.2 -->
+<section>
+  <span class="kicker">แนวคิด 4/5 (ตอนที่ 2): การแก้ไขภาพเฉพาะจุด</span>
+  <h2>วิทยาศาสตร์เบื้องหลังการระบายสร้างภาพ (Behind Inpainting)</h2>
+  <div class="cols">
+    <div style="flex: 1.2;">
+      <p style="font-size: 0.8em; line-height: 1.6; margin-bottom: 0.5em;">
+        เมื่อเราสั่ง Inpainting ตัวแบบจำลองภาพ (Image Generator Model) จะไม่เพียงแค่วาดภาพชิ้นใหม่มาตัดแปะเฉยๆ แต่มีกระบวนการคำนวณขั้นสูง:
+      </p>
+      <ul style="font-size: 0.72em; padding-left: 1.1em; line-height: 1.6; margin-bottom: 0.5em;">
+        <li><b>วิเคราะห์ทิศทางแสง (Lighting Consistency):</b> AI จะวิเคราะห์มุมของแหล่งกำเนิดแสงในภาพเดิม เพื่อสร้างแสงไฮไลต์บนวัตถุใหม่ให้กลมกลืน</li>
+        <li><b>คำนวณทิศเงาตกกระทบ (Shadow Alignment):</b> มีการเติมมิติเงาลงบนพื้นถนนหรือกำแพงด้านหลัง เพื่อให้วัตถุชิ้นใหม่ดูมีน้ำหนักและไม่ลอย</li>
+        <li><b>รักษาความคงเส้นคงวาของภาพพื้นหลัง (Keep background consistent):</b> พิกเซลนอกพื้นที่ทาสีแปรงจะถูกล็อกไม่ให้บิดเบี้ยวหรือเปลี่ยนแปลง</li>
+      </ul>
+    </div>
+    <div style="flex: 1.0; text-align: center;">
+      <img src="images/lecture3_inpainting_lighting.png" alt="Inpainting Lighting Logic" style="max-height: 380px; border-radius: 12px; box-shadow: 0 4px 12px rgba(20,30,60,0.12); object-fit: cover;">
+    </div>
+  </div>
+</section>
+
+<!-- 12 ACT 3 INTRO -->
+<section>
+  <span class="kicker">กิจกรรมที่ 3 (⏱ 25 นาที)</span>
+  <h2>กิจกรรมที่ 3: แทนที่ยานพาหนะด้วยรถยนต์จีน</h2>
+  <div class="cols">
+    <div style="flex: 1.4;">
+      <p style="font-size: 0.85em;">ดาวน์โหลดไฟล์ภาพถนนในกรุงเทพฯ ด้านล่างนี้ (หรือค้นภาพถนนอื่นๆ ใน Google Images ตามใจชอบ) จากนั้นอัปโหลดเข้าสู่เครื่องมือตัดต่อภาพ AI เพื่อแทนที่รถยนต์ในภาพ:</p>
+      <div class="rule" style="font-size: 0.7em; line-height: 1.6;">
+        ⚙️ ขั้นตอนการตัดต่อภาพ:
+        <br>1. บันทึกภาพตั้งต้นลงเครื่องคอมพิวเตอร์ของคุณ
+        <br>2. อัปโหลดเข้าสู่ OpenArt.ai (ใช้เมนู Magic Brush ระบายสีทับรถ Alphard คันสีขาวด้านซ้าย) หรืออัปโหลดเข้าสู่ Gemini.google.com
+        <br>3. สั่งเปลี่ยนรถยนต์ตู้ดังกล่าวให้เป็น <b>รถยนต์ไฟฟ้าแบรนด์จีนยอดฮิต</b> ตามรุ่นรถที่กลุ่มของคุณได้รับสุ่ม
+        <br>4. บันทึกรูปภาพผลลัพธ์การตัดต่อสุดท้ายที่เนียนตากลับมาแนบส่งงาน
+      </div>
+    </div>
+    <div style="flex: 1.0; text-align: center;">
+      <div class="card" style="border-left: 5px solid var(--purple); min-height: 160px; text-align: left;">
+        <h3 style="font-size: 0.9em; color: var(--purple); margin:0 0 0.2em;">🚘 แบรนด์รถจีนที่ต้องแทนที่:</h3>
+        <p style="font-size: 0.8em; font-weight:700; color: var(--warn); margin:0.3em 0;" class="warn" id="act3-car-target">— (ระบุเลขที่นั่งก่อนเพื่อรับชื่อรถ)</p>
+        <span class="note" style="display:block; margin-top:5px; font-size: 0.58em; line-height: 1.6; color: var(--muted);">เช่น Xiaomi SU7, BYD Dolphin, Wuling Mini EV, Zeekr 009, BYD Atto 3</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 ACT 3 WORKSPACE -->
+<section>
+  <h3>ข้อ 3 — ผลการทำ Inpainting แก้ไขภาพเฉพาะจุด</h3>
+  <p class="q">เปลี่ยนรถในภาพเป็นรถยนต์ไฟฟ้ารุ่น <b data-var="carTarget">...</b></p>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.0em; align-items: start;">
+    <div style="display: flex; flex-direction: column; gap: 0.4em;">
+      <div>
+        <span class="ws-label">📸 1. แนบรูปผลงานสุดท้ายหลังแก้ไข Inpainting สลับรถจีนสำเร็จ:</span>
+        <textarea class="save ws-field" id="q33_inpainting_result" data-group="กิจกรรมที่ 3: แก้ไขวัตถุด้วย Inpainting" data-label="ข้อ 3.1 — ภาพหลังแก้ไข Inpainting สลับรถจีน" style="height: 100px;" placeholder="คัดลอกรูปผลงานตัดต่อแล้วกดวาง (Ctrl/⌘ + V) หรือกดแนบไฟล์รูป..."></textarea>
+        <div id="q33_inpainting_result_img_tray" class="img-tray"></div>
+      </div>
+      <div>
+        <span class="ws-label">💾 ลิงก์ดาวน์โหลดภาพต้นแบบตัวอย่างสำหรับคาบนี้ (คลิกขวาเปิดแท็บใหม่เพื่อบันทึกภาพ):</span>
+        <p style="margin: 0.2em 0 0; font-size: 0.6em;">
+          👉 <a href="images/street_thailand.jpg" target="_blank" style="color: var(--blue); text-decoration: underline; font-weight: bold;">[ดาวน์โหลดรูปภาพตั้งต้น street_thailand.jpg]</a>
+        </p>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0.4em;">
+      <div>
+        <span class="ws-label">✏ 2. Prompt หรือคำสั่งภาษาอังกฤษที่ป้อนส่ง Gemini/OpenArt ในการ Inpainting:</span>
+        <textarea class="save ws-field" id="q33_inpainting_prompt" data-group="กิจกรรมที่ 3: แก้ไขวัตถุด้วย Inpainting" data-label="ข้อ 3.2 — พรอมต์หรือคำสั่งแก้ไขภาพที่ใช้" style="height: 130px;" placeholder="ตัวอย่าง: Change the white van on the left to a sleek cyan Xiaomi SU7 sports sedan, photorealistic..."></textarea>
+        <div class="fb" id="fb_q33_prompt"></div>
+      </div>
+      <div>
+        <span class="ws-label">🛠️ 3. เครื่องมือที่คุณเลือกใช้ตัดต่อ (เช่น OpenArt Magic Brush หรือ Gemini Chat):</span>
+        <input class="save ws-field" id="q33_tool_used" data-group="กิจกรรมที่ 3: แก้ไขวัตถุด้วย Inpainting" data-label="ข้อ 3.3 — เครื่องมือ AI ที่เลือกใช้" type="text" placeholder="พิมพ์ชื่อโปรแกรม เช่น OpenArt.ai" style="font-size: 0.72em; padding: 0.45em 0.6em;">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PART 4: IMAGE TO VIDEO ===================== -->
+
+<!-- 14 LECTURE 4.1.1 -->
+<section>
+  <span class="kicker">แนวคิด 5/5 (ตอนที่ 1): การทำภาพเคลื่อนไหว</span>
+  <h2>กระบวนการสร้างวิดีโอเคลื่อนไหว (Image-to-Video)</h2>
+  <div class="cols">
+    <div style="flex: 1.2;">
+      <p style="font-size: 0.8em; line-height: 1.6; margin-bottom: 0.5em;">
+        เพื่อเปลี่ยนภาพนิ่งที่เราเจนเสร็จให้กลายเป็นวิดีโอสั้นขนาด 3-5 วินาทีในโปรแกรมสร้างวิดีโอ (เช่น labs.gemini หรือ openart video) เราใช้พรอมต์ในการบังคับทิศทางกล้อง:
+      </p>
+      <ul style="font-size: 0.72em; padding-left: 1.1em; line-height: 1.6; margin-bottom: 0.5em;">
+        <li><b>Pan (แพนกล้องแนวนอน):</b> แพนซ้าย <code>pan left</code> หรือแพนขวา <code>pan right</code></li>
+        <li><b>Zoom (ซูมภาพ):</b> ซูมเข้าหาวัตถุ <code>zoom in</code> หรือดึงถอยออก <code>zoom out</code></li>
+        <li><b>Tilt (ก้ม/เงยกล้อง):</b> ก้มลงมอง <code>tilt down</code> หรือเงยขึ้นท้องฟ้า <code>tilt up</code></li>
+        <li><b>Orbit (หมุนกล้องรอบตัววัตถุ):</b> หมุนกล้อง 3D รอบยานพาหนะ <code>camera orbit shot rotating</code></li>
+      </ul>
+    </div>
+    <div style="flex: 1.0; text-align: center;">
+      <img src="images/lecture4_camera_move.png" alt="Camera Movements" style="max-height: 380px; border-radius: 12px; box-shadow: 0 4px 12px rgba(20,30,60,0.12); object-fit: cover;">
+    </div>
+  </div>
+</section>
+
+<!-- 14.2 LECTURE 4.1.2 -->
+<section>
+  <span class="kicker">แนวคิด 5/5 (ตอนที่ 2): การทำภาพเคลื่อนไหว</span>
+  <h2>หลักความสมจริงและความพริ้วไหวในวิดีโอ (Consistency)</h2>
+  <div class="cols">
+    <div style="flex: 1.2;">
+      <p style="font-size: 0.8em; line-height: 1.6; margin-bottom: 0.5em;">
+        การสร้างภาพเคลื่อนไหวที่เนียนตาและดูสมจริง มีทฤษฎีหลัก 2 ข้อที่ต้องให้ความสำคัญ:
+      </p>
+      <ul style="font-size: 0.72em; padding-left: 1.1em; line-height: 1.6; margin-bottom: 0.5em;">
+        <li><b>การรักษาความสมบูรณ์วัตถุ (Consistency):</b> ควรขยับเฉพาะกล้อง (Camera motion) เป็นหลัก ไม่ควรปล่อยให้รูปทรงกายภาพของวัตถุบิดเบี้ยว เปลี่ยนแปลง หรือละลาย (Morphing/Warping)</li>
+        <li><b>การเติมความพริ้วไหวธรรมชาติ (Subtle Motion):</b> ระบุการเคลื่อนไหวเบาๆ ในฉากหลัง เช่น ฝุ่นละอองลอย, ลมพัดใบไม้ปลิว หรือควันจางๆ พริ้วไหว <code>subtle wind breeze, soft smoke drifting</code></li>
+      </ul>
+      <div class="card" style="border-top: 4px solid var(--teal); padding: 0.6em 0.8em; font-size: 0.68em; line-height: 1.45;">
+        <b style="color: var(--teal);">🔬 กฎเหล็ก Imagen Video:</b>
+        <p style="margin: 0.2em 0 0; color: var(--muted);">ห้ามสั่งทิศทางการเคลื่อนไหวของวัตถุจนเกินความเป็นจริงในฟิสิกส์ เพื่อป้องกันไม่ให้โครงสร้างรถยนต์/ตึก แตกพิกเซลหรือเบลอตัวลง</p>
+      </div>
+    </div>
+    <div style="flex: 1.0; text-align: center;">
+      <img src="images/lecture4_video_consistency.png" alt="Video Consistency" style="max-height: 380px; border-radius: 12px; box-shadow: 0 4px 12px rgba(20,30,60,0.12); object-fit: cover;">
+    </div>
+  </div>
+</section>
+
+<!-- 15 ACT 4 INTRO -->
+<section>
+  <span class="kicker">กิจกรรมที่ 4 (⏱ 20 นาที)</span>
+  <h2>กิจกรรมที่ 4: ปั้นภาพนิ่งให้กลายเป็นโมชันวิดีโอ</h2>
+  <div class="cols">
+    <div style="flex: 1.4;">
+      <p style="font-size: 0.82em;">นำรูปภาพรถยนต์ไฟฟ้าจีนที่ตัดต่อเสร็จจากกิจกรรมที่ 3 (หรือรูปที่เจนขึ้นใหม่) เข้าสู่เครื่องมือทำวิดีโอ (labs.gemini หรือ openart video) แล้วสั่งโมชันมุมกล้องตามทิศทางที่กลุ่มของคุณได้รับสุ่ม</p>
+      <div class="rule" style="font-size:0.72em; line-height:1.6;">
+        ⚙️ ลำดับการทดลอง:
+        <br>1. อัปโหลดรูปภาพรถยนต์เข้าสู่เครื่องมือ Image-to-Video
+        <br>2. ป้อน Prompt ภาษาอังกฤษสั่งทิศทางกล้องตามโจทย์ของคุณ
+        <br>3. กดสร้างคลิป 3–5 วินาที แล้วสังเกตความเนียน/ความบิดเบี้ยว
+        <br>4. จับภาพหน้าจอ (Screenshot) เฟรมที่ขยับสวยที่สุดมาแนบส่ง
+      </div>
+    </div>
+    <div style="flex: 1.1;">
+      <div class="card" style="border-left: 5px solid var(--teal); min-height:150px;">
+        <h3 style="font-size: 0.95em; color: var(--teal); margin: 0;">🎥 ทิศทางกล้องที่กลุ่มของคุณต้องใช้</h3>
+        <p style="font-size: 0.82em; margin: 0.3em 0;" class="good" id="act4-motion-theme">— (ระบุเลขที่นั่งก่อน)</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 16 ACT 4 WORKSPACE -->
+<section>
+  <h3>ข้อ 4 — ผลการทำวิดีโอสั้นด้วย AI (Image-to-Video)</h3>
+  <p class="q">ปั้นความเคลื่อนไหวให้กับภาพถ่ายด้วยทิศทางมุมกล้อง: <b data-var="motionTheme">...</b></p>
+  <div style="display: grid; grid-template-columns: 1.1fr 1fr; gap: 1.0em; align-items: start;">
+    <div style="display: flex; flex-direction: column; gap: 0.4em;">
+      <div>
+        <span class="ws-label">✏ 1. Prompt โมชันกล้องวิดีโอ (ภาษาอังกฤษ) ที่ป้อนสั่ง AI:</span>
+        <textarea class="save ws-field" id="q34_video_prompt" data-group="กิจกรรมที่ 4: ปรับโหมดภาพเป็นโมชันวิดีโอ" data-label="ข้อ 4.1 — พรอมต์ควบคุมโมชันกล้องวิดีโอ" style="height: 130px; font-weight: 600; color: var(--teal);" placeholder="คัดลอกพรอมต์วิดีโอมาวาง เช่น 'Slow pan left with warm dust particles and glowing sun flares, highly detailed...'"></textarea>
+        <div class="fb" id="fb_q34_prompt"></div>
+      </div>
+      <div>
+        <span class="ws-label">📸 2. แนบรูปถ่ายจับภาพหน้าจอ (Screenshot) วินาทีที่ขยับสำเร็จ:</span>
+        <textarea class="save ws-field" id="q34_video_result" data-group="กิจกรรมที่ 4: ปรับโหมดภาพเป็นโมชันวิดีโอ" data-label="ข้อ 4.2 — ภาพ Screenshot ผลงานคลิปวิดีโอสั้น" style="height: 100px;" placeholder="คัดลอกรูปภาพเฟรมในคลิปแล้วกดวาง (Ctrl/⌘ + V) หรือกดแนบไฟล์รูป..."></textarea>
+        <div id="q34_video_result_img_tray" class="img-tray"></div>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0.4em;">
+      <div>
+        <span class="ws-label">✏️ 3. อธิบายพฤติกรรมภาพและจุดบกพร่องหลังปั้นเคลื่อนไหว (ความบิดเบี้ยว/ความเนียน):</span>
+        <textarea class="save ws-field" id="q34_video_analysis" data-group="กิจกรรมที่ 4: ปรับโหมดภาพเป็นโมชันวิดีโอ" data-label="ข้อ 4.3 — สรุปการประเมินความสมจริงวิดีโอ" style="height: 180px;" placeholder="ตัวอย่าง: วิดีโอขยับแพนกล้องไปซ้ายได้เนียนตา สะท้อนเงาโลหะบนตัวรถได้สมจริง แต่อาจมีขอบตึกด้านหลังละลายหรือสั่นตัวบ้างในช่วงท้ายคลิป..."></textarea>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PART 5: CREATIVE CAMPAIGN ===================== -->
+
+<!-- 17 ACT 5 INTRO -->
+<section>
+  <span class="kicker">กิจกรรมที่ 5 (⏱ 30 นาที)</span>
+  <h2>กิจกรรมที่ 5: แคมเปญสร้างสรรค์ผลิตภัณฑ์ไทยแห่งอนาคต (Creative Campaign)</h2>
+  <div class="cols">
+    <div style="flex: 1.4;">
+      <p style="font-size: 0.82em;">ให้นักเรียนประยุกต์ใช้ทักษะการสร้างและดัดแปลงรูปภาพ/วิดีโอด้วย AI ทั้งหมดที่เรียนมา เพื่อออกแบบชุดสื่อโฆษณาผลิตภัณฑ์ไทยในแบรนด์และแนวคิดใหม่ของตนเอง:</p>
+      <ul style="font-size: 0.7em; line-height: 1.65;">
+        <li><b>1. เลือกผลิตภัณฑ์แบรนด์ไทย:</b> ชาไทยไข่มุก, ผัดไทย, ข้าวเหนียวมะม่วง, ผ้า silk ไทย, หรือผลิตภัณฑ์สปาสมุนไพร</li>
+        <li><b>2. ออกแบบ Concept นวัตกรรมอนาคต:</b> ตกแต่งแบรนด์ให้ออกมาล้ำสมัยหรือแฟนตาซี (เช่น ชาไทยนีออนสไตล์ Cyberpunk หรือข้าวเหนียวมะม่วง Claymation)</li>
+        <li><b>3. เจนรูปภาพ Poster โฆษณา:</b> ป้อน Prompt ควบคุมสัดส่วน Aspect Ratio และ Style ศิลปะให้เหมาะสม</li>
+        <li><b>4. แปลงภาพเป็นคลิปเคลื่อนไหว:</b> นำโปสเตอร์ที่ได้เข้าสู่โปรแกรม Image-to-Video เขียนคำสั่งขยับกล้อง (Camera Motion) 3-5 วินาที สื่ออารมณ์โฆษณา</li>
+      </ul>
+    </div>
+    <div style="flex: 1.0;">
+      <div class="card" style="border-left: 5px solid var(--purple); background:#fcf9ff; min-height:180px; font-size:0.7em; line-height: 1.5;">
+        <b style="color:var(--purple)">💡 ข้อมูลที่ต้องกรอกส่งงานด้านหลัง:</b>
+        <ol style="margin-top:5px; padding-left:1.2em;">
+          <li>ชื่อแบรนด์และแนวคิดผลิตภัณฑ์</li>
+          <li>สัดส่วน Aspect Ratio และ Style ที่เลือก</li>
+          <li>Prompt และรูป Poster โฆษณาที่สร้างเสร็จ</li>
+          <li>Prompt และรูป Screenshot คลิปวิดีโอสั้น</li>
+          <li>คำอธิบายแนวคิดการออกแบบสื่อตอบโจทย์ธุรกิจ</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 18 ACT 5 WORKSPACE -->
+<section>
+  <h3>ข้อ 5 — ชุดผลงานแคมเปญโฆษณาเชิงสร้างสรรค์ (My Creative Campaign)</h3>
+  <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.0em; align-items: start;">
+    <div style="display: flex; flex-direction: column; gap: 0.4em;">
+      <div>
+        <span class="ws-label">🛍️ 1. ชื่อแบรนด์และผลิตภัณฑ์ไทยเชิงสร้างสรรค์ (เช่น "สตรีทฟู้ดผัดไทยอวกาศ"):</span>
+        <input class="save ws-field" id="q35_product_name" data-group="กิจกรรมที่ 5: แคมเปญสร้างสรรค์ผลิตภัณฑ์ไทย" data-label="ข้อ 5.1 — ชื่อแบรนด์และผลิตภัณฑ์" type="text" placeholder="พิมพ์ชื่อแบรนด์และผลิตภัณฑ์ที่นี่..." style="font-size: 0.72em; padding: 0.45em 0.6em; font-weight: bold; color: var(--blue);">
+      </div>
+      <div>
+        <span class="ws-label">📐 2. สัดส่วน Aspect Ratio และ Style ที่เลือกใช้:</span>
+        <input class="save ws-field" id="q35_ratio_style" data-group="กิจกรรมที่ 5: แคมเปญสร้างสรรค์ผลิตภัณฑ์ไทย" data-label="ข้อ 5.2 — สัดส่วนภาพและสไตล์ศิลปะที่เลือก" type="text" placeholder="เช่น 9:16 (แนวตั้ง), สไตล์การ์ตูนสดใส..." style="font-size: 0.72em; padding: 0.45em 0.6em;">
+      </div>
+      <div>
+        <span class="ws-label">✏ 3. Prompt ภาษาอังกฤษที่ใช้สร้างภาพ Poster โฆษณา:</span>
+        <textarea class="save ws-field" id="q35_image_prompt" data-group="กิจกรรมที่ 5: แคมเปญสร้างสรรค์ผลิตภัณฑ์ไทย" data-label="ข้อ 5.3 — พรอมต์สร้างภาพโปสเตอร์โฆษณา" style="height: 120px;" placeholder="พิมพ์ Prompt ภาษาอังกฤษที่ระบุสไตล์และขนาดที่ใช้..."></textarea>
+      </div>
+      <div>
+        <span class="ws-label">📸 4. แนบรูปภาพ Poster โฆษณาชิ้นงานตัวสมบูรณ์:</span>
+        <textarea class="save ws-field" id="q35_image_result" data-group="กิจกรรมที่ 5: แคมเปญสร้างสรรค์ผลิตภัณฑ์ไทย" data-label="ข้อ 5.4 — ภาพถ่ายผลงานโปสเตอร์โฆษณา" style="height: 90px;" placeholder="คัดลอกรูปภาพแล้วกดวาง (Ctrl/⌘ + V) หรือกดแนบไฟล์รูป..."></textarea>
+        <div id="q35_image_result_img_tray" class="img-tray"></div>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0.4em;">
+      <div>
+        <span class="ws-label">✏ 5. Prompt สั่งโมชันกล้องเคลื่อนไหวคลิปวิดีโอสั้น (Camera Motion):</span>
+        <textarea class="save ws-field" id="q35_video_prompt" data-group="กิจกรรมที่ 5: แคมเปญสร้างสรรค์ผลิตภัณฑ์ไทย" data-label="ข้อ 5.5 — พรอมต์โมชันมุมกล้องวิดีโอ" style="height: 120px;" placeholder="พิมพ์ Prompt ทิศทางเคลื่อนที่ของกล้อง เช่น 'Slow pan right showing steam rising from pad thai...'"></textarea>
+      </div>
+      <div>
+        <span class="ws-label">📸 6. แนบรูป Screenshot ช่วงที่คลิปวิดีโอแสดงโมชัน:</span>
+        <textarea class="save ws-field" id="q35_video_result" data-group="กิจกรรมที่ 5: แคมเปญสร้างสรรค์ผลิตภัณฑ์ไทย" data-label="ข้อ 5.6 — ภาพ Screenshot วิดีโอโฆษณา" style="height: 90px;" placeholder="คัดลอกรูปภาพแล้วกดวาง (Ctrl/⌘ + V) หรือกดแนบไฟล์รูป..."></textarea>
+        <div id="q35_video_result_img_tray" class="img-tray"></div>
+      </div>
+      <div>
+        <span class="ws-label">✏ 7. อธิบายแนวคิดผลิตภัณฑ์และการเลือกสื่อโฆษณาให้เหมาะสมเชิงธุรกิจ:</span>
+        <textarea class="save ws-field" id="q35_concept_desc" data-group="กิจกรรมที่ 5: แคมเปญสร้างสรรค์ผลิตภัณฑ์ไทย" data-label="ข้อ 5.7 — อธิบายแนวคิดธุรกิจและการออกแบบ" style="height: 130px;" placeholder="พิมพ์เหตุผล เช่น เพื่อโปรโมตในแพลตฟอร์มแนวตั้ง จึงเลือก 9:16 สไตล์ดินน้ำมันที่แปลกตาดึงดูดสายตา และใช้การซูมกล้องเข้าหามะม่วงเพื่อให้น่าลิ้มลอง..."></textarea>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PART 6: ETHICS & REFLECTION ===================== -->
+
+<!-- 19 LECTURE 5.1 (ETHICS - COPYRIGHT) -->
+<section>
+  <span class="kicker">แนวคิดสำคัญ 1/3: ลิขสิทธิ์ภาพ</span>
+  <h2>จริยธรรม AI: ลิขสิทธิ์รูปภาพตั้งต้น (Copyright)</h2>
+  <div class="cols">
+    <div style="flex: 1.2;">
+      <p style="font-size: 0.85em; line-height: 1.65; margin-bottom: 0.5em;">
+        <b>ลิขสิทธิ์รูปภาพตั้งต้น (Copyright):</b> การดึงภาพถนนจาก Google Search มาดัดแปลงแก้ไข (Inpainting) เพื่อส่งเป็นการศึกษาในห้องเรียนไม่มีปัญหา แต่หากจะดัดแปลงเพื่อนำไปขายเชิงการค้า ต้องมั่นใจว่ารูปต้นแบบเป็นสัญญาอนุญาตประเภท <b>Creative Commons CC0, Public Domain</b> หรือภาพที่เราถ่ายมาด้วยตนเอง
+      </p>
+    </div>
+    <div style="flex: 1.0; text-align: center;">
+      <img src="images/ethics_copyright.png" alt="Copyright Ethics" style="max-height: 380px; border-radius: 12px; box-shadow: 0 4px 12px rgba(20,30,60,0.12); object-fit: cover;">
+    </div>
+  </div>
+</section>
+
+<!-- 19.2 LECTURE 5.2 (ETHICS - DEEPFAKES) -->
+<section>
+  <span class="kicker">แนวคิดสำคัญ 2/3: ความถูกต้องของข้อมูล</span>
+  <h2>จริยธรรม AI: ภาพปลอม/ข่าวปลอม (Deepfakes)</h2>
+  <div class="cols">
+    <div style="flex: 1.2;">
+      <p style="font-size: 0.85em; line-height: 1.65; margin-bottom: 0.5em;">
+        <b>ภาพปลอม/ข่าวปลอม (Deepfakes & Misinformation):</b> การลบแบรนด์รถหรือใส่เหตุการณ์ปลอมบนท้องถนนไทย สามารถชี้นำความคิดคนเข้าใจผิดได้ ครูจึงต้องย้ำเรื่องห้ามทำภาพหลอกลวงสังคม หรือจงใจสร้างความปั่นป่วนบิดเบือนความจริง
+      </p>
+    </div>
+    <div style="flex: 1.0; text-align: center;">
+      <img src="images/ethics_deepfake.png" alt="Deepfake Ethics" style="max-height: 380px; border-radius: 12px; box-shadow: 0 4px 12px rgba(20,30,60,0.12); object-fit: cover;">
+    </div>
+  </div>
+</section>
+
+<!-- 19.3 LECTURE 5.3 (ETHICS - WATERMARK & PDPA) -->
+<section>
+  <span class="kicker">แนวคิดสำคัญ 3/3: ความโปร่งใสและความปลอดภัย</span>
+  <h2>จริยธรรม AI: ลายน้ำและการคุ้มครองข้อมูลส่วนบุคคล</h2>
+  <div class="cols">
+    <div style="flex: 1.2; display: flex; flex-direction: column; gap: 0.5em;">
+      <div class="card" style="border-left: 5px solid var(--teal); padding: 0.6em 0.8em; line-height: 1.45;">
+        <h3 style="font-size: 0.85em; color: var(--teal); margin: 0 0 0.2em;">🏷️ ลายน้ำระบุผลงาน AI</h3>
+        <p style="font-size: 0.7em; line-height: 1.5; margin: 0;">
+          การระบุอย่างเปิดเผยว่าภาพนี้ดัดแปลงด้วยระบบปัญญาประดิษฐ์ (AI-generated) ถือเป็นมารยาททางวิชาการและการสื่อสารในปัจจุบัน เพื่อความโปร่งใสและแสดงความจริงใจต่อผู้บริโภคสื่อ
+        </p>
+      </div>
+      <div class="card" style="border-left: 5px solid var(--blue); padding: 0.6em 0.8em; line-height: 1.45;">
+        <h3 style="font-size: 0.85em; color: var(--blue); margin: 0 0 0.2em;">✍️ การระบุสิทธิในผลงาน</h3>
+        <p style="font-size: 0.7em; line-height: 1.5; margin: 0;">
+          หากนำชิ้นงานสร้างสรรค์ไปเผยแพร่ ควรระบุชัดเจน เช่น <i>"ภาพนี้สร้างสรรค์ด้วยปัญญาประดิษฐ์"</i> เพื่อสร้างนิสัยการอ้างอิงแหล่งที่มาที่น่าเชื่อถือ
+        </p>
+      </div>
+    </div>
+    <div style="flex: 1.0;">
+      <div class="card" style="background:#fff5f5; border-color:#fed7d7; color:var(--warn); padding: 0.8em 1.0em; min-height: 180px; box-shadow: 0 4px 12px rgba(220,50,50,0.05);">
+        <h3 style="font-size: 0.9em; color:var(--warn); margin:0 0 0.3em;">⚠️ พึงระวังความปลอดภัย (PDPA)</h3>
+        <p style="font-size: 0.68em; line-height: 1.6; color: var(--ink); margin:0;">
+          อย่าทำการแก้ไขภาพใบหน้าของบุคคล หรือป้ายทะเบียนรถส่วนบุคคลของผู้อื่นโดยไม่ได้รับอนุญาต เนื่องจากกฎหมายพระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล (PDPA) และสิทธิ์ความเป็นส่วนตัวของผู้อื่น
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 20 REFLECTION -->
+<section>
+  <span class="kicker">สรุปการเรียนรู้</span>
+  <h2>สะท้อนความคิดท้ายคาบเรียน</h2>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.2em; align-items: start;">
+    <div style="display: flex; flex-direction: column; gap: 0.4em;">
+      <div>
+        <p style="font-size: 0.72em; line-height: 1.6; font-weight: 600; margin: 0 0 0.4em; color: var(--ink);">
+          ✏️ 1. การเลือกสัดส่วนภาพ (Aspect Ratio) และสไตล์ศิลปะให้เข้ากับเป้าหมายโจทย์จำลองในคาบนี้ (โจทย์ข้อ 2) มีความสำคัญต่อความน่าเชื่อถือและการมองเห็นโฆษณาอย่างไร?
+        </p>
+        <textarea class="save ws-field" id="q35_ref_ratio" data-group="การสะท้อนคิดท้ายคาบ" data-label="สะท้อนคิดเรื่องสัดส่วนภาพและสไตล์สื่อ" style="height: 155px;" placeholder="พิมพ์อธิบายเหตุผลของคุณที่นี่..."></textarea>
+      </div>
+    </div>
+    <div style="flex: 1.5; display: flex; flex-direction: column; gap: 0.4em;">
+      <div>
+        <p style="font-size: 0.72em; line-height: 1.6; font-weight: 600; margin: 0 0 0.4em; color: var(--ink);">
+          ✏️ 2. ในมุมมองของจริยธรรมลิขสิทธิ์และการใช้งานเชิงการค้า การนำภาพจาก Google Images มาดัดแปลงแก้ไขเป็นภาพอื่นผ่าน Inpainting มีสิ่งใดที่เราต้องระมัดระวังเป็นพิเศษก่อนการเผยแพร่?
+        </p>
+        <textarea class="save ws-field" id="q35_ref_ethics" data-group="การสะท้อนคิดท้ายคาบ" data-label="สะท้อนคิดประเด็นลิขสิทธิ์และสิทธิ์การตัดต่อ" style="height: 155px;" placeholder="พิมพ์อธิบายความระมัดระวังและหลักจริยธรรมที่นี่..."></textarea>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 21 DOWNLOAD SUBMISSION -->
+<section>
+  <span class="kicker">บันทึกใบงาน</span>
+  <h2>บันทึกใบงานส่งครู</h2>
+  <div class="check-panel" style="text-align: center; padding-top: 1em;">
+    <!-- Hidden elements to satisfy JS without errors/warnings -->
+    <div id="check-rows" style="display:none;"></div>
+    <div id="prog-bar" style="display:none;"></div>
+    <div id="prog-count" style="display:none;"></div>
+    <div id="check-msg" style="display:none;"></div>
+    
+    <p style="text-align: center; margin-top: 1em;">
+      <button class="dlbig" onclick="downloadPDF()" style="font-size: 1.1em; padding: 0.6em 1.4em;">⬇ บันทึกใบงานเป็น PDF เพื่อส่งครู</button>
+    </p>
+    <p class="note" style="color: var(--warn); font-weight: 600; margin-top: 0.8em; text-align: center; font-size: 0.75em;">🚨 อย่าลืมกรอก “ชื่อ–นามสกุล” ในสไลด์ที่ 2 ให้ครบ จึงจะบันทึกเป็น PDF ได้</p>
+  </div>
+</section>
+
+</div></div>
+
+<!-- assignment print area layout -->
+<div id="print-area"></div>
+
+<!-- reveal.js javascript setup -->
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script>
+  Reveal.initialize({
+    hash: false, respondToHashChanges: false, slideNumber: 'c/t', controls: true, progress: true,
+    width: 1280, height: 800, margin: 0.06, minScale: 0.2, maxScale: 1.5,
+    transition: 'slide'
+  });
+
+  const SAVE_KEY = 'aied_w3';
+
+  function saveField(el) {
+    const data = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
+    data[el.id] = el.value;
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+    const hint = document.getElementById('savehint');
+    if (hint) {
+      hint.style.opacity = 1;
+      setTimeout(() => { hint.style.opacity = 0; }, 800);
+    }
+  }
+
+  function loadSaved() {
+    const data = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
+    Object.keys(data).forEach(k => {
+      if (k.indexOf('img:') === 0) return; // handled by image setup
+      const el = document.getElementById(k);
+      if (el) {
+        el.value = data[k];
+      }
+    });
+  }
+
+  window.saveField = saveField;
+  document.addEventListener('input', e => { if (e.target.classList.contains('save')) saveField(e.target); });
+  document.addEventListener('change', e => { if (e.target.classList.contains('save')) saveField(e.target); });
+  loadSaved();
+
+  /* ---- show floating download button only on the last slide ---- */
+  function updateDlBtnVisibility() {
+    const dlBtn = document.getElementById('dlbtn');
+    if (dlBtn) {
+      dlBtn.style.display = Reveal.isLastSlide() ? 'block' : 'none';
+    }
+  }
+  Reveal.on('ready', updateDlBtnVisibility);
+  Reveal.on('slidechanged', updateDlBtnVisibility);
+
+  /* ---- don't let reveal hijack arrow keys while typing ---- */
+  ['focusin', 'focusout'].forEach(ev => document.addEventListener(ev, e => {
+    if (e.target.matches('input,textarea,select')) Reveal.configure({ keyboard: ev === 'focusout' });
+  }));
+
+  /* ---- build & download the assignment-only PDF ---- */
+  function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function val(id) { const el = document.getElementById(id); return el ? el.value : ''; }
+  function getImgs(id) {
+    try { const d = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}'); return d['img:' + id] || []; }
+    catch (e) { return []; }
+  }
+
+  function buildAssignmentHTML() {
+    const name = val('ws-name'), cls = val('ws-class'), no = val('ws-no');
+    const si = (window.getSetInfo && window.getSetInfo()) || null;
+    let html = `<div class="pdf-doc">
+      <h1>ใบงาน AI for Ed — สัปดาห์ที่ 3</h1>
+      <div class="pdf-meta">
+        <span><b>ชื่อ–สกุล:</b> ${esc(name) || '____________________'}</span>
+        <span><b>ชั้น:</b> ${esc(cls) || '________'}</span>
+        <span><b>เลขที่:</b> ${esc(no) || '____'}</span>
+        ${ si ? `<span><b>ชุดโจทย์สุ่มประจำตัว:</b> ชุดที่ ${si.n} (สไตล์สร้างภาพ: ${esc(si.theme)} · โจทย์สลับรถจีน: ${esc(si.car)})</span>` : '' }
+      </div>`;
+    let curGroup = '';
+    document.querySelectorAll('.ws-field').forEach(f => {
+      const g = f.getAttribute('data-group') || '';
+      if (g && g !== curGroup) { curGroup = g; html += `<h2>${esc(g)}</h2>`; }
+      const label = f.getAttribute('data-label') || '';
+      const v = f.value || '';
+      const imgs = getImgs(f.id);
+      const ans = v ? esc(v).replace(/\n/g, '<br>')
+                    : (imgs.length ? '<span class="empty">(แนบรูปภาพด้านล่าง)</span>' : '<span class="empty">(ยังไม่ได้ตอบ)</span>');
+      let imgHtml = '';
+      if (imgs.length) { imgHtml = '<div class="pdf-imgs">' + imgs.map(s => `<img src="${s}">`).join('') + '</div>'; }
+      html += `<div class="pdf-item"><div class="pdf-label">${esc(label)}</div><div class="pdf-answer">${ans}</div>${imgHtml}</div>`;
+    });
+    html += `</div>`;
+    return html;
+  }
+
+  function downloadPDF() {
+    const name = val('ws-name').trim();
+    if (!name) {
+      alert('กรุณากรอก “ชื่อ–นามสกุล” ในสไลด์ที่ 2 ก่อนบันทึกใบงาน');
+      Reveal.slide(1); return;
+    }
+    const area = document.getElementById('print-area');
+    area.innerHTML = buildAssignmentHTML();
+    document.body.classList.add('printing');
+    setTimeout(() => {
+      try { window.print(); }
+      catch (e) {
+        cleanupPrint();
+        alert('เบราว์เซอร์เปิดหน้าพิมพ์ไม่ได้\nให้ดับเบิลคลิกเปิดไฟล์ html นี้ใน Chrome หรือ Edge โดยตรง แล้วลองใหม่ครับ');
+      }
+    }, 150);
+  }
+
+  function cleanupPrint() {
+    document.body.classList.remove('printing');
+    const area = document.getElementById('print-area'); if (area) area.innerHTML = '';
+  }
+  window.addEventListener('afterprint', cleanupPrint);
+  window.downloadPDF = downloadPDF;
+</script>
+
+<!-- ===================== IMAGE ATTACH / PASTE ===================== -->
+<script>
+(function(){
+  const MAXDIM = 1000;            // image cap (px) for localStorage limit
+  const QUALITY = 0.8;            // jpeg quality
+  function readAll() { try { return JSON.parse(localStorage.getItem(SAVE_KEY) || '{}'); } catch (e) { return {}; } }
+  function getImgs(id) { return readAll()['img:' + id] || []; }
+  function setImgs(id, arr) {
+    const d = readAll(); d['img:' + id] = arr;
+    try { localStorage.setItem(SAVE_KEY, JSON.stringify(d)); return true; }
+    catch (e) { alert('พื้นที่จัดเก็บในเบราว์เซอร์เต็ม — รูปอาจมีขนาดใหญ่เกินไป ลองลบรูปอื่นออกก่อนนะครับ'); return false; }
+  }
+
+  function compress(file) {
+    return new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onerror = () => rej(new Error('read'));
+      r.onload = () => {
+        const img = new Image();
+        img.onerror = () => rej(new Error('decode'));
+        img.onload = () => {
+          let w = img.naturalWidth, h = img.naturalHeight;
+          if (w > MAXDIM || h > MAXDIM) { const k = Math.min(MAXDIM/w, MAXDIM/h); w = Math.round(w*k); h = Math.round(h*k); }
+          const c = document.createElement('canvas'); c.width = w; c.height = h;
+          c.getContext('2d').drawImage(img, 0, 0, w, h);
+          try { res(c.toDataURL('image/jpeg', QUALITY)); } catch (e) { rej(e); }
+        };
+        img.src = r.result;
+      };
+      r.readAsDataURL(file);
+    });
+  }
+
+  async function addFiles(id, files, tray) {
+    const list = [...files].filter(f => f && f.type && f.type.indexOf('image/') === 0);
+    if (!list.length) return;
+    const arr = getImgs(id);
+    for (const f of list) { try { arr.push(await compress(f)); } catch (e) {} }
+    if (setImgs(id, arr)) renderTray(id, tray);
+  }
+
+  function renderTray(id, tray) {
+    const arr = getImgs(id); tray.innerHTML = '';
+    arr.forEach((src, i) => {
+      const t = document.createElement('div'); t.className = 'img-thumb';
+      const im = document.createElement('img'); im.src = src; im.alt = 'แนบรูป';
+      const rm = document.createElement('button'); rm.className = 'rm'; rm.type = 'button';
+      rm.textContent = '✕';
+      rm.addEventListener('click', () => { const a = getImgs(id); a.splice(i, 1); setImgs(id, a); renderTray(id, tray); });
+      t.appendChild(im); t.appendChild(rm); tray.appendChild(t);
+    });
+    if (window.refreshFeedback) window.refreshFeedback();
+  }
+
+  function attach(field) {
+    const id = field.id;
+    const btn = document.createElement('button'); btn.className = 'img-btn'; btn.type = 'button';
+    btn.textContent = '📎 แนบรูป / วางรูป';
+    const hint = document.createElement('span'); hint.className = 'img-hint';
+    hint.textContent = 'หรือคัดลอกรูปแล้ววางในช่อง (Ctrl/⌘ + V)';
+    const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*';
+    inp.multiple = true; inp.style.display = 'none';
+    const tray = document.getElementById(id + '_img_tray') || document.createElement('div');
+    if (!tray.className) tray.className = 'img-tray';
+
+    btn.addEventListener('click', () => inp.click());
+    inp.addEventListener('change', () => { addFiles(id, inp.files, tray); inp.value = ''; });
+    field.addEventListener('paste', e => {
+      const items = e.clipboardData && e.clipboardData.items;
+      if (!items) return;
+      const imgs = [...items].filter(it => it.kind === 'file' && it.type.indexOf('image/') === 0)
+                           .map(it => it.getAsFile());
+      if (imgs.length) { e.preventDefault(); addFiles(id, imgs, tray); }
+    });
+
+    field.insertAdjacentElement('afterend', tray);
+    field.insertAdjacentElement('afterend', hint);
+    field.insertAdjacentElement('afterend', inp);
+    field.insertAdjacentElement('afterend', btn);
+    renderTray(id, tray);
+  }
+
+  function init() {
+    const targets = ['q31_result_pic', 'q33_inpainting_result', 'q34_video_result', 'q35_image_result', 'q35_video_result'];
+    targets.forEach(tid => {
+      const el = document.getElementById(tid);
+      if (el) attach(el);
+    });
+  }
+  if (document.readyState !== 'loading') init();
+  else document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+
+<!-- ===================== PROBLEM SETS (anti-copy) ===================== -->
+<script>
+(function(){
+  const SETS = [
+    {
+      theme: 'ดินน้ำมันสตอปโมชัน Claymation',
+      scenarioName: 'โพสเตอร์ TikTok แนวตั้ง แคมเปญสะท้อนสุขภาพจิตวัยรุ่น',
+      scenarioDesc: 'โจทย์จำลอง: ออกแบบภาพสำหรับ "โปสเตอร์แนวตั้งแคมเปญ TikTok วัยรุ่นสะท้อนความคิดเรื่องสุขภาพจิต" (สัดส่วนภาพควรเป็นแนวตั้ง 9:16 สไตล์ภาพประกอบแบบแบนมินิมอลสีพาสเทล Minimal Flat Illustration)',
+      car: 'BYD Dolphin (รถแฮทช์แบ็ก สีชมพู/ครีม)',
+      carPlain: 'BYD Dolphin electric hatchback (pink and cream duo-tone)',
+      motion: 'ภาพขยับเด้งมีลมส่ายแบบ stop-motion ดินเหนียว (Clay Bounce Animation)',
+      motionPlain: 'Claymation stop-motion bounce animation of the clay car, clean details',
+      goodRatio: '9:16', goodRatioLabel: '9:16 แนวตั้ง', ratioWhy: 'เป็นโพสเตอร์ TikTok แนวตั้งเต็มจอมือถือ',
+      carKeys: ['dolphin','byd'], motionKeys: ['bounce','clay'], motionHint: 'bounce / clay bounce'
+    },
+    {
+      theme: 'ไซเบอร์พังก์ นีออนยามค่ำคืน Cyberpunk Neon',
+      scenarioName: 'แบนเนอร์กว้างพิเศษโฆษณาห้องเรียนอัจฉริยะประหยัดพลังงานในไทย',
+      scenarioDesc: 'โจทย์จำลอง: ออกแบบภาพสำหรับ "แบนเนอร์กว้างพิเศษ (Widescreen) โฆษณาห้องเรียนอัจฉริยะประหยัดพลังงานในไทย" (สัดส่วนภาพควรเป็นแนวนอนกว้าง 16:9 หรือ 21:9 สไตล์งาน 3D Isometric Render น่ารัก)',
+      car: 'Xiaomi SU7 (รถสปอร์ตซีดาน สีฟ้า Turquoise)',
+      carPlain: 'sleek cyan Xiaomi SU7 electric sports sedan',
+      motion: 'แพนกล้องขวาไปซ้ายช้าๆ (Slow Pan Left)',
+      motionPlain: 'Slow cinematic pan left showing neon street reflections on the metallic car',
+      goodRatio: '16:9', goodRatioLabel: '16:9 แนวนอน', ratioWhy: 'เป็นแบนเนอร์กว้างพิเศษแนวนอน',
+      carKeys: ['su7','xiaomi'], motionKeys: ['pan'], motionHint: 'pan left'
+    },
+    {
+      theme: 'จิตรกรรมฝาผนังแบบไทยโบราณ Thai Mural Painting',
+      scenarioName: 'โฆษณา IG Story น้ำสตอเบอรี่แท้ 100% ออร์แกนิก',
+      scenarioDesc: 'โจทย์จำลอง: ออกแบบภาพสำหรับ "โฆษณา IG Story (แนวตั้ง) สำหรับน้ำสตอเบอรี่แท้ 100% ออร์แกนิก" (สัดส่วนภาพควรเป็นแนวตั้ง 9:16 สไตล์ภาพถ่ายสตูดิโอระดับมือโปร Studio Photography)',
+      car: 'Wuling Hongguang Mini EV (รถไฟฟ้าจิ๋ว สีเหลืองพาสเทล)',
+      carPlain: 'cute pastel yellow Wuling Hongguang Mini EV electric city car',
+      motion: 'ซูมกล้องเข้าหาวัตถุช้าๆ (Slow Zoom In)',
+      motionPlain: 'Gentle slow zoom-in focusing closely on the car details with light morning dust',
+      goodRatio: '9:16', goodRatioLabel: '9:16 แนวตั้ง', ratioWhy: 'เป็น IG Story แนวตั้งเต็มจอ',
+      carKeys: ['wuling','hongguang','mini ev'], motionKeys: ['zoom'], motionHint: 'zoom in'
+    },
+    {
+      theme: 'สีน้ำพริ้วไหว สไตล์อนิเมะ Ghibli Watercolor',
+      scenarioName: 'ป้ายโฆษณาบิลบอร์ดภาพยนตร์ไซไฟแนวผจญภัยรูดำอวกาศ',
+      scenarioDesc: 'โจทย์จำลอง: ออกแบบภาพสำหรับ "ป้ายบิลบอร์ดภาพยนตร์ไซไฟแนวผจญภัยรูดำอวกาศ" (สัดส่วนภาพควรเป็นแนวนอนกว้าง 16:9 หรือ 21:9 สไตล์ภาพวาดดิจิทัลคอนเซปต์อาร์ต Sci-Fi Digital Art)',
+      car: 'BYD Atto 3 (รถครอบครัว SUV สีน้ำเงิน)',
+      carPlain: 'blue BYD Atto 3 electric crossover SUV',
+      motion: 'หมุนกล้องรอบวัตถุสามมิติ (Orbit/Rotate Shot)',
+      motionPlain: '3D camera orbit shot rotating around the car showing watercolor textures',
+      goodRatio: '16:9', goodRatioLabel: '16:9 แนวนอน', ratioWhy: 'เป็นป้ายบิลบอร์ดแนวนอนขนาดใหญ่',
+      carKeys: ['atto','byd'], motionKeys: ['orbit','rotat'], motionHint: 'orbit / rotating'
+    },
+    {
+      theme: 'แก้วคริสตัลเป่า แสงไฟสะท้อนระยิบระยับ Crystal Glass',
+      scenarioName: 'ภาพปกเพลย์ลิสต์เพลงแนว 80s Synthwave ลง Spotify',
+      scenarioDesc: 'โจทย์จำลอง: ออกแบบภาพสำหรับ "ภาพหน้าปกเพลย์ลิสต์เพลงแนว 80s Synthwave ลง Spotify" (สัดส่วนภาพควรเป็นสี่เหลี่ยมจตุรัส 1:1 สไตล์ภาพกราฟิกแนวย้อนยุค 80s Retro / Vaporwave)',
+      car: 'Zeekr 009 (รถตู้ครอบครัวสุดหรู สีดำเงา)',
+      carPlain: 'premium luxury black Zeekr 009 electric MPV van',
+      motion: 'กล้องก้มต่ำระดับทางเดินเผยตัวรถ (Tilt Down)',
+      motionPlain: 'Cinematic slow camera tilt down showing wet road reflections and the luxury car',
+      goodRatio: '1:1', goodRatioLabel: '1:1 จตุรัส', ratioWhy: 'เป็นปกเพลย์ลิสต์สี่เหลี่ยมจตุรัส',
+      carKeys: ['zeekr'], motionKeys: ['tilt'], motionHint: 'tilt down'
+    }
+  ];
+
+  function setIndexOf(noStr) {
+    const n = parseInt(String(noStr || '').replace(/[^0-9]/g, ''), 10);
+    if (!n || n < 1) return null;
+    return n % SETS.length; // ensures set 1-5 distributes evenly
+  }
+
+  function applySet(i) {
+    const s = SETS[i];
+    document.querySelectorAll('[data-var="styleTheme"]').forEach(e => e.textContent = s.theme);
+    document.querySelectorAll('[data-var="scenarioName"]').forEach(e => e.textContent = s.scenarioName);
+    document.querySelectorAll('[data-var="carTarget"]').forEach(e => e.textContent = s.car);
+    document.querySelectorAll('[data-var="motionTheme"]').forEach(e => e.textContent = s.motion);
+  }
+
+  function refresh() {
+    const noEl = document.getElementById('ws-no');
+    const lblTheme = document.getElementById('set-theme-lbl');
+    const lblScenario = document.getElementById('set-scenario-lbl');
+    const lblCar = document.getElementById('set-car-lbl');
+    const lblMotion = document.getElementById('set-motion-lbl');
+
+    const act1Theme = document.getElementById('act1-style-theme');
+    const act2ScenarioDesc = document.getElementById('act2-scenario-desc');
+    const act3CarTarget = document.getElementById('act3-car-target');
+    const act4Motion = document.getElementById('act4-motion-theme');
+
+    const i = setIndexOf(noEl ? noEl.value : '');
+    if (i === null) {
+      applySet(0);
+      const resetStr = '— (ระบุเลขที่ก่อน)';
+      if (lblTheme) lblTheme.textContent = resetStr;
+      if (lblScenario) lblScenario.textContent = resetStr;
+      if (lblCar) lblCar.textContent = resetStr;
+      if (lblMotion) lblMotion.textContent = resetStr;
+      if (act1Theme) act1Theme.textContent = resetStr;
+      if (act2ScenarioDesc) act2ScenarioDesc.textContent = resetStr;
+      if (act3CarTarget) act3CarTarget.textContent = resetStr;
+      if (act4Motion) act4Motion.textContent = resetStr;
+      if (window.refreshFeedback) window.refreshFeedback();
+      return;
+    }
+
+    applySet(i);
+    const s = SETS[i];
+    if (lblTheme) lblTheme.textContent = s.theme;
+    if (lblScenario) lblScenario.textContent = s.scenarioName;
+    if (lblCar) lblCar.textContent = s.car;
+    if (lblMotion) lblMotion.textContent = s.motion;
+
+    if (act1Theme) act1Theme.textContent = s.theme;
+    if (act2ScenarioDesc) act2ScenarioDesc.textContent = s.scenarioDesc;
+    if (act3CarTarget) act3CarTarget.textContent = s.car;
+    if (act4Motion) act4Motion.textContent = s.motion;
+    if (window.refreshFeedback) window.refreshFeedback();
+  }
+
+  // set number shown to match the teacher guide (เศษ 0 = ชุดที่ 5)
+  function guideSetNo(i) { return i === 0 ? SETS.length : i; }
+
+  window.getSetInfo = function() {
+    const noEl = document.getElementById('ws-no');
+    const i = setIndexOf(noEl ? noEl.value : '');
+    if (i === null) return null;
+    return {
+      n: guideSetNo(i),
+      theme: SETS[i].theme,
+      car: SETS[i].car
+    };
+  };
+
+  window.getCurrentSet = function() {
+    const noEl = document.getElementById('ws-no');
+    const i = setIndexOf(noEl ? noEl.value : '');
+    if (i === null) return null;
+    return Object.assign({ index: i, setNo: guideSetNo(i) }, SETS[i]);
+  };
+
+  function init() {
+    const noEl = document.getElementById('ws-no');
+    if (noEl) noEl.addEventListener('input', refresh);
+    refresh();
+  }
+  if (document.readyState !== 'loading') init();
+  else document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+
+<!-- ===================== LIVE FEEDBACK & SUBMISSION CHECK ===================== -->
+<script>
+(function(){
+  function txt(id){ const e=document.getElementById(id); return e ? (e.value||'').trim() : ''; }
+  function imgs(id){ try{ const d=JSON.parse(localStorage.getItem(SAVE_KEY)||'{}'); return d['img:'+id]||[]; }catch(e){ return []; } }
+  function curSet(){ return (window.getCurrentSet && window.getCurrentSet()) || null; }
+  function setFb(id, cls, msg){
+    const e=document.getElementById(id); if(!e) return;
+    if(!msg){ e.className='fb'; e.textContent=''; return; }
+    e.className='fb show '+cls; e.textContent=msg;
+  }
+  function setFbResult(id,res){ if(res) setFb(id,res.cls,res.msg); else setFb(id,'',''); }
+
+  /* ---- per-field smart checks, tied to each student's random set ---- */
+  function checkA1(){
+    const p=txt('q31_prompt'); if(!p) return null;
+    const eng=/[a-z]/i.test(p);
+    const style=/(watercolor|cyberpunk|neon|clay|mural|ghibli|anime|isometric|3d|photoreal|crystal|glass|render|style|painting|illustration|vaporwave|retro)/i.test(p);
+    const light=/(light|lighting|sunlight|\bsun\b|cinematic|glow|shadow|morning|golden|studio|neon)/i.test(p);
+    const scene=/(over|above|background|street|city|sky|bangkok|road|scene|skyline|landscape)/i.test(p);
+    if(!eng) return {cls:'fb-tip', msg:'💡 โมเดลสร้างภาพเข้าใจภาษาอังกฤษแม่นที่สุด — ลองพิมพ์พรอมต์เป็นอังกฤษ (ให้ Gemini ช่วยแปลตามสูตรได้)'};
+    if(style && (light||scene)) return {cls:'fb-ok', msg:'✓ ครบสูตร! มีทั้ง Style และ Lighting/Details — พรอมต์ระดับมือโปร'};
+    const miss=[]; if(!style) miss.push('Style (เช่น watercolor, cyberpunk)'); if(!light&&!scene) miss.push('Lighting/Details (เช่น soft morning light, over Bangkok)');
+    return {cls:'fb-warn', msg:'💡 เพิ่มอีกนิดให้ครบสูตร: '+miss.join('  +  ')};
+  }
+  function checkRatio(){
+    const sel=txt('q32_ratio'); if(!sel) return null;
+    const s=curSet(); if(!s) return {cls:'fb-tip', msg:'💡 ระบุเลขที่นั่งในสไลด์ที่ 2 ก่อน เพื่อรับฟีดแบ็กตรงโจทย์ของคุณ'};
+    if(sel.indexOf(s.goodRatio)>=0) return {cls:'fb-ok', msg:'✓ เหมาะสม — โจทย์'+s.ratioWhy+' จึงควรใช้ '+s.goodRatioLabel};
+    return {cls:'fb-warn', msg:'💡 ลองทบทวน — โจทย์'+s.ratioWhy+' โดยทั่วไปจึงเหมาะกับ '+s.goodRatioLabel+' มากกว่า'};
+  }
+  function checkCar(){
+    const p=txt('q33_inpainting_prompt'); if(!p) return null;
+    const s=curSet(); if(!s) return {cls:'fb-tip', msg:'💡 ระบุเลขที่นั่งก่อน เพื่อรับชื่อรุ่นรถที่ต้องใส่ในพรอมต์'};
+    const lp=p.toLowerCase();
+    if(s.carKeys.some(k=>lp.indexOf(k)>=0)) return {cls:'fb-ok', msg:'✓ ดี! พรอมต์ระบุรุ่นรถ '+s.car+' ตรงตามโจทย์'};
+    return {cls:'fb-warn', msg:'💡 อย่าลืมระบุรุ่นรถที่สุ่มให้: '+s.car+' ลงในพรอมต์ด้วย'};
+  }
+  function checkMotion(){
+    const p=txt('q34_video_prompt'); if(!p) return null;
+    const s=curSet(); if(!s) return {cls:'fb-tip', msg:'💡 ระบุเลขที่นั่งก่อน เพื่อรับทิศทางกล้องที่ต้องใช้'};
+    const lp=p.toLowerCase();
+    if(s.motionKeys.some(k=>lp.indexOf(k)>=0)) return {cls:'fb-ok', msg:'✓ พรอมต์มีคำสั่งกล้องตรงโจทย์: '+s.motion};
+    return {cls:'fb-warn', msg:'💡 โจทย์ของคุณคือ “'+s.motion+'” — ลองใส่คีย์เวิร์ดกล้อง เช่น '+s.motionHint};
+  }
+
+  /* ---- submission readiness panel ---- */
+  const ACTS=[
+    {name:'กิจกรรมที่ 1 · พรอมต์สร้างภาพ', slots:[['t','q31_prompt'],['i','q31_result_pic'],['t','q31_analysis']], tip:checkA1},
+    {name:'กิจกรรมที่ 2 · สัดส่วน & สไตล์', slots:[['s','q32_ratio'],['s','q32_style'],['t','q32_prompt']], tip:checkRatio},
+    {name:'กิจกรรมที่ 3 · Inpainting', slots:[['i','q33_inpainting_result'],['t','q33_inpainting_prompt'],['t','q33_tool_used']], tip:checkCar},
+    {name:'กิจกรรมที่ 4 · โมชันวิดีโอ', slots:[['t','q34_video_prompt'],['i','q34_video_result'],['t','q34_video_analysis']], tip:checkMotion},
+    {name:'กิจกรรมที่ 5 · แคมเปญสร้างสรรค์', slots:[['t','q35_product_name'],['t','q35_ratio_style'],['t','q35_image_prompt'],['i','q35_image_result'],['t','q35_video_prompt'],['i','q35_video_result'],['t','q35_concept_desc']], tip:null},
+    {name:'สะท้อนคิดท้ายคาบ', slots:[['t','q35_ref_ratio'],['t','q35_ref_ethics']], tip:null}
+  ];
+  function slotFilled(type,id){
+    if(type==='i') return imgs(id).length>=1;
+    if(type==='s') return txt(id)!=='';
+    return txt(id).length>=2;
+  }
+  function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function renderPanel(){
+    const rows=document.getElementById('check-rows'); if(!rows) return;
+    let done=0, total=0, html='';
+    ACTS.forEach(a=>{
+      let f=0; a.slots.forEach(sl=>{ total++; if(slotFilled(sl[0],sl[1])){ f++; done++; } });
+      const all=f===a.slots.length;
+      const ic = all ? '✅' : (f>0 ? '◑' : '○');
+      const tip = a.tip ? a.tip() : null;
+      const tipHtml = (tip && tip.cls==='fb-warn') ? `<span class="tip">${esc(tip.msg)}</span>` : '';
+      html += `<div class="check-row${all?' done':''}"><span class="ic">${ic}</span><span class="body"><span class="ttl">${esc(a.name)}</span> <span class="sub">(${f}/${a.slots.length})</span>${tipHtml}</span></div>`;
+    });
+    rows.innerHTML=html;
+    const bar=document.getElementById('prog-bar'), cnt=document.getElementById('prog-count'), msg=document.getElementById('check-msg');
+    const pct = total ? Math.round(done/total*100) : 0;
+    if(bar) bar.style.width = pct+'%';
+    if(cnt) cnt.textContent = done+' / '+total+' ช่อง ('+pct+'%)';
+    if(msg){
+      const name = txt('ws-name');
+      if(done===total && name) msg.textContent='🎉 เยี่ยมมาก! ใบงานครบทุกช่องแล้ว กดบันทึกเป็น PDF ส่งครูได้เลย';
+      else if(done===total && !name) msg.textContent='✅ ตอบครบแล้ว เหลือกรอกชื่อ–นามสกุลในสไลด์ที่ 2 ก่อนบันทึก';
+      else if(pct>=60) msg.textContent='เกือบครบแล้ว! เหลืออีก '+(total-done)+' ช่อง สู้ๆ 💪';
+      else if(done>0) msg.textContent='ทำไปแล้ว '+done+' จาก '+total+' ช่อง — ทำต่อให้ครบนะ';
+      else msg.textContent='กรอกใบงานให้ครบ ระบบจะตรวจและให้คำแนะนำอัตโนมัติ';
+    }
+  }
+
+  function runFeedback(){
+    setFbResult('fb_q31_prompt', checkA1());
+    setFbResult('fb_q32_ratio', checkRatio());
+    setFbResult('fb_q33_prompt', checkCar());
+    setFbResult('fb_q34_prompt', checkMotion());
+    renderPanel();
+  }
+
+  window.refreshFeedback = runFeedback;
+  document.addEventListener('input', e=>{ if(e.target.classList && e.target.classList.contains('save')) runFeedback(); });
+  document.addEventListener('change', e=>{ if(e.target.classList && e.target.classList.contains('save')) runFeedback(); });
+  if(window.Reveal) Reveal.on('slidechanged', runFeedback);
+  if(document.readyState!=='loading') runFeedback();
+  else document.addEventListener('DOMContentLoaded', runFeedback);
+})();
+</script>
+
+</body>
+</html>

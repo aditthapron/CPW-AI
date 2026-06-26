@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI for Ed — สัปดาห์ที่ 4: เครื่องมือ Generative AI (แชต · สร้างภาพ · วิดีโอ)</title>
+
+<!-- reveal.js core -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+<!-- Thai fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --ink: #1a2235; --muted: #5b6678; --line: #dfe4ec;
+  --blue: #1a73e8; --purple: #7b41d8; --teal: #0aa3a3;
+  --bg1: #f7f9fc; --card: #ffffff; --soft: #eef3fb;
+  --warn: #c2410c; --good: #0f8a4f;
+  --accent-grad: linear-gradient(90deg, var(--blue), var(--purple));
+}
+.reveal { font-family:'Sarabun','Noto Sans Thai','Outfit',sans-serif; color:var(--ink); font-size:28px; }
+.reveal .slides { text-align:left; }
+.reveal h1, .reveal h2, .reveal h3 { font-family:'Sarabun','Noto Sans Thai','Outfit',sans-serif; color:var(--ink); font-weight:700; text-transform:none; letter-spacing:0; line-height:1.35; }
+.reveal h1 { font-size:1.8em; margin-bottom: 0.5em; }
+.reveal h2 { font-size:1.35em; margin-bottom: 0.6em; }
+.reveal h3 { font-size:1.15em; color:var(--blue); margin-bottom: 0.4em; }
+.reveal p { line-height:1.75; margin-bottom: 0.7em; }
+.reveal ul { display:block; margin-bottom: 0.7em; }
+.reveal li { margin:.5em 0; line-height:1.65; }
+.reveal strong { color:var(--purple); }
+.reveal section { height:100%; overflow-y:auto; }
+.reveal section::-webkit-scrollbar { width:6px; }
+.reveal section::-webkit-scrollbar-track { background:transparent; }
+.reveal section::-webkit-scrollbar-thumb { background:var(--line); border-radius:99px; }
+.reveal section::-webkit-scrollbar-thumb:hover { background:var(--muted); }
+.reveal .slides section { padding:8px 20px; box-sizing:border-box; }
+.reveal h2 { margin-bottom:.4em; }
+
+/* accent header bar on each slide */
+.reveal .slides section > .kicker {
+  display:inline-block; font-size:.6em; font-weight:700; letter-spacing:.05em;
+  color:#fff; background:var(--accent-grad);
+  padding:.2em .9em; border-radius:999px; margin-bottom:.4em;
+}
+.reveal .q { background:var(--soft); border-left:5px solid var(--blue);
+  padding:.6em .9em; border-radius:10px; font-size:.9em; line-height:1.5; margin:.5em 0 .7em; }
+.reveal .note { color:var(--muted); font-size:.65em; }
+.reveal .rule { background:#fff6ed; border:1px solid #ffd8b8; color:var(--warn);
+  border-radius:10px; padding:.4em .8em; font-size:.78em; font-weight:600; }
+.reveal .good { color:var(--good); font-weight:700; }
+.reveal .warn { color:var(--warn); font-weight:600; }
+.reveal code { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; font-size:.85em;
+  background:var(--soft); color:var(--blue); padding:.06em .42em; border-radius:6px; white-space:nowrap; }
+.reveal a.tool { color:var(--blue); font-weight:700; text-decoration:underline; }
+
+/* title slide */
+.title-wrap { text-align:center; height:100%; display:flex; flex-direction:column;
+  justify-content:center; align-items:center; }
+.title-wrap .badge { font-size:.68em; color:#fff; background:var(--accent-grad);
+  padding:.3em 1.2em; border-radius:999px; font-weight:700; }
+.title-wrap h1 { background:var(--accent-grad);
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; margin:.2em 0; }
+.title-wrap .sub { font-size:1.0em; color:var(--ink); font-weight:600; }
+.title-wrap .meta { color:var(--muted); font-size:.75em; margin-top:.5em; }
+
+/* two-column helper */
+.cols { display:flex; gap:1.2em; align-items:flex-start; }
+.cols > div { flex:1; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:14px;
+  padding:.8em 1.0em; box-shadow:0 2px 8px rgba(20,30,60,.04); line-height:1.5; }
+.card h3 { margin-top:0; }
+.pill { display:inline-block; background:var(--soft); color:var(--blue);
+  border-radius:8px; padding:.08em .5em; font-size:.78em; font-weight:600; margin:.1em; }
+.pill.free { background:#eafaf1; color:#0f6b3f; }
+
+/* table styling inside reveal */
+.reveal table { width:100%; border-collapse:collapse; margin:.5em 0; font-size:.7em; }
+.reveal th { background:var(--soft); font-weight:700; border:1px solid var(--line); padding:6px 12px; }
+.reveal td { border:1px solid var(--line); padding:6px 12px; }
+
+/* worksheet fields */
+.ws-label { display:block; font-size:.7em; font-weight:700; color:var(--muted);
+  margin:.4em 0 .15em; }
+textarea.ws-field, input.save, select.save {
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:.7em; color:var(--ink);
+  width:100%; border:1.5px solid var(--line); border-radius:10px; padding:.5em .7em;
+  background:#fcfdff; box-sizing:border-box; resize:vertical !important; overflow:auto !important; }
+textarea.ws-field { min-height:120px; line-height:1.5; }
+textarea.ws-field:focus, input.save:focus, select.save:focus { outline:none; border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(26,115,232,.12); }
+input.save { height:auto; }
+select.save { height:auto; padding:.4em .6em; }
+
+/* thin scrollbar for all textareas */
+textarea::-webkit-scrollbar { width: 5px; }
+textarea::-webkit-scrollbar-track { background: transparent; }
+textarea::-webkit-scrollbar-thumb { background: var(--line); border-radius: 99px; }
+textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+.info-grid { display:grid; grid-template-columns:1fr; gap:.3em; max-width:620px; }
+.info-row { display:flex; gap:.8em; }
+.info-row > div { flex:1; }
+
+/* download button (floating) */
+#dlbtn { position:fixed; top:14px; right:16px; z-index:60;
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:15px; font-weight:700;
+  color:#fff; background:var(--accent-grad);
+  border:none; border-radius:999px; padding:10px 18px; cursor:pointer;
+  box-shadow:0 4px 14px rgba(76,40,160,.3); display:none; }
+#dlbtn:hover { filter:brightness(1.05); }
+#dlbtn:active { transform:translateY(1px); }
+#savehint { position:fixed; top:54px; right:18px; z-index:60; font-size:11px;
+  color:var(--good); font-family:'Sarabun',sans-serif; opacity:0; transition:opacity .3s; }
+.dlbig { font-size:.9em; font-weight:700; color:#fff;
+  background:var(--accent-grad); border:none;
+  border-radius:12px; padding:.5em 1.1em; cursor:pointer; box-shadow:0 4px 14px rgba(76,40,160,.25);
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; }
+
+/* assignment print area — hidden on screen, shown only when printing */
+#print-area { display:none; }
+.pdf-doc { font-family:'Sarabun','Noto Sans Thai',sans-serif; color:#11131a; padding:6px 4px; }
+.pdf-doc h1 { font-size:22px; margin:0 0 4px; color:#1a73e8; }
+.pdf-doc .pdf-meta { display:flex; gap:18px; font-size:13px; border-bottom:2px solid #1a73e8;
+  padding-bottom:8px; margin-bottom:12px; flex-wrap:wrap; }
+.pdf-doc h2 { font-size:15px; margin:16px 0 6px; color:#7b41d8; border-left:4px solid #7b41d8; padding-left:8px; }
+.pdf-item { margin:8px 0; page-break-inside:avoid; }
+.pdf-label { font-size:12.5px; font-weight:700; color:#333; margin-bottom:3px; }
+.pdf-answer { font-size:12.5px; line-height:1.5; border:1px solid #c9d2e0; border-radius:6px;
+  padding:7px 9px; white-space:pre-wrap; min-height:18px; background:#fbfcfe; }
+.pdf-answer .empty { color:#aab2c0; }
+@page { size:A4; margin:14mm; }
+@media print {
+  body.printing > *:not(#print-area) { display:none !important; }
+  body.printing #print-area { display:block !important; }
+  body.printing { background:#fff !important; }
+}
+.pdf-imgs img { display:block; max-width:100%; max-height:420px; margin-top:6px;
+  border:1px solid #c9d2e0; border-radius:6px; page-break-inside:avoid; }
+
+/* image attach / paste helper */
+.img-btn { display:inline-flex; align-items:center; gap:.3em; margin-top:.35em;
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:.6em; font-weight:700;
+  color:var(--blue); background:var(--soft); border:1.5px solid #cfe0fb;
+  border-radius:999px; padding:.4em .9em; cursor:pointer; }
+.img-btn:hover { filter:brightness(.98); }
+.img-hint { font-size:.55em; color:var(--muted); margin-left:.55em; }
+.img-tray { display:flex; flex-wrap:wrap; gap:.5em; margin-top:.4em; }
+.img-thumb { position:relative; width:96px; height:96px; border:1px solid var(--line);
+  border-radius:8px; overflow:hidden; background:#fafbff; }
+.img-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+.img-thumb .rm { position:absolute; top:2px; right:2px; width:20px; height:20px;
+  border:none; border-radius:50%; background:rgba(20,30,60,.7); color:#fff;
+  font-size:13px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.img-thumb .rm:hover { background:var(--warn); }
+
+/* ---- live inline feedback ---- */
+.fb { font-size:.62em; line-height:1.45; margin-top:.35em; padding:.4em .65em; border-radius:9px; display:none; }
+.fb.show { display:block; }
+.fb-ok   { background:#eafaf1; color:#0f6b3f; border:1px solid #b8e6cd; }
+.fb-warn { background:#fff4ec; color:#b4480c; border:1px solid #ffd2b3; }
+.fb-tip  { background:#eef3fb; color:#2a4a86; border:1px solid #cfe0fb; }
+
+/* ---- submission readiness panel ---- */
+.check-panel { max-width:780px; margin:0.3em auto 0; }
+.prog-meta { display:flex; justify-content:space-between; font-size:.64em; color:var(--muted);
+  font-weight:700; margin:.2em .2em .35em; }
+.prog-wrap { background:var(--soft); border-radius:999px; height:15px; overflow:hidden; border:1px solid var(--line); }
+.prog-bar  { height:100%; width:0%; border-radius:999px; background:var(--accent-grad); transition:width .35s ease; }
+.check-msg { text-align:center; font-size:.74em; font-weight:700; margin:.5em 0 .55em; color:var(--ink); }
+.check-grid { display:grid; grid-template-columns:1fr 1fr; gap:.4em; }
+.check-row { display:flex; align-items:flex-start; gap:.5em; font-size:.66em; line-height:1.4;
+  padding:.4em .65em; border:1px solid var(--line); border-radius:10px; background:#fff; }
+.check-row .ic { font-size:1.1em; line-height:1.3; flex:0 0 auto; }
+.check-row .body { flex:1; min-width:0; }
+.check-row .ttl { font-weight:700; color:var(--ink); }
+.check-row .sub { color:var(--muted); font-size:.92em; }
+.check-row .tip { display:block; color:#b4480c; font-size:.92em; margin-top:.15em; }
+.check-row.done { background:#f4fbf7; border-color:#cdeadb; }
+</style>
+</head>
+<body>
+
+<button id="dlbtn" onclick="downloadPDF()">⬇ บันทึกใบงานเป็น PDF</button>
+<div id="savehint">บันทึกแล้ว ✓</div>
+
+<div class="reveal"><div class="slides">
+
+<!-- 1 TITLE -->
+<section>
+  <div class="title-wrap">
+    <span class="badge">AI for Ed · สัปดาห์ที่ 4</span>
+    <h1>เครื่องมือ Generative AI: แชต · สร้างภาพ · วิดีโอ</h1>
+  </div>
+</section>
+
+<!-- 2 STUDENT INFO -->
+<section>
+  <span class="kicker">เริ่มต้นคลาส</span>
+  <h2>ระบุข้อมูลผู้เรียน</h2>
+  <div class="info-grid">
+    <div class="info-row">
+      <div>
+        <span class="ws-label">ชื่อ–นามสกุล คนที่ 1</span>
+        <input class="save" id="ws-name1" type="text" placeholder="เช่น นายสมชาย ตั้งใจเรียน">
+      </div>
+      <div>
+        <span class="ws-label">ชื่อ–นามสกุล คนที่ 2 (ถ้ามี)</span>
+        <input class="save" id="ws-name2" type="text" placeholder="เช่น นางสาวสมศรี รักเรียน">
+      </div>
+    </div>
+    <div class="info-row">
+      <div><span class="ws-label">ชั้น</span><input class="save" id="ws-class" type="text" placeholder="ม.6/2"></div>
+      <div><span class="ws-label">เลขที่นั่งสอบ/เรียน</span><input class="save" id="ws-no" type="text" placeholder="ระบุตัวเลข เช่น 15"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Sections Removed -->
+
+<!-- ===================== PART A: LLM PLAYGROUND ===================== -->
+
+<!-- 5 LECTURE A INTRO -->
+<section>
+  <span class="kicker">ช่วง A · เครื่องมือที่ใช้</span>
+  <h2>LLM Playground</h2>
+  <table style="font-size:0.6em;">
+    <thead><tr><th>ทักษะ</th><th>เครื่องมือหลัก (ไม่ต้องสมัคร)</th></tr></thead>
+    <tbody>
+      <tr><td>คุยกับ AI · ปรับ Temperature · ตั้ง System Prompt</td><td><b>HuggingChat</b> — huggingface.co/chat (โหมด guest) หรือ <b>Gradio Chat Space</b> ที่มีแถบ Temperature/System</td></tr>
+      <tr><td>เทียบรุ่นโมเดล เร็ว vs เก่ง</td><td><b>LMArena</b> — lmarena.ai (โหมด Direct Chat คู่กัน)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 6 LECTURE A1: TEMPERATURE -->
+<section>
+  <span class="kicker">แนวคิด A1: ความสุ่มของคำตอบ</span>
+  <h2>Temperature — ปุ่มปรับ “ความสร้างสรรค์”</h2>
+  <div class="cols">
+    <div style="flex:1.2;">
+      <p style="font-size:0.8em; line-height:1.6;">Temperature คือค่าที่บอก AI ว่าจะ “เดาคำถัดไป” อย่างปลอดภัยหรือกล้าเสี่ยงแค่ไหน</p>
+      <ul style="font-size:0.72em; line-height:1.6; padding-left:1.1em;">
+        <li><b>ค่าต่ำ (~0.2):</b> คำตอบนิ่ง คาดเดาได้ ซ้ำเดิม — เหมาะกับงานที่ต้องการความถูกต้อง</li>
+        <li><b>ค่าสูง (~1.2–1.5):</b> คำตอบหลากหลาย แปลกใหม่ บางทีเพี้ยน — เหมาะกับงานสร้างสรรค์</li>
+      </ul>
+      <div class="card" style="border-left:5px solid var(--teal); font-size:0.66em; line-height:1.5;">
+        <b style="color:var(--teal)">💡 ถ้าเครื่องมือไม่มีแถบ Temperature:</b>
+        <p style="margin:.2em 0 0; color:var(--muted)">ให้เลียนแบบแนวคิดได้ 2 วิธี — (1) รันโจทย์เดิม <b>ซ้ำ 3 ครั้ง</b> ดูว่าคำตอบต่างกันไหม และ (2) สั่งตรงๆ ว่า <i>“ตอบแบบจำเจตรงไปตรงมา”</i> เทียบกับ <i>“ตอบแบบสร้างสรรค์สุดขั้ว แปลกใหม่”</i></p>
+      </div>
+    </div>
+    <div style="flex:1.0; text-align:center;">
+      <img src="images/ai_temperature.png" style="max-height: 330px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 1em;">
+      <div class="card" style="text-align:center; background:linear-gradient(135deg,var(--soft),#fff);">
+        <div style="font-size:.66em; color:var(--muted); margin-bottom:.3em;">ความน่าจะเป็นของคำถัดไป</div>
+        <div style="font-size:.62em; text-align:left; line-height:1.7;">
+          <b style="color:var(--blue)">Temp ต่ำ</b> → 🟦🟦🟦🟦⬜⬜ เลือกคำเดิมเกือบทุกครั้ง<br>
+          <b style="color:var(--purple)">Temp สูง</b> → 🟪🟦🟩🟧🟥🟨 กระจายเลือกได้หลายคำ
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 ACT A1 -->
+<section>
+  <span class="kicker">กิจกรรม A1 (⏱ 14 นาที)</span>
+  <h2>กิจกรรม A1: ทดลองปรับ Temperature</h2>
+  <div class="cols">
+    <div style="flex:1.4;">
+      <p style="font-size:0.8em;">เปิด <a class="tool" href="https://huggingface.co/chat" target="_blank">HuggingChat</a> (หรือ Gradio Chat Space ที่ครูแชร์) แล้วใช้โจทย์สร้างสรรค์ประจำตัวของคุณ รันที่ค่า Temperature <b>ต่ำ</b> และ <b>สูง</b> อย่างละ 2–3 ครั้ง</p>
+      <div class="rule" style="font-size:0.7em; line-height:1.6;">
+        ⚙️ ขั้นตอน:<br>
+        1. โจทย์ของคุณ: <b data-var="poemKind">...</b> เกี่ยวกับ “<b data-var="poemTopic">...</b>”<br>
+        2. รันที่ Temp ต่ำ (~0.2) — บันทึกผล<br>
+        3. รันที่ Temp สูง (~1.3) ซ้ำ 2–3 ครั้ง — บันทึกผล<br>
+        4. เปรียบเทียบว่าต่างกันอย่างไร
+      </div>
+    </div>
+    <div style="flex:1.0;">
+      <div class="card" style="border-left:5px solid var(--teal); min-height:120px;">
+        <h3 style="font-size:.92em; color:var(--teal); margin:0;">📌 โจทย์สร้างสรรค์ของคุณ</h3>
+        <p class="good" id="aA1-topic" style="font-size:.8em; margin:.3em 0;">— (ระบุเลขที่นั่งก่อน)</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7b ACT A1 WORKSPACE -->
+<section>
+  <h3>ข้อ A1 — ผลการปรับ Temperature</h3>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.0em; align-items:start;">
+    <div>
+      <span class="ws-label">🔵 1. ผลที่ Temperature ต่ำ (~0.2):</span>
+      <textarea class="save ws-field" id="q_a1_low" data-group="A1: ปรับ Temperature" data-label="A1.1 — ผลที่ Temp ต่ำ" style="height:120px;" placeholder="คัดลอกคำตอบ/บทประพันธ์ที่ได้จากค่า Temp ต่ำมาวางที่นี่..."></textarea>
+    </div>
+    <div>
+      <span class="ws-label">🟣 2. ผลที่ Temperature สูง (~1.3) — รัน 2–3 ครั้ง:</span>
+      <textarea class="save ws-field" id="q_a1_high" data-group="A1: ปรับ Temperature" data-label="A1.2 — ผลที่ Temp สูง" style="height:120px;" placeholder="คัดลอกคำตอบหลายๆ รอบจากค่า Temp สูงมาวางที่นี่..."></textarea>
+    </div>
+  </div>
+  <span class="ws-label">✏️ 3. สรุปความแตกต่าง (ความนิ่ง/ความหลากหลาย/ความเพี้ยน):</span>
+  <textarea class="save ws-field" id="q_a1_compare" data-group="A1: ปรับ Temperature" data-label="A1.3 — สรุปเปรียบเทียบ Temp ต่ำ vs สูง" style="height:120px;" placeholder="ตัวอย่าง: Temp ต่ำได้คำตอบคล้ายเดิมทุกครั้ง สัมผัสซ้ำ ส่วน Temp สูงแต่ละรอบเปลี่ยนคำเยอะ มีคำแปลกใหม่แต่บางครั้งหลุดสัมผัส..."></textarea>
+  <div class="fb" id="fb_q_a1_compare"></div>
+</section>
+
+<!-- 8 LECTURE A2: SYSTEM PROMPT -->
+<section>
+  <span class="kicker">แนวคิด A2: ตั้งกฎให้ AI</span>
+  <h2>System Prompt — กำหนด “บทบาท” ของ AI</h2>
+  <p style="font-size:0.8em; line-height:1.6;">System Prompt คือคำสั่งระดับบนสุดที่บอก AI ว่า “คุณคือใคร ต้องตอบสไตล์ไหน” ก่อนผู้ใช้จะถามคำถามจริง ทำให้คุมพฤติกรรม/บุคลิกของ AI ได้</p>
+  <div class="cols">
+    <div>
+      <div class="card" style="border-left:5px solid var(--blue); font-size:0.68em; line-height:1.5;">
+        <b style="color:var(--blue)">🅰 ถ้าเครื่องมือมีช่อง System message</b> (เช่น Gradio Chat Space) — พิมพ์บทบาทลงช่องนั้นตรงๆ
+      </div>
+    </div>
+    <div>
+      <div class="card" style="border-left:5px solid var(--purple); font-size:0.68em; line-height:1.5;">
+        <b style="color:var(--purple)">🅱 ถ้าไม่มีช่อง</b> (เช่น HuggingChat guest) — พิมพ์บรรทัดแรกว่า <i>“ตั้งแต่นี้ไปคุณคือ … ให้ตอบทุกคำถามในบทบาทนี้”</i> แล้วค่อยถามต่อ
+      </div>
+    </div>
+  </div>
+  <div class="rule" style="font-size:0.7em;">⚖️ ทดสอบ: ถามคำถามเดิม 1 ข้อ — ครั้งแรก<b>ไม่ตั้ง</b>บทบาท ครั้งที่สอง<b>ตั้ง</b>บทบาท แล้วดูว่าน้ำเสียง/คำตอบเปลี่ยนไหม</div>
+  <div style="text-align:center; margin-top: 0.8em;"><img src="images/system_prompt_hats.png" style="max-height: 330px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"></div>
+</section>
+
+<!-- 8b ACT A2 WORKSPACE -->
+<section>
+  <span class="kicker">กิจกรรม A2 (⏱ 10 นาที)</span>
+  <h3>ข้อ A2 — ตั้ง System Prompt ตามบทบาทที่สุ่มให้</h3>
+  <p class="q">บทบาทของคุณ: <b data-var="roleScenario">...</b></p>
+  <p style="font-size:0.75em; margin-bottom:0.65em; line-height:1.5;"><b>คำสั่ง:</b> นำบทบาทด้านบนไปตั้งเป็น System Prompt (หรือสั่งตั้งบทบาทในบรรทัดแรก) จากนั้นถามคำถามทดสอบทั่วไป 1 ข้อ เช่น <i>“อธิบายว่าฝนตกได้อย่างไร”</i> หรือ <i>“ขอไอเดียอาหารเย็น”</i> สังเกตและเปรียบเทียบคำตอบของ AI ก่อนและหลังตั้งบทบาท</p>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.0em; align-items:start;">
+    <div>
+      <span class="ws-label">✏️ 1. System Prompt / บรรทัดตั้งบทบาทที่คุณพิมพ์:</span>
+      <textarea class="save ws-field" id="q_a2_system" data-group="A2: ตั้ง System Prompt" data-label="A2.1 — System Prompt ที่ใช้" style="height:120px; font-weight:600; color:var(--blue);" placeholder="เช่น: ตั้งแต่นี้ไปคุณคือติวเตอร์ฟิสิกส์ที่อธิบายเป็นขั้นตอนและยกตัวอย่างในชีวิตประจำวันเสมอ..."></textarea>
+      <div class="fb" id="fb_q_a2_system"></div>
+    </div>
+    <div>
+      <span class="ws-label">✏️ 2. AI เปลี่ยนพฤติกรรมอย่างไร (เทียบก่อน/หลังตั้งบทบาท):</span>
+      <textarea class="save ws-field" id="q_a2_result" data-group="A2: ตั้ง System Prompt" data-label="A2.2 — พฤติกรรม AI หลังตั้งบทบาท" style="height:120px;" placeholder="ตัวอย่าง: ก่อนตั้งบทบาท AI ตอบกลางๆ พอตั้งให้เป็นติวเตอร์ฟิสิกส์ มันเริ่มแบ่งเป็นขั้นตอน 1-2-3 และยกตัวอย่างรถ/ลูกบอลทันที..."></textarea>
+    </div>
+  </div>
+</section>
+
+<!-- 9 LECTURE A3: MODEL COMPARE -->
+<section>
+  <span class="kicker">แนวคิด A3: ไม่ใช่ทุกโมเดลเก่งเท่ากัน</span>
+  <h2>เทียบโมเดล “เร็ว” vs “เก่ง” ด้วย LMArena</h2>
+  <div class="cols">
+    <div style="flex:1.2;">
+      <p style="font-size:0.8em; line-height:1.6;">โมเดลรุ่นเล็ก/เร็ว ตอบไว ประหยัด แต่ตรรกะอาจพลาด ส่วนรุ่นใหญ่/เก่ง คิดลึกกว่าแต่ช้ากว่า</p>
+      <p style="font-size:0.74em; line-height:1.6;">เปิด <a class="tool" href="https://lmarena.ai" target="_blank">LMArena (lmarena.ai)</a> เลือกโหมด <b>Direct Chat</b> ที่เปิดสองโมเดลคู่กัน เลือกรุ่นเล็กไว้ข้างหนึ่ง รุ่นใหญ่อีกข้าง แล้วถามโจทย์ตรรกะเดียวกัน</p>
+    </div>
+    <div style="flex:1.0; text-align:center;">
+      <img src="images/model_compare.png" style="max-height: 330px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 1em;">
+      <div class="card" style="border-top:4px solid var(--blue); font-size:0.66em; line-height:1.55;">
+        <b>👀 สังเกต 3 อย่าง:</b>
+        <ul style="margin:.2em 0 0; padding-left:1.1em;">
+          <li>คำตอบ <b>ถูก</b> ไหม?</li>
+          <li><b>เร็ว</b> ต่างกันแค่ไหน?</li>
+          <li>วิธี <b>อธิบายเหตุผล</b> ละเอียดต่างกันอย่างไร?</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 9b ACT A3 WORKSPACE -->
+<section>
+  <span class="kicker">กิจกรรม A3 (⏱ 12 นาที)</span>
+  <h3>ข้อ A3 — เทียบโมเดลด้วยโจทย์ตรรกะ</h3>
+  <p class="q">โจทย์ตรรกะของคุณ: <b data-var="reasonTask">...</b></p>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.0em; align-items:start;">
+    <div>
+      <span class="ws-label">⚡ 1. คำตอบจากโมเดล “เร็ว/เล็ก” (+ ความเร็วโดยประมาณ):</span>
+      <textarea class="save ws-field" id="q_a3_fast" data-group="A3: เทียบโมเดล" data-label="A3.1 — คำตอบโมเดลเร็ว/เล็ก" style="height:110px;" placeholder="ระบุชื่อรุ่นที่เลือก + คำตอบ + รู้สึกเร็วแค่ไหน..."></textarea>
+    </div>
+    <div>
+      <span class="ws-label">🧠 2. คำตอบจากโมเดล “เก่ง/ใหญ่”:</span>
+      <textarea class="save ws-field" id="q_a3_strong" data-group="A3: เทียบโมเดล" data-label="A3.2 — คำตอบโมเดลเก่ง/ใหญ่" style="height:110px;" placeholder="ระบุชื่อรุ่นที่เลือก + คำตอบ..."></textarea>
+    </div>
+  </div>
+  <span class="ws-label">✏️ 3. สรุป: รุ่นไหนตอบดีกว่า/ถูกกว่า เพราะอะไร และแลกกับความเร็วอย่างไร:</span>
+  <textarea class="save ws-field" id="q_a3_compare" data-group="A3: เทียบโมเดล" data-label="A3.3 — สรุปเปรียบเทียบโมเดล" style="height:110px;" placeholder="ตัวอย่าง: รุ่นเล็กตอบไวแต่คิดเลขผิดขั้นตอนหนึ่ง รุ่นใหญ่ช้ากว่าเล็กน้อยแต่แสดงวิธีคิดครบและได้คำตอบถูก..."></textarea>
+</section>
+
+<!-- Section A4 Removed -->
+
+<!-- Sections A5 & Break Removed -->
+<!-- ===================== PART B: IMAGE & VIDEO ===================== -->
+
+<!-- 13 LECTURE B INTRO -->
+<section>
+  <span class="kicker">ช่วง B · เครื่องมือที่ใช้</span>
+  <h2>สร้างภาพ & วิดีโอ แบบไม่ต้องล็อกอิน</h2>
+  <table style="font-size:0.62em;">
+    <thead><tr><th>ทักษะ</th><th>เครื่องมือหลัก (ไม่ต้องสมัคร)</th><th>ตัวสำรอง</th></tr></thead>
+    <tbody>
+      <tr><td>สร้างภาพจากข้อความ</td><td><b>Perchance</b> — perchance.org/ai-text-to-image-generator (ทำงานในเครื่อง ไม่ต้องรอคิว)</td><td><b>Pollinations</b> — pollinations.ai</td></tr>
+      <tr><td>แก้ไขภาพ / Inpainting</td><td><b>Cleanup.pictures</b> (ลบวัตถุ + เติมพื้นหลัง)</td><td><b>FlatAI</b> — flatai.org (สั่งแทนที่ด้วยข้อความ)</td></tr>
+      <tr><td>ภาพนิ่ง → วิดีโอ</td><td><b>EaseMate</b></td><td>-</td></tr>
+      <tr><td>สร้างสื่อนำเสนอ/กราฟิก</td><td><b>Napkin.ai / Gamma</b> (ร่างเนื้อหาด้วย Gemini ก่อน)</td><td>-</td></tr>
+    </tbody>
+  </table>
+  <p class="note">⚠️ เครื่องมือสร้างวิดีโอฟรีคุม “ทิศทางกล้อง” ได้จำกัด — ส่วนใหญ่ขยับให้อัตโนมัติ เราจะ “สั่ง + สังเกตผล” เป็นหลัก</p>
+</section>
+
+<!-- 14 LECTURE B1: PROMPT FORMULA -->
+<section>
+  <span class="kicker">แนวคิด B1: สูตรคำสั่งสร้างภาพ</span>
+  <h2>Concept หลัก</h2>
+  <div class="cols">
+    <div style="flex:1.2;">
+      <ul style="font-size:0.74em; line-height:1.6; padding-left:1.1em;">
+        <li><b>1. Subject (วัตถุหลัก):</b> สิ่งที่อยากให้อยู่ในภาพ</li>
+        <li><b>2. Style (สไตล์ศิลปะ):</b> เช่น photorealistic, watercolor, claymation</li>
+        <li><b>3. Details (รายละเอียดฉาก):</b> ฉากหลัง สถานที่ องค์ประกอบ</li>
+        <li><b>4. Lighting (แสงเงา):</b> soft morning light, neon, studio lighting</li>
+        <li><b>5. Camera (มุมกล้อง):</b> wide-angle, bird's eye, close-up</li>
+      </ul>
+    </div>
+    <div style="flex:1.0; text-align:center;">
+      <img src="images/prompt_formula.png" style="max-height: 220px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 1em;">
+      <div class="card" style="border-left:5px solid var(--warn); background:#fffcf8; font-size:0.66em; line-height:1.5;">
+        <b class="warn">💡 พิมพ์เป็นภาษาอังกฤษ</b> โมเดลสร้างภาพเข้าใจอังกฤษแม่นสุด — คิดไม่ออกให้ HuggingChat ช่วยแปล/เรียบเรียงพรอมต์ตามสูตรก่อนได้
+      </div>
+      <div class="card" style="margin-top:.5em; font-size:0.62em; color:var(--muted); line-height:1.5;">
+        <b style="color:var(--ink)">ตัวอย่าง:</b> <span style="font-family:ui-monospace,monospace; color:var(--purple)">"A claymation flying electric car over a Bangkok night market, neon lighting, wide-angle shot"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 14b ACT B1 -->
+<section>
+  <span class="kicker">กิจกรรม B1 (⏱ 18 นาที)</span>
+  <h3>ข้อ B1 — สร้างภาพ “รถยนต์ไฟฟ้าบินได้” ตามสไตล์ที่สุ่มให้</h3>
+  <p class="q">สไตล์ของคุณ: <b data-var="imgStyle">...</b> · เปิด <a class="tool" href="https://perchance.org/ai-text-to-image-generator" target="_blank">Perchance</a></p>
+  <p style="font-size:0.75em; margin-bottom:0.65em; line-height:1.5;"><b>คำสั่ง:</b> ใช้เครื่องมือ Perchance เขียนคำสั่งภาษาอังกฤษ (Prompt) เพื่อเจนภาพ <b>รถยนต์ไฟฟ้าบินได้ (flying electric car)</b> ตามสไตล์ที่สุ่มให้ด้านบน โดยประยุกต์ใช้สูตรพรอมต์ 5 แกน (Subject, Style, Details, Lighting, Camera) แล้วนำรูปผลงานมาวางส่ง</p>
+  <div style="display:grid; grid-template-columns:1.1fr 1fr; gap:1.0em; align-items:start;">
+    <div>
+      <span class="ws-label">✏️ 1. พรอมต์ภาษาอังกฤษ (ครบสูตร Style + Lighting/Details):</span>
+      <textarea class="save ws-field" id="q_b1_prompt" data-group="B1: สร้างภาพด้วยสูตรพรอมต์" data-label="B1.1 — พรอมต์สร้างภาพ" style="height:130px; font-weight:600; color:var(--blue);" placeholder="เช่น: A futuristic flying electric car, claymation style, over a Bangkok night market, warm neon lighting, wide-angle shot"></textarea>
+      <div class="fb" id="fb_q_b1_prompt"></div>
+    </div>
+    <div>
+      <span class="ws-label">📸 2. แนบภาพผลงานที่เจนได้:</span>
+      <textarea class="save ws-field" id="q_b1_img" data-group="B1: สร้างภาพด้วยสูตรพรอมต์" data-label="B1.2 — ภาพผลงานที่สร้าง" style="height:90px;" placeholder="คัดลอกภาพแล้ววาง (Ctrl/⌘ + V) หรือกดแนบไฟล์รูป..."></textarea>
+      <div id="q_b1_img_img_tray" class="img-tray"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 15 LECTURE B2: ASPECT RATIO -->
+<section>
+  <span class="kicker">แนวคิด B2: สัดส่วน & สไตล์</span>
+  <h2>เลือกสัดส่วนภาพให้ตรงกับสื่อ</h2>
+  <table style="font-size:0.62em;">
+    <thead><tr><th>สัดส่วน</th><th>ลักษณะ</th><th>เหมาะกับ</th></tr></thead>
+    <tbody>
+      <tr><td><b>16:9 / 21:9</b></td><td>แนวนอนกว้าง</td><td>ปก YouTube, แบนเนอร์, บิลบอร์ด</td></tr>
+      <tr><td><b>9:16</b></td><td>แนวตั้ง</td><td>TikTok, IG/FB Story, Shorts</td></tr>
+      <tr><td><b>1:1</b></td><td>จตุรัส</td><td>โปรไฟล์, ปกเพลง, โพสต์ IG</td></tr>
+      <tr><td><b>4:3 / 3:2</b></td><td>คลาสสิก</td><td>ภาพสารคดี, นิตยสารกระดาษ</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:0.7em;" class="note">สัดส่วนผิด = ภาพโดนบีบ/มีแถบดำ ดูไม่โปร และคนเลื่อนผ่านทันที · ใน Perchance เลือกปุ่ม Aspect Ratio หรือใส่คีย์เวิร์ด เช่น <code>9:16 aspect ratio</code></p>
+</section>
+
+<!-- 15b ACT B2 -->
+<section>
+  <span class="kicker">กิจกรรม B2 (⏱ 12 นาที)</span>
+  <h3>ข้อ B2 — แมตช์สัดส่วน & สไตล์ให้ตรงโจทย์สื่อ</h3>
+  <div class="card" style="border-left:5px solid var(--purple); background:#fbf9ff; font-size:0.72em; margin-bottom:.5em;">
+    <b style="color:var(--purple)">📰 โจทย์สื่อของคุณ:</b> <span class="warn" id="aB2-scenario">— (ระบุเลขที่นั่งก่อน)</span>
+  </div>
+  <p style="font-size:0.75em; margin-bottom:0.65em; line-height:1.5;"><b>คำสั่ง:</b> พิจารณาโจทย์สื่อประจำตัวด้านบน แล้วจับคู่เลือกสัดส่วนและสไตล์ภาพที่ถูกต้อง จากนั้นร่างพรอมต์ภาษาอังกฤษสำหรับโจทย์นั้นเพื่อใช้สร้างรูปภาพ</p>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.0em; align-items:start;">
+    <div>
+      <span class="ws-label">📐 1. สัดส่วน (Aspect Ratio) ที่เหมาะที่สุด:</span>
+      <select class="save ws-field" id="q_b2_ratio" data-group="B2: สัดส่วน & สไตล์" data-label="B2.1 — สัดส่วนที่เลือก" style="height:40px; font-weight:700; color:var(--blue);">
+        <option value="">-- เลือกสัดส่วน --</option>
+        <option value="16:9 แนวนอน (Widescreen)">16:9 แนวนอน (Widescreen)</option>
+        <option value="9:16 แนวตั้ง (Portrait)">9:16 แนวตั้ง (Portrait)</option>
+        <option value="1:1 สี่เหลี่ยมจตุรัส (Square)">1:1 สี่เหลี่ยมจตุรัส (Square)</option>
+        <option value="4:3 คลาสสิกเฟรม (Classic)">4:3 คลาสสิกเฟรม (Classic)</option>
+      </select>
+      <div class="fb" id="fb_q_b2_ratio"></div>
+      <span class="ws-label" style="margin-top:.5em;">🎨 2. สไตล์ภาพที่เลือก:</span>
+      <select class="save ws-field" id="q_b2_style" data-group="B2: สัดส่วน & สไตล์" data-label="B2.2 — สไตล์ที่เลือก" style="height:40px; font-weight:700; color:var(--purple);">
+        <option value="">-- เลือกสไตล์ --</option>
+        <option value="Photorealistic (ภาพถ่ายจริง)">Photorealistic (ภาพถ่ายจริง)</option>
+        <option value="3D Isometric Render">3D Isometric Render</option>
+        <option value="Watercolor (สีน้ำ)">Watercolor (สีน้ำ)</option>
+        <option value="Anime / Ghibli">Anime / Ghibli</option>
+        <option value="Minimal Flat Illustration">Minimal Flat Illustration</option>
+      </select>
+    </div>
+    <div>
+      <span class="ws-label">✏️ 3. ร่างพรอมต์ภาษาอังกฤษ (ระบุสัดส่วน + สไตล์):</span>
+      <textarea class="save ws-field" id="q_b2_prompt" data-group="B2: สัดส่วน & สไตล์" data-label="B2.3 — ร่างพรอมต์สำหรับโจทย์สื่อ" style="height:150px;" placeholder="เช่น: A professional photorealistic studio shot of an organic strawberry juice carton, water droplets, 9:16 aspect ratio, soft studio lighting..."></textarea>
+    </div>
+  </div>
+</section>
+
+<!-- 16 LECTURE B3: INPAINTING -->
+<section>
+  <span class="kicker">แนวคิด B3: แก้ไขภาพเฉพาะจุด</span>
+  <h2>Inpainting — ลบ/แทนที่วัตถุ ให้แสงเงากลมกลืน</h2>
+  <div class="cols">
+    <div style="flex:1.2;">
+      <p style="font-size:0.78em; line-height:1.6;">Inpainting คือการระบายเลือกบริเวณหนึ่งของภาพ แล้วให้ AI ลบของเดิม + เติมพื้นหลัง/วัตถุใหม่ โดย<b>คำนวณทิศทางแสงและเงา</b>ให้เนียนกับภาพเดิม</p>
+      <ul style="font-size:0.7em; line-height:1.55; padding-left:1.1em;">
+        <li><b><a class="tool" href="https://cleanup.pictures" target="_blank">Cleanup.pictures</a>:</b> ระบายทับวัตถุที่ไม่ต้องการ → AI ลบออกแล้วเติมพื้นหลังให้</li>
+        <li><b><a class="tool" href="https://flatai.org" target="_blank">FlatAI</a>:</b> สั่งด้วยข้อความ เช่น “เปลี่ยนรถตู้เป็นรถ EV สีฟ้า” (ตัวเลือกเสริม)</li>
+      </ul>
+    </div>
+    <div style="flex:1.0; text-align:center;">
+      <img src="images/inpainting.png" style="max-height: 220px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 1em;">
+      <div class="card" style="border-top:4px solid var(--teal); font-size:0.64em; line-height:1.5;">
+        <b style="color:var(--teal)">🖌️ เคล็ดลับ</b> ระบายให้คลุม<b>เงาด้านล่าง</b>ของวัตถุเดิมด้วย เพื่อให้ AI ลบเงาเก่าทิ้งและสร้างเงาใหม่ให้ถูกทิศ
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 16b ACT B3 -->
+<section>
+  <span class="kicker">กิจกรรม B3 (⏱ 22 นาที)</span>
+  <h3>ข้อ B3 — แก้ไขภาพถนน: ลบ (และลองแทนที่) วัตถุ</h3>
+  <p class="q">งานของคุณ: <b data-var="editTask">...</b></p>
+  <p style="font-size:0.75em; margin-bottom:0.65em; line-height:1.5;"><b>คำสั่ง:</b> ดาวน์โหลดภาพถนนตั้งต้นด้านล่าง แล้วใช้เครื่องมือ Cleanup.pictures หรือ FlatAI เพื่อลบหรือแทนที่วัตถุตามหัวข้อ <b>งานของคุณ</b> เติมแสงเงาให้เนียนกับภาพเดิม แล้วเซฟภาพส่ง</p>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.0em; align-items:start;">
+    <div>
+      <span class="ws-label">📸 1. แนบภาพผลงานหลังแก้ไข (ลบ/แทนที่สำเร็จ):</span>
+      <textarea class="save ws-field" id="q_b3_img" data-group="B3: แก้ไขภาพ Inpainting" data-label="B3.1 — ภาพหลังแก้ไข" style="height:90px;" placeholder="คัดลอกรูปผลงานแล้ววาง (Ctrl/⌘ + V) หรือกดแนบไฟล์รูป..."></textarea>
+      <div id="q_b3_img_img_tray" class="img-tray"></div>
+      <p style="margin:.3em 0 0; font-size:0.58em;">💾 👉 <a href="images/street_thailand.jpg" target="_blank" style="color:var(--blue); font-weight:bold; text-decoration:underline;">ดาวน์โหลดภาพตั้งต้น street_thailand.jpg</a> (หรือหาภาพถนนเองจาก Google Images)</p>
+    </div>
+    <div>
+      <span class="ws-label">✏️ 2. อธิบายสิ่งที่ลบ/แทนที่ และ AI เติมแสงเงาให้กลมกลืนแค่ไหน:</span>
+      <textarea class="save ws-field" id="q_b3_desc" data-group="B3: แก้ไขภาพ Inpainting" data-label="B3.2 — อธิบายผลการแก้ไข" style="height:100px;" placeholder="ตัวอย่าง: ระบายลบรถตู้สีขาวด้านซ้าย AI เติมพื้นถนนและเงาตึกด้านหลังได้เนียน แต่ขอบฟุตปาธยังเพี้ยนเล็กน้อย..."></textarea>
+      <span class="ws-label" style="margin-top:.4em;">🛠️ 3. เครื่องมือที่ใช้:</span>
+      <input class="save ws-field" id="q_b3_tool" data-group="B3: แก้ไขภาพ Inpainting" data-label="B3.3 — เครื่องมือที่ใช้" type="text" placeholder="เช่น Cleanup.pictures หรือ FlatAI" style="font-size:0.72em; padding:.45em .6em;">
+    </div>
+  </div>
+</section>
+
+<!-- 17 LECTURE B4: NAPKIN -->
+<section>
+  <span class="kicker">แนวคิด B4: สร้างแผนภาพและกราฟิก</span>
+  <h2>Napkin.ai + การเขียน Prompt ด้วยสูตร RFC</h2>
+  <div class="cols">
+    <div style="flex:1.2;">
+      <p style="font-size:0.78em; line-height:1.6;"><b>Napkin.ai</b> เป็นเครื่องมือสำหรับแปลงข้อความเป็นแผนภาพ (Mind Map, Flowchart) จะทำงานได้ดีที่สุดเมื่อมีโครงเนื้อหาที่ชัดเจน แนะนำให้ใช้ <b>Gemini</b> ช่วยร่างเนื้อหาก่อน โดยใช้สูตร <b>RFC</b>:</p>
+      <ul style="font-size:0.7em; line-height:1.55; padding-left:1.1em;">
+        <li><b>R = Role (บทบาท):</b> คุณคือใคร? (เช่น คุณคือครูวิทยาศาสตร์)</li>
+        <li><b>F = Format (รูปแบบ):</b> ผลลัพธ์แบบไหน? (เช่น หัวข้อย่อยสั้นๆ 5 ข้อสำหรับทำแผนภาพ)</li>
+        <li><b>C = Context (บริบท):</b> เป้าหมายคืออะไร? (เช่น เพื่อให้เด็กเข้าใจวัฏจักรน้ำ)</li>
+      </ul>
+    </div>
+    <div style="flex:1.0; text-align:center;">
+      <div class="card" style="border-top:4px solid var(--purple); background:#fbf9ff; font-size:0.64em; line-height:1.5; margin-bottom:1em; text-align:left;">
+        <b style="color:var(--purple)">💡 ตัวอย่าง Prompt ใส่ใน Gemini:</b><br>
+        "<b style="color:var(--teal)">[Role]</b> คุณคือผู้เชี่ยวชาญด้านประวัติศาสตร์ <b style="color:var(--teal)">[Context]</b> จงอธิบายสงครามโลกครั้งที่ 2 ให้เด็กประถมเข้าใจง่าย <b style="color:var(--teal)">[Format]</b> โดยสรุปเป็น 3 หัวข้อสั้นๆ"
+      </div>
+      <div class="card" style="border-top:4px solid var(--teal); background:#f2fdfb; font-size:0.64em; line-height:1.5; text-align:left;">
+        <b style="color:var(--teal)">✅ ขั้นตอนการทำงาน:</b><br>
+        1. ให้ Gemini สร้างเนื้อหาด้วยสูตร <b>RFC</b><br>
+        2. <b>คัดลอก</b> ข้อความที่ได้<br>
+        3. นำไปวางใน <b>Napkin.ai</b> เพื่อทำแผนภาพ
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 17b ACT B4 -->
+<section>
+  <span class="kicker">กิจกรรม B4 (⏱ 10 นาที)</span>
+  <h3>ข้อ B4 — ออกแบบแผนภาพด้วย Napkin.ai</h3>
+  <div class="card" style="border-left:5px solid var(--teal); background:#f2fdfb; font-size:0.75em; margin-bottom:.5em;">
+    <b style="color:var(--teal)">📋 หัวข้อสำหรับการสร้างแผนภาพของคุณ:</b> <span class="good" data-var="docTopic">...</span>
+  </div>
+  <p style="font-size:0.75em; margin-bottom:0.65em; line-height:1.5;"><b>คำสั่ง:</b> เขียนพรอมต์ด้วยสูตร <b>RFC (Role, Format, Context)</b> เพื่อสั่งให้ Gemini ร่างเนื้อหาเกี่ยวกับ <b>หัวข้อสำหรับการสร้างแผนภาพ</b> ด้านบน จากนั้นนำข้อความผลลัพธ์ไปใส่ใน <a class="tool" href="https://www.napkin.ai" target="_blank">Napkin.ai</a> เพื่อให้ AI เจนเป็นแผนภาพหรือกราฟิก (เช่น Mind Map, Flowchart) แคปภาพผลงานมาวางส่ง และอธิบายข้อสังเกต</p>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.0em; align-items:start;">
+    <div>
+      <span class="ws-label">✏️ 1. พรอมต์ RFC (ที่นำไปสั่ง Gemini):</span>
+      <textarea class="save ws-field" id="q_b4_prompt" data-group="B4: สร้างสื่อ (Napkin)" data-label="B4.1 — พรอมต์ RFC (Gemini)" style="height:110px; font-weight:600; color:var(--teal);" placeholder="ตัวอย่าง: [Role] คุณคือ... [Format] ขอให้เขียนเป็น... [Context] เพื่ออธิบายเรื่อง... ให้กับ..."></textarea>
+      <div class="fb" id="fb_q_b4_prompt"></div>
+    </div>
+    <div>
+      <span class="ws-label">📸 2. นำเนื้อหาที่ได้ไปใส่ Napkin แล้วแนบผลงาน:</span>
+      <textarea class="save ws-field" id="q_b4_img" data-group="B4: สร้างสื่อ (Napkin)" data-label="B4.2 — ภาพแผนภาพจาก Napkin" style="height:80px;" placeholder="คัดลอกรูปผลงานแล้ววาง (Ctrl/⌘ + V) หรือกดแนบไฟล์รูป..."></textarea>
+      <div id="q_b4_img_img_tray" class="img-tray"></div>
+    </div>
+  </div>
+  <span class="ws-label">✏️ 3. ข้อสังเกตจากการใช้งาน Napkin.ai:</span>
+  <textarea class="save ws-field" id="q_b4_obs" data-group="B4: สร้างสื่อ (Napkin)" data-label="B4.3 — ข้อสังเกต Napkin" style="height:50px;" placeholder="ตัวอย่าง: สร้างแผนภาพ Mind Map ให้เราอัตโนมัติจากข้อความ สะดวกมาก..."></textarea>
+</section>
+
+<!-- 18 LECTURE B5: GAMMA -->
+<section>
+  <span class="kicker">แนวคิด B5: สร้างสไลด์นำเสนอ</span>
+  <h2>Gamma.app + การเตรียมเนื้อหาด้วย RFC</h2>
+  <div class="cols">
+    <div style="flex:1.2;">
+      <p style="font-size:0.78em; line-height:1.6;"><b>Gamma.app</b> เป็นเครื่องมือสร้างสไลด์นำเสนอที่รวดเร็ว แต่จะได้ผลลัพธ์ที่ตรงใจขึ้นหากเราเตรียมโครงเนื้อหาให้มันก่อน โดยใช้สูตร <b>RFC</b> ใน Gemini เช่นกัน:</p>
+      <ul style="font-size:0.7em; line-height:1.55; padding-left:1.1em;">
+        <li><b>R = Role:</b> ควบคุมทิศทางและภาษา (เช่น เป็นวิทยากรมืออาชีพ)</li>
+        <li><b>F = Format:</b> ออกแบบโครงสไลด์ (เช่น แบ่งเป็น 5 สไลด์ แต่ละสไลด์มีหัวข้อและ Bullet points)</li>
+        <li><b>C = Context:</b> บริบทผู้ฟัง (เช่น สำหรับนำเสนอผู้บริหาร)</li>
+      </ul>
+    </div>
+    <div style="flex:1.0; text-align:center;">
+      <div class="card" style="border-top:4px solid var(--purple); background:#fbf9ff; font-size:0.64em; line-height:1.5; margin-bottom:1em; text-align:left;">
+        <b style="color:var(--purple)">💡 ตัวอย่าง Prompt เพื่อทำสไลด์:</b><br>
+        "<b style="color:var(--teal)">[Role]</b> คุณคือนักการตลาด <b style="color:var(--teal)">[Context]</b> ต้องการนำเสนอกลยุทธ์ปี 2024 <b style="color:var(--teal)">[Format]</b> ช่วยเขียนโครงสไลด์ 3 หน้า แต่ละหน้าประกอบด้วยหัวข้อหลักและคำอธิบายสั้นๆ"
+      </div>
+      <div class="card" style="border-top:4px solid var(--teal); background:#f2fdfb; font-size:0.64em; line-height:1.5; text-align:left;">
+        <b style="color:var(--teal)">✅ ขั้นตอนการทำงาน:</b><br>
+        1. ร่างเนื้อหาสไลด์จาก Gemini<br>
+        2. <b>คัดลอก</b> ไปใส่โหมด "Paste in text" ใน <b>Gamma</b><br>
+        3. เลือก Theme และปล่อยให้ Gamma จัดหน้าให้
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 18b ACT B5 -->
+<section>
+  <span class="kicker">กิจกรรม B5 (⏱ 10 นาที)</span>
+  <h3>ข้อ B5 — สร้างสไลด์นำเสนอด้วย Gamma</h3>
+  <div class="card" style="border-left:5px solid var(--purple); background:#fbf9ff; font-size:0.75em; margin-bottom:.5em;">
+    <b style="color:var(--purple)">📋 หัวข้อสำหรับการสร้างสไลด์ของคุณ:</b> <span class="good" data-var="docTopic">...</span>
+  </div>
+  <p style="font-size:0.75em; margin-bottom:0.65em; line-height:1.5;"><b>คำสั่ง:</b> เขียนพรอมต์ด้วยสูตร <b>RFC (Role, Format, Context)</b> เพื่อสั่งให้ Gemini ร่างโครงร่างสไลด์ (อย่างน้อย 3-4 หน้า) ในหัวข้อด้านบน จากนั้นนำข้อความไปวางใส่ในโหมด "Paste in text" ของ <a class="tool" href="https://gamma.app" target="_blank">Gamma.app</a> เลือก Theme และให้ AI เจนหน้าสไลด์ออกมา แคปหน้าสไลด์บางส่วนมาวางส่ง พร้อมระบุข้อสังเกต</p>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.0em; align-items:start;">
+    <div>
+      <span class="ws-label">✏️ 1. พรอมต์ RFC (ที่นำไปสั่ง Gemini เพื่อร่างสไลด์):</span>
+      <textarea class="save ws-field" id="q_b5_prompt" data-group="B5: สร้างสื่อ (Gamma)" data-label="B5.1 — พรอมต์ RFC (Gemini)" style="height:110px; font-weight:600; color:var(--teal);" placeholder="ตัวอย่าง: [Role] คุณคือ... [Format] ขอให้เขียนโครงสไลด์... [Context] เพื่ออธิบายเรื่อง... ให้กับ..."></textarea>
+      <div class="fb" id="fb_q_b5_prompt"></div>
+    </div>
+    <div>
+      <span class="ws-label">📸 2. นำข้อความไปใส่ Gamma แล้วแนบผลงาน (หน้าสไลด์):</span>
+      <textarea class="save ws-field" id="q_b5_img" data-group="B5: สร้างสื่อ (Gamma)" data-label="B5.2 — ภาพหน้าสไลด์จาก Gamma" style="height:80px;" placeholder="คัดลอกรูปผลงานแล้ววาง (Ctrl/⌘ + V) หรือกดแนบไฟล์รูป..."></textarea>
+      <div id="q_b5_img_img_tray" class="img-tray"></div>
+    </div>
+  </div>
+  <span class="ws-label">✏️ 3. ข้อสังเกตจากการใช้งาน Gamma:</span>
+  <textarea class="save ws-field" id="q_b5_obs" data-group="B5: สร้างสื่อ (Gamma)" data-label="B5.3 — ข้อสังเกต Gamma" style="height:50px;" placeholder="ตัวอย่าง: จัดหน้าสไลด์ได้เร็วมาก แต่เนื้อหาบางส่วนอาจต้องปรับแต่งรูปภาพเพิ่มเองนิดหน่อย..."></textarea>
+</section>
+
+<!-- ===================== PART C: ETHICS & REFLECTION ===================== -->
+
+<!-- 18 ETHICS -->
+<section>
+  <span class="kicker">จริยธรรม AI</span>
+  <h2>ใช้ AI อย่างปลอดภัยและมีจริยธรรม</h2>
+  <div class="cols">
+    <div style="display:flex; flex-direction:column; gap:.5em;">
+      <div class="card" style="border-left:5px solid var(--blue); font-size:0.66em; line-height:1.5;">
+        <b style="color:var(--blue)">© ลิขสิทธิ์ภาพตั้งต้น</b> ดึงภาพจาก Google มาทำใบงานในห้องได้ แต่ถ้าจะใช้เชิงการค้า ต้องเป็นภาพ CC0 / Public Domain หรือถ่ายเอง
+      </div>
+      <div class="card" style="border-left:5px solid var(--warn); font-size:0.66em; line-height:1.5;">
+        <b class="warn">🎭 Deepfake / ข่าวปลอม</b> ห้ามตัดต่อใบหน้า/ทะเบียนรถผู้อื่น หรือสร้างภาพหลอกลวงสังคม (เกี่ยวข้องกับ PDPA)
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:.5em;">
+      <div class="card" style="border-left:5px solid var(--teal); font-size:0.66em; line-height:1.5;">
+        <b style="color:var(--teal)">🏷️ ระบุว่าเป็นงาน AI</b> เมื่อเผยแพร่ ควรกำกับว่า “สร้างด้วย AI” เพื่อความโปร่งใส
+      </div>
+      <div class="card" style="border-left:5px solid var(--purple); background:#fbf9ff; font-size:0.66em; line-height:1.5;">
+        <b style="color:var(--purple)">🔓 เครื่องมือ “ไม่ล็อกอิน” ต้องระวังเป็นพิเศษ</b> ตัวกรองเนื้อหาอ่อนกว่าของบริษัทใหญ่ และบางเว็บนำผลงานเราไปฝึกต่อ — อย่าใส่ข้อมูลส่วนตัว และพิมพ์เฉพาะโจทย์ที่เหมาะสม
+      </div>
+    </div>
+  </div>
+  <div style="text-align:center; margin-top: 0.8em;"><img src="images/ethics.png" style="max-height: 220px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"></div>
+</section>
+
+<!-- Reflection Removed -->
+
+<!-- 20 DOWNLOAD -->
+<section>
+  <span class="kicker">บันทึกใบงาน</span>
+  <h2>บันทึกใบงานส่งครู</h2>
+  <div class="check-panel">
+    <!-- Progress panel removed -->
+    <div style="text-align:center; margin-top:1em; display:flex; flex-direction:column; gap:0.8em; align-items:center;">
+      <button class="dlbig" onclick="downloadPDF()" style="font-size:1.1em; padding:.6em 1.4em;">⬇ บันทึกใบงานหลัก เป็น PDF</button>
+      <button class="dlbig" onclick="downloadNapkinPDF()" style="font-size:1.1em; padding:.6em 1.4em; background:var(--purple); border-color:#5c2d91;">⬇ บันทึกใบงาน Napkin & Gamma เป็น PDF แยก</button>
+    </div>
+    <p class="note" style="color:var(--warn); font-weight:600; text-align:center; font-size:.75em;">🚨 อย่าลืมกรอก “ชื่อ–นามสกุล” ในสไลด์ที่ 2 ให้ครบ จึงจะบันทึกเป็น PDF ได้</p>
+  </div>
+</section>
+
+</div></div>
+
+<!-- assignment print area layout -->
+<div id="print-area"></div>
+
+<!-- reveal.js javascript setup -->
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script>
+  Reveal.initialize({
+    hash: false, respondToHashChanges: false, slideNumber: 'c/t', controls: true, progress: true,
+    width: 1280, height: 800, margin: 0.06, minScale: 0.2, maxScale: 1.5,
+    transition: 'slide'
+  });
+
+  const SAVE_KEY = 'aied_w4';
+
+  function saveField(el) {
+    const data = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
+    data[el.id] = el.value;
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+    const hint = document.getElementById('savehint');
+    if (hint) { hint.style.opacity = 1; setTimeout(() => { hint.style.opacity = 0; }, 800); }
+  }
+
+  function loadSaved() {
+    const data = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
+    Object.keys(data).forEach(k => {
+      if (k.indexOf('img:') === 0) return; // handled by image setup
+      const el = document.getElementById(k);
+      if (el) { el.value = data[k]; }
+    });
+  }
+
+  window.saveField = saveField;
+  document.addEventListener('input', e => { if (e.target.classList.contains('save')) saveField(e.target); });
+  document.addEventListener('change', e => { if (e.target.classList.contains('save')) saveField(e.target); });
+  loadSaved();
+
+  /* ---- show floating download button only on the last slide ---- */
+  function updateDlBtnVisibility() {
+    const dlBtn = document.getElementById('dlbtn');
+    if (dlBtn) { dlBtn.style.display = Reveal.isLastSlide() ? 'block' : 'none'; }
+  }
+  Reveal.on('ready', updateDlBtnVisibility);
+  Reveal.on('slidechanged', updateDlBtnVisibility);
+
+  /* ---- don't let reveal hijack arrow keys while typing ---- */
+  ['focusin', 'focusout'].forEach(ev => document.addEventListener(ev, e => {
+    if (e.target.matches('input,textarea,select')) Reveal.configure({ keyboard: ev === 'focusout' });
+  }));
+
+  /* ---- build & download the assignment-only PDF ---- */
+  function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function val(id) { const el = document.getElementById(id); return el ? el.value : ''; }
+  function getImgs(id) {
+    try { const d = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}'); return d['img:' + id] || []; }
+    catch (e) { return []; }
+  }
+
+  function buildAssignmentHTML() {
+    const name1 = val('ws-name1'), name2 = val('ws-name2'), cls = val('ws-class'), no = val('ws-no');
+    const name = name2 ? `${name1} และ ${name2}` : name1;
+    const si = (window.getSetInfo && window.getSetInfo()) || null;
+    let html = `<div class="pdf-doc">
+      <h1>ใบงาน AI for Ed — สัปดาห์ที่ 4 (เครื่องมือไม่จำกัดอายุ)</h1>
+      <div class="pdf-meta">
+        <span><b>ชื่อ–สกุล:</b> ${esc(name) || '____________________'}</span>
+        <span><b>ชั้น:</b> ${esc(cls) || '________'}</span>
+        <span><b>เลขที่:</b> ${esc(no) || '____'}</span>
+        ${ si ? `<span><b>ชุดโจทย์สุ่มประจำตัว:</b> ชุดที่ ${si.n} (สไตล์ภาพ: ${esc(si.style)} · โจทย์สร้างสรรค์: ${esc(si.topic)})</span>` : '' }
+      </div>`;
+    let curGroup = '';
+    document.querySelectorAll('.ws-field').forEach(f => {
+      const g = f.getAttribute('data-group') || '';
+      if (g === 'B4: สร้างสื่อ (Napkin)' || g === 'B5: สร้างสื่อ (Gamma)') return; // Skip Napkin/Gamma for main PDF
+      if (g && g !== curGroup) { curGroup = g; html += `<h2>${esc(g)}</h2>`; }
+      const label = f.getAttribute('data-label') || '';
+      const v = f.value || '';
+      const imgs = getImgs(f.id);
+      const ans = v ? esc(v).replace(/\n/g, '<br>')
+                    : (imgs.length ? '<span class="empty">(แนบรูปภาพด้านล่าง)</span>' : '<span class="empty">(ยังไม่ได้ตอบ)</span>');
+      let imgHtml = '';
+      if (imgs.length) { imgHtml = '<div class="pdf-imgs">' + imgs.map(s => `<img src="${s}">`).join('') + '</div>'; }
+      html += `<div class="pdf-item"><div class="pdf-label">${esc(label)}</div><div class="pdf-answer">${ans}</div>${imgHtml}</div>`;
+    });
+    html += `</div>`;
+    return html;
+  }
+
+  function downloadPDF() {
+    const name1 = val('ws-name1').trim();
+    if (!name1) {
+      alert('กรุณากรอก “ชื่อ–นามสกุล คนที่ 1” ในสไลด์ที่ 2 ก่อนบันทึกใบงาน');
+      Reveal.slide(1); return;
+    }
+    const area = document.getElementById('print-area');
+    area.innerHTML = buildAssignmentHTML();
+    document.body.classList.add('printing');
+    setTimeout(() => {
+      try { window.print(); }
+      catch (e) {
+        cleanupPrint();
+        alert('เบราว์เซอร์เปิดหน้าพิมพ์ไม่ได้\nให้ดับเบิลคลิกเปิดไฟล์ html นี้ใน Chrome หรือ Edge โดยตรง แล้วลองใหม่ครับ');
+      }
+    }, 150);
+  }
+
+  function cleanupPrint() {
+    document.body.classList.remove('printing');
+    const area = document.getElementById('print-area'); if (area) area.innerHTML = '';
+  }
+  window.addEventListener('afterprint', cleanupPrint);
+  window.downloadPDF = downloadPDF;
+
+  function buildNapkinHTML() {
+    const name1 = val('ws-name1'), name2 = val('ws-name2'), cls = val('ws-class'), no = val('ws-no');
+    const name = name2 ? `${name1} และ ${name2}` : name1;
+    let html = `<div class="pdf-doc">
+      <h1>ใบงาน AI for Ed — Napkin & Gamma</h1>
+      <div class="pdf-meta">
+        <span><b>ชื่อ–สกุล:</b> ${esc(name) || '____________________'}</span>
+        <span><b>ชั้น:</b> ${esc(cls) || '________'}</span>
+        <span><b>เลขที่:</b> ${esc(no) || '____'}</span>
+      </div>`;
+    let curGroup = '';
+    document.querySelectorAll('.ws-field').forEach(f => {
+      const g = f.getAttribute('data-group') || '';
+      if (g !== 'B4: สร้างสื่อ (Napkin)' && g !== 'B5: สร้างสื่อ (Gamma)') return; // Only include Napkin & Gamma
+      if (g && g !== curGroup) { curGroup = g; html += `<h2>${esc(g)}</h2>`; }
+      const label = f.getAttribute('data-label') || '';
+      const v = f.value || '';
+      const imgs = getImgs(f.id);
+      const ans = v ? esc(v).replace(/\n/g, '<br>')
+                    : (imgs.length ? '<span class="empty">(แนบรูปภาพด้านล่าง)</span>' : '<span class="empty">(ยังไม่ได้ตอบ)</span>');
+      let imgHtml = '';
+      if (imgs.length) { imgHtml = '<div class="pdf-imgs">' + imgs.map(s => `<img src="${s}">`).join('') + '</div>'; }
+      html += `<div class="pdf-item"><div class="pdf-label">${esc(label)}</div><div class="pdf-answer">${ans}</div>${imgHtml}</div>`;
+    });
+    html += `</div>`;
+    return html;
+  }
+
+  function downloadNapkinPDF() {
+    const name1 = val('ws-name1').trim();
+    if (!name1) {
+      alert('กรุณากรอก “ชื่อ–นามสกุล คนที่ 1” ในสไลด์ที่ 2 ก่อนบันทึกใบงาน');
+      Reveal.slide(1); return;
+    }
+    const area = document.getElementById('print-area');
+    area.innerHTML = buildNapkinHTML();
+    document.body.classList.add('printing');
+    setTimeout(() => {
+      try { window.print(); }
+      catch (e) {
+        cleanupPrint();
+        alert('เบราว์เซอร์เปิดหน้าพิมพ์ไม่ได้\nให้ดับเบิลคลิกเปิดไฟล์ html นี้ใน Chrome หรือ Edge โดยตรง แล้วลองใหม่ครับ');
+      }
+    }, 150);
+  }
+  window.downloadNapkinPDF = downloadNapkinPDF;
+</script>
+
+<!-- ===================== IMAGE ATTACH / PASTE ===================== -->
+<script>
+(function(){
+  const MAXDIM = 1000;            // image cap (px) for localStorage limit
+  const QUALITY = 0.8;            // jpeg quality
+  function readAll() { try { return JSON.parse(localStorage.getItem(SAVE_KEY) || '{}'); } catch (e) { return {}; } }
+  function getImgs(id) { return readAll()['img:' + id] || []; }
+  function setImgs(id, arr) {
+    const d = readAll(); d['img:' + id] = arr;
+    try { localStorage.setItem(SAVE_KEY, JSON.stringify(d)); return true; }
+    catch (e) { alert('พื้นที่จัดเก็บในเบราว์เซอร์เต็ม — รูปอาจมีขนาดใหญ่เกินไป ลองลบรูปอื่นออกก่อนนะครับ'); return false; }
+  }
+
+  function compress(file) {
+    return new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onerror = () => rej(new Error('read'));
+      r.onload = () => {
+        const img = new Image();
+        img.onerror = () => rej(new Error('decode'));
+        img.onload = () => {
+          let w = img.naturalWidth, h = img.naturalHeight;
+          if (w > MAXDIM || h > MAXDIM) { const k = Math.min(MAXDIM/w, MAXDIM/h); w = Math.round(w*k); h = Math.round(h*k); }
+          const c = document.createElement('canvas'); c.width = w; c.height = h;
+          c.getContext('2d').drawImage(img, 0, 0, w, h);
+          try { res(c.toDataURL('image/jpeg', QUALITY)); } catch (e) { rej(e); }
+        };
+        img.src = r.result;
+      };
+      r.readAsDataURL(file);
+    });
+  }
+
+  async function addFiles(id, files, tray) {
+    const list = [...files].filter(f => f && f.type && f.type.indexOf('image/') === 0);
+    if (!list.length) return;
+    const arr = getImgs(id);
+    for (const f of list) { try { arr.push(await compress(f)); } catch (e) {} }
+    if (setImgs(id, arr)) renderTray(id, tray);
+  }
+
+  function renderTray(id, tray) {
+    const arr = getImgs(id); tray.innerHTML = '';
+    arr.forEach((src, i) => {
+      const t = document.createElement('div'); t.className = 'img-thumb';
+      const im = document.createElement('img'); im.src = src; im.alt = 'แนบรูป';
+      const rm = document.createElement('button'); rm.className = 'rm'; rm.type = 'button';
+      rm.textContent = '✕';
+      rm.addEventListener('click', () => { const a = getImgs(id); a.splice(i, 1); setImgs(id, a); renderTray(id, tray); });
+      t.appendChild(im); t.appendChild(rm); tray.appendChild(t);
+    });
+    if (window.refreshFeedback) window.refreshFeedback();
+  }
+
+  function attach(field) {
+    const id = field.id;
+    const btn = document.createElement('button'); btn.className = 'img-btn'; btn.type = 'button';
+    btn.textContent = '📎 แนบรูป / วางรูป';
+    const hint = document.createElement('span'); hint.className = 'img-hint';
+    hint.textContent = 'หรือคัดลอกรูปแล้ววางในช่อง (Ctrl/⌘ + V)';
+    const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*';
+    inp.multiple = true; inp.style.display = 'none';
+    const tray = document.getElementById(id + '_img_tray') || document.createElement('div');
+    if (!tray.className) tray.className = 'img-tray';
+
+    btn.addEventListener('click', () => inp.click());
+    inp.addEventListener('change', () => { addFiles(id, inp.files, tray); inp.value = ''; });
+    field.addEventListener('paste', e => {
+      const items = e.clipboardData && e.clipboardData.items;
+      if (!items) return;
+      const imgs = [...items].filter(it => it.kind === 'file' && it.type.indexOf('image/') === 0)
+                           .map(it => it.getAsFile());
+      if (imgs.length) { e.preventDefault(); addFiles(id, imgs, tray); }
+    });
+
+    field.insertAdjacentElement('afterend', tray);
+    field.insertAdjacentElement('afterend', hint);
+    field.insertAdjacentElement('afterend', inp);
+    field.insertAdjacentElement('afterend', btn);
+    renderTray(id, tray);
+  }
+
+  function init() {
+    const targets = ['q_b1_img', 'q_b3_img', 'q_b4_img', 'q_b5_img'];
+    targets.forEach(tid => {
+      const el = document.getElementById(tid);
+      if (el) attach(el);
+    });
+  }
+  if (document.readyState !== 'loading') init();
+  else document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+
+<!-- ===================== PROBLEM SETS (anti-copy) ===================== -->
+<script>
+(function(){
+  // Index order matches Week 2 & 3: array index 1..4 -> ชุดที่ 1..4, index 0 -> ชุดที่ 5
+  const SETS = [
+    { // index 0 = ชุดที่ 5 (เลขที่ % 5 == 0)
+      poemKind: 'แต่งกลอน 4 สุภาพ',
+      poemTopic: 'การเล่นเกมออนไลน์ตอนกลางคืนกับแก๊งเพื่อน',
+      roleScenario: 'นักเล่าเรื่องผีไทย ที่ตอบทุกคำถามด้วยน้ำเสียงลึกลับชวนขนลุก',
+      roleKeys: ['ผี','ลึกลับ','ขนลุก'], roleHint: 'นักเล่าเรื่องผี (เช่น “คุณคือนักเล่าเรื่องผีไทย…”)',
+      reasonTask: 'ถ้าวันนี้เป็นวันพุธ อีก 100 วันข้างหน้าจะเป็นวันอะไร? อธิบายวิธีคิดทีละขั้น',
+      liveQuery: 'ราคาน้ำมันขายปลีกแก๊สโซฮอล์ 95 ในกรุงเทพฯ วันนี้',
+      docTopic: 'วิทยาศาสตร์การกีฬาและกลไกของสรีระร่างกาย',
+      imgStyle: 'ดินน้ำมันสตอปโมชัน (Claymation)', imgStylePlain: 'claymation stop-motion',
+      scenarioName: 'โปสเตอร์ TikTok แนวตั้ง แคมเปญสะท้อนสุขภาพจิตวัยรุ่น',
+      scenarioDesc: 'ออกแบบภาพสำหรับ “โปสเตอร์แนวตั้งแคมเปญ TikTok วัยรุ่นสะท้อนความคิดเรื่องสุขภาพจิต” (ควรใช้สัดส่วน 9:16 สไตล์ Minimal Flat Illustration สีพาสเทล)',
+      goodRatio: '9:16', goodRatioLabel: '9:16 แนวตั้ง', ratioWhy: 'เป็นโพสเตอร์ TikTok แนวตั้งเต็มจอมือถือ',
+      editTask: 'ลบรถตู้ Alphard สีขาวด้านซ้ายออก (ตัวเลือกเสริม: ลองแทนที่ด้วย BYD Dolphin สีชมพู)',
+      motion: 'ภาพขยับเด้งแบบดินน้ำมัน (Clay Bounce)', motionKeys: ['bounce','clay'], motionHint: 'bounce / clay bounce'
+    },
+    { // index 1 = ชุดที่ 1 (เลขที่ % 5 == 1)
+      poemKind: 'แต่งกลอน 4 สุภาพ',
+      poemTopic: 'ชานมไข่มุกแสนอร่อย',
+      roleScenario: 'ติวเตอร์ฟิสิกส์ ที่อธิบายเป็นขั้นตอนและยกตัวอย่างในชีวิตประจำวันเสมอ',
+      roleKeys: ['ฟิสิกส์','ติว','ขั้นตอน'], roleHint: 'ติวเตอร์ฟิสิกส์ (เช่น “คุณคือติวเตอร์ฟิสิกส์…”)',
+      reasonTask: 'รถไฟออกจากเชียงใหม่ 09:00 วิ่ง 80 กม./ชม. ระยะทาง 700 กม. จะถึงปลายทางกี่โมง? แสดงวิธีคิด',
+      liveQuery: 'สภาพอากาศและอุณหภูมิในอำเภอเมือง จังหวัดเชียงใหม่ วันนี้',
+      docTopic: 'ดาราศาสตร์และการย้ายถิ่นฐานสู่ดาวอังคาร',
+      imgStyle: 'ไซเบอร์พังก์ นีออนยามค่ำคืน (Cyberpunk Neon)', imgStylePlain: 'cyberpunk neon night',
+      scenarioName: 'แบนเนอร์กว้างพิเศษโฆษณาห้องเรียนอัจฉริยะประหยัดพลังงานในไทย',
+      scenarioDesc: 'ออกแบบภาพสำหรับ “แบนเนอร์กว้างพิเศษ (Widescreen) โฆษณาห้องเรียนอัจฉริยะประหยัดพลังงานในไทย” (ควรใช้สัดส่วน 16:9 หรือ 21:9 สไตล์ 3D Isometric Render)',
+      goodRatio: '16:9', goodRatioLabel: '16:9 แนวนอน', ratioWhy: 'เป็นแบนเนอร์กว้างพิเศษแนวนอน',
+      editTask: 'ลบรถตู้ Alphard สีขาวด้านซ้ายออก (ตัวเลือกเสริม: ลองแทนที่ด้วย Xiaomi SU7 สีฟ้า)',
+      motion: 'แพนกล้องไปทางซ้ายช้าๆ (Slow Pan Left)', motionKeys: ['pan'], motionHint: 'pan left'
+    },
+    { // index 2 = ชุดที่ 2 (เลขที่ % 5 == 2)
+      poemKind: 'แต่งคำผวนตลกๆ',
+      poemTopic: 'การบ้านที่เยอะแยะจนทำไม่ทัน',
+      roleScenario: 'บรรณารักษ์ผู้เคร่งครัด ที่ตอบสั้นกระชับและแนะนำให้ตรวจสอบแหล่งข้อมูลเสมอ',
+      roleKeys: ['บรรณารักษ์','กระชับ','แหล่งข้อมูล'], roleHint: 'บรรณารักษ์เคร่งครัด (เช่น “คุณคือบรรณารักษ์…”)',
+      reasonTask: 'โยนเหรียญ 3 เหรียญพร้อมกัน ความน่าจะเป็นที่ออกหัวอย่างน้อย 2 เหรียญเป็นเท่าใด? อธิบายขั้นตอน',
+      liveQuery: 'ราคาทองคำแท่ง 96.5% ในประเทศไทย ณ วันนี้ (ล่าสุด)',
+      docTopic: 'ประวัติศาสตร์เทคโนโลยีและการปฏิวัติอุตสาหกรรม',
+      imgStyle: 'จิตรกรรมฝาผนังแบบไทยโบราณ (Thai Mural)', imgStylePlain: 'traditional Thai mural painting',
+      scenarioName: 'โฆษณา IG Story น้ำสตรอว์เบอร์รีแท้ 100% ออร์แกนิก',
+      scenarioDesc: 'ออกแบบภาพสำหรับ “โฆษณา IG Story (แนวตั้ง) น้ำสตรอว์เบอร์รีแท้ 100% ออร์แกนิก” (ควรใช้สัดส่วน 9:16 สไตล์ภาพถ่ายสตูดิโอระดับมือโปร Studio Photography)',
+      goodRatio: '9:16', goodRatioLabel: '9:16 แนวตั้ง', ratioWhy: 'เป็น IG Story แนวตั้งเต็มจอ',
+      editTask: 'ลบรถตู้ Alphard สีขาวด้านซ้ายออก (ตัวเลือกเสริม: ลองแทนที่ด้วย Wuling Hongguang Mini EV สีเหลือง)',
+      motion: 'ซูมกล้องเข้าหาวัตถุช้าๆ (Slow Zoom In)', motionKeys: ['zoom'], motionHint: 'zoom in'
+    },
+    { // index 3 = ชุดที่ 3 (เลขที่ % 5 == 3)
+      poemKind: 'แต่งกลอน 4 สุภาพ',
+      poemTopic: 'น้องแมวส้มจอมกวนที่ชอบทำลายข้าวของ',
+      roleScenario: 'โค้ชสร้างแรงบันดาลใจ ที่พูดให้กำลังใจและลงท้ายด้วยคำคมทุกครั้ง',
+      roleKeys: ['โค้ช','กำลังใจ','คำคม'], roleHint: 'โค้ชสร้างแรงบันดาลใจ (เช่น “คุณคือโค้ช…”)',
+      reasonTask: 'พ่อมีลูก 5 คน ลูกแต่ละคนมีพี่น้องชาย 2 คน ครอบครัวนี้มีลูกสาวกี่คน? อธิบายเหตุผล',
+      liveQuery: 'ผลการแข่งขันฟุตบอลพรีเมียร์ลีกคู่ล่าสุดเมื่อคืนนี้',
+      docTopic: 'ร่างกายและชีววิทยาการนอนหลับกับกลไกสมอง',
+      imgStyle: 'สีน้ำพริ้วไหวสไตล์ Ghibli (Ghibli Watercolor)', imgStylePlain: 'Ghibli-style watercolor',
+      scenarioName: 'ป้ายบิลบอร์ดภาพยนตร์ไซไฟแนวผจญภัยรูดำอวกาศ',
+      scenarioDesc: 'ออกแบบภาพสำหรับ “ป้ายบิลบอร์ดภาพยนตร์ไซไฟแนวผจญภัยรูดำอวกาศ” (ควรใช้สัดส่วน 16:9 หรือ 21:9 สไตล์ Sci-Fi Digital Art / Concept Art)',
+      goodRatio: '16:9', goodRatioLabel: '16:9 แนวนอน', ratioWhy: 'เป็นป้ายบิลบอร์ดแนวนอนขนาดใหญ่',
+      editTask: 'ลบรถตู้ Alphard สีขาวด้านซ้ายออก (ตัวเลือกเสริม: ลองแทนที่ด้วย BYD Atto 3 สีน้ำเงิน)',
+      motion: 'หมุนกล้องรอบวัตถุสามมิติ (Orbit Shot)', motionKeys: ['orbit','rotat'], motionHint: 'orbit / rotating'
+    },
+    { // index 4 = ชุดที่ 4 (เลขที่ % 5 == 4)
+      poemKind: 'แต่งคำผวนตลกๆ',
+      poemTopic: 'อาหารกลางวันโรงเรียนสุดแปลก',
+      roleScenario: 'เชฟมืออาชีพ ที่อธิบายทุกอย่างโดยเปรียบเทียบกับการทำอาหารเสมอ',
+      roleKeys: ['เชฟ','อาหาร','ทำครัว'], roleHint: 'เชฟมืออาชีพ (เช่น “คุณคือเชฟ…”)',
+      reasonTask: 'ลำดับเลข 2, 6, 12, 20, 30, ... ตัวถัดไปคือเลขอะไร? อธิบายกฎของลำดับ',
+      liveQuery: 'ข่าวเทคโนโลยีหรือปัญญาประดิษฐ์ที่เด่นในไทยวันนี้',
+      docTopic: 'วิวัฒนาการของวรรณกรรมแฟนตาซีและโลกเวทมนตร์',
+      imgStyle: 'แก้วคริสตัลเป่า แสงไฟสะท้อนระยิบระยับ (Crystal Glass)', imgStylePlain: 'blown crystal glass, reflective neon',
+      scenarioName: 'ภาพปกเพลย์ลิสต์เพลงแนว 80s Synthwave ลง Spotify',
+      scenarioDesc: 'ออกแบบภาพสำหรับ “ภาพหน้าปกเพลย์ลิสต์เพลงแนว 80s Synthwave ลง Spotify” (ควรใช้สัดส่วน 1:1 สไตล์ Retro 80s / Vaporwave)',
+      goodRatio: '1:1', goodRatioLabel: '1:1 จตุรัส', ratioWhy: 'เป็นปกเพลย์ลิสต์สี่เหลี่ยมจตุรัส',
+      editTask: 'ลบรถตู้ Alphard สีขาวด้านซ้ายออก (ตัวเลือกเสริม: ลองแทนที่ด้วย Zeekr 009 สีดำ)',
+      motion: 'กล้องก้มต่ำเผยรายละเอียดวัตถุ (Tilt Down)', motionKeys: ['tilt'], motionHint: 'tilt down'
+    }
+  ];
+
+  function setIndexOf(noStr) {
+    const n = parseInt(String(noStr || '').replace(/[^0-9]/g, ''), 10);
+    if (!n || n < 1) return null;
+    return n % SETS.length; // 1-5 distributes evenly
+  }
+
+  function applySet(i) {
+    const s = SETS[i];
+    const map = {
+      poemKind: s.poemKind, poemTopic: s.poemTopic, roleScenario: s.roleScenario,
+      reasonTask: s.reasonTask, liveQuery: s.liveQuery, docTopic: s.docTopic,
+      imgStyle: s.imgStyle, scenarioName: s.scenarioName, editTask: s.editTask, motion: s.motion
+    };
+    Object.keys(map).forEach(key => {
+      document.querySelectorAll('[data-var="'+key+'"]').forEach(e => e.textContent = map[key]);
+    });
+  }
+
+  function setCard(id, txt){ const e=document.getElementById(id); if(e) e.textContent = txt; }
+
+  function refresh() {
+    const noEl = document.getElementById('ws-no');
+    const i = setIndexOf(noEl ? noEl.value : '');
+    if (i === null) {
+      applySet(0);
+      const r = '— (ระบุเลขที่นั่งก่อน)';
+      setCard('aA1-topic', r); setCard('aB2-scenario', r);
+      if (window.refreshFeedback) window.refreshFeedback();
+      return;
+    }
+    applySet(i);
+    const s = SETS[i];
+    setCard('aA1-topic', s.poemKind + ' เกี่ยวกับ “' + s.poemTopic + '”');
+    setCard('aB2-scenario', s.scenarioDesc);
+    if (window.refreshFeedback) window.refreshFeedback();
+  }
+
+  function guideSetNo(i) { return i === 0 ? SETS.length : i; }
+
+  window.getSetInfo = function() {
+    const noEl = document.getElementById('ws-no');
+    const i = setIndexOf(noEl ? noEl.value : '');
+    if (i === null) return null;
+    return { n: guideSetNo(i), style: SETS[i].imgStyle, topic: SETS[i].poemTopic };
+  };
+
+  window.getCurrentSet = function() {
+    const noEl = document.getElementById('ws-no');
+    const i = setIndexOf(noEl ? noEl.value : '');
+    if (i === null) return null;
+    return Object.assign({ index: i, setNo: guideSetNo(i) }, SETS[i]);
+  };
+
+  function init() {
+    const noEl = document.getElementById('ws-no');
+    if (noEl) noEl.addEventListener('input', refresh);
+    refresh();
+  }
+  if (document.readyState !== 'loading') init();
+  else document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+
+<!-- ===================== LIVE FEEDBACK & SUBMISSION CHECK ===================== -->
+<script>
+(function(){
+  function txt(id){ const e=document.getElementById(id); return e ? (e.value||'').trim() : ''; }
+  function imgs(id){ try{ const d=JSON.parse(localStorage.getItem(SAVE_KEY)||'{}'); return d['img:'+id]||[]; }catch(e){ return []; } }
+  function curSet(){ return (window.getCurrentSet && window.getCurrentSet()) || null; }
+  function setFb(id, cls, msg){
+    const e=document.getElementById(id); if(!e) return;
+    if(!msg){ e.className='fb'; e.textContent=''; return; }
+    e.className='fb show '+cls; e.textContent=msg;
+  }
+  function setFbResult(id,res){ if(res) setFb(id,res.cls,res.msg); else setFb(id,'',''); }
+
+  /* ---- A1: both low & high recorded ---- */
+  function checkTemp(){
+    const lo=txt('q_a1_low'), hi=txt('q_a1_high');
+    if(!lo && !hi) return null;
+    if(lo && hi) return {cls:'fb-ok', msg:'✓ ดี! บันทึกผลทั้งค่า Temp ต่ำและสูงครบแล้ว — ลองสรุปความต่างให้ชัด'};
+    return {cls:'fb-warn', msg:'💡 ยังขาดผลของอีกค่า — ต้องมีทั้ง Temp ต่ำ (นิ่ง) และ Temp สูง (หลากหลาย) เพื่อเปรียบเทียบ'};
+  }
+  /* ---- A2: role mentioned ---- */
+  function checkRole(){
+    const p=txt('q_a2_system'); if(!p) return null;
+    const s=curSet(); if(!s) return {cls:'fb-tip', msg:'💡 ระบุเลขที่นั่งในสไลด์ที่ 2 ก่อน เพื่อรับบทบาทที่ต้องตั้ง'};
+    const lp=p.toLowerCase();
+    const hit = s.roleKeys.some(k=>p.indexOf(k)>=0) || /(คุณคือ|ตั้งแต่นี้|บทบาท|you are|act as)/i.test(p);
+    if(hit) return {cls:'fb-ok', msg:'✓ ดี! มีการตั้งบทบาทชัดเจน ('+s.roleHint+')'};
+    return {cls:'fb-warn', msg:'💡 ลองเริ่มด้วยการกำหนดบทบาทให้ชัด เช่น “คุณคือ '+s.roleScenario+'”'};
+  }
+  /* ---- B1: image prompt formula ---- */
+  function checkImgPrompt(){
+    const p=txt('q_b1_prompt'); if(!p) return null;
+    const eng=/[a-z]/i.test(p);
+    const style=/(watercolor|cyberpunk|neon|clay|mural|ghibli|anime|isometric|3d|photoreal|crystal|glass|render|style|painting|illustration|vaporwave|retro)/i.test(p);
+    const light=/(light|lighting|sunlight|\bsun\b|cinematic|glow|shadow|morning|golden|studio|neon)/i.test(p);
+    const scene=/(over|above|background|street|city|sky|bangkok|road|scene|skyline|market|landscape)/i.test(p);
+    if(!eng) return {cls:'fb-tip', msg:'💡 โมเดลสร้างภาพเข้าใจอังกฤษแม่นสุด — ลองพิมพ์พรอมต์เป็นภาษาอังกฤษ (ให้ HuggingChat ช่วยแปลตามสูตรได้)'};
+    if(style && (light||scene)) return {cls:'fb-ok', msg:'✓ ครบสูตร! มีทั้ง Style และ Lighting/Details — พรอมต์ระดับมือโปร'};
+    const miss=[]; if(!style) miss.push('Style (เช่น claymation, cyberpunk)'); if(!light&&!scene) miss.push('Lighting/Details (เช่น neon lighting, over Bangkok)');
+    return {cls:'fb-warn', msg:'💡 เพิ่มอีกนิดให้ครบสูตร: '+miss.join('  +  ')};
+  }
+  /* ---- B2: ratio matches brief ---- */
+  function checkRatio(){
+    const sel=txt('q_b2_ratio'); if(!sel) return null;
+    const s=curSet(); if(!s) return {cls:'fb-tip', msg:'💡 ระบุเลขที่นั่งในสไลด์ที่ 2 ก่อน เพื่อรับฟีดแบ็กตรงโจทย์ของคุณ'};
+    if(sel.indexOf(s.goodRatio)>=0) return {cls:'fb-ok', msg:'✓ เหมาะสม — โจทย์'+s.ratioWhy+' จึงควรใช้ '+s.goodRatioLabel};
+    return {cls:'fb-warn', msg:'💡 ลองทบทวน — โจทย์'+s.ratioWhy+' โดยทั่วไปจึงเหมาะกับ '+s.goodRatioLabel+' มากกว่า'};
+  }
+  /* ---- B4/B5: RFC Prompt check ---- */
+  function checkRFC(id){
+    const p=txt(id); if(!p) return null;
+    const len=p.length;
+    if(len<20) return {cls:'fb-warn', msg:'💡 พรอมต์สั้นไปหน่อย ลองเขียนให้ครบทั้ง Role (บทบาท), Format (รูปแบบ), และ Context (บริบท) ดูนะครับ'};
+    return {cls:'fb-ok', msg:'✓ ดีมาก! นำพรอมต์นี้ไปให้ Gemini ช่วยคิดเนื้อหา แล้วก๊อปปี้ผลลัพธ์ไปใช้งานได้เลย'};
+  }
+
+  /* ---- submission readiness panel ---- */
+  const ACTS=[
+    {name:'A1 · ปรับ Temperature', slots:[['t','q_a1_low'],['t','q_a1_high'],['t','q_a1_compare']], tip:checkTemp},
+    {name:'A2 · System Prompt', slots:[['t','q_a2_system'],['t','q_a2_result']], tip:checkRole},
+    {name:'A3 · เทียบโมเดล', slots:[['t','q_a3_fast'],['t','q_a3_strong'],['t','q_a3_compare']], tip:null},
+    {name:'B1 · สร้างภาพ', slots:[['t','q_b1_prompt'],['i','q_b1_img']], tip:checkImgPrompt},
+    {name:'B2 · สัดส่วน & สไตล์', slots:[['s','q_b2_ratio'],['s','q_b2_style'],['t','q_b2_prompt']], tip:checkRatio},
+    {name:'B3 · แก้ไขภาพ (Inpainting)', slots:[['i','q_b3_img'],['t','q_b3_desc'],['t','q_b3_tool']], tip:null},
+    {name:'B4 · สร้างแผนภาพ (Napkin)', slots:[['t','q_b4_prompt'],['i','q_b4_img'],['t','q_b4_obs']], tip:()=>checkRFC('q_b4_prompt')},
+    {name:'B5 · สร้างสไลด์ (Gamma)', slots:[['t','q_b5_prompt'],['i','q_b5_img'],['t','q_b5_obs']], tip:()=>checkRFC('q_b5_prompt')}
+  ];
+  function slotFilled(type,id){
+    if(type==='i') return imgs(id).length>=1;
+    if(type==='s') return txt(id)!=='';
+    return txt(id).length>=2;
+  }
+  function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function renderPanel(){
+    const rows=document.getElementById('check-rows'); if(!rows) return;
+    let done=0, total=0, html='';
+    ACTS.forEach(a=>{
+      let f=0; a.slots.forEach(sl=>{ total++; if(slotFilled(sl[0],sl[1])){ f++; done++; } });
+      const all=f===a.slots.length;
+      const ic = all ? '✅' : (f>0 ? '◑' : '○');
+      const tip = a.tip ? a.tip() : null;
+      const tipHtml = (tip && tip.cls==='fb-warn') ? `<span class="tip">${esc(tip.msg)}</span>` : '';
+      html += `<div class="check-row${all?' done':''}"><span class="ic">${ic}</span><span class="body"><span class="ttl">${esc(a.name)}</span> <span class="sub">(${f}/${a.slots.length})</span>${tipHtml}</span></div>`;
+    });
+    rows.innerHTML=html;
+    const bar=document.getElementById('prog-bar'), cnt=document.getElementById('prog-count'), msg=document.getElementById('check-msg');
+    const pct = total ? Math.round(done/total*100) : 0;
+    if(bar) bar.style.width = pct+'%';
+    if(cnt) cnt.textContent = done+' / '+total+' ช่อง ('+pct+'%)';
+    if(msg){
+      const name1 = txt('ws-name1');
+      if(done===total && name1) msg.textContent='🎉 เยี่ยมมาก! ใบงานครบทุกช่องแล้ว กดบันทึกเป็น PDF ส่งครูได้เลย';
+      else if(done===total && !name1) msg.textContent='✅ ตอบครบแล้ว เหลือกรอกชื่อ–นามสกุลในสไลด์ที่ 2 ก่อนบันทึก';
+      else if(pct>=60) msg.textContent='เกือบครบแล้ว! เหลืออีก '+(total-done)+' ช่อง สู้ๆ 💪';
+      else if(done>0) msg.textContent='ทำไปแล้ว '+done+' จาก '+total+' ช่อง — ทำต่อให้ครบนะ';
+      else msg.textContent='กรอกใบงานให้ครบ ระบบจะตรวจและให้คำแนะนำอัตโนมัติ';
+    }
+  }
+
+  function runFeedback(){
+    setFbResult('fb_q_a1_compare', checkTemp());
+    setFbResult('fb_q_a2_system', checkRole());
+    setFbResult('fb_q_b1_prompt', checkImgPrompt());
+    setFbResult('fb_q_b2_ratio', checkRatio());
+    setFbResult('fb_q_b4_prompt', checkRFC('q_b4_prompt'));
+    setFbResult('fb_q_b5_prompt', checkRFC('q_b5_prompt'));
+    renderPanel();
+  }
+
+  window.refreshFeedback = runFeedback;
+  document.addEventListener('input', e=>{ if(e.target.classList && e.target.classList.contains('save')) runFeedback(); });
+  document.addEventListener('change', e=>{ if(e.target.classList && e.target.classList.contains('save')) runFeedback(); });
+  if(window.Reveal) Reveal.on('slidechanged', runFeedback);
+  if(document.readyState!=='loading') runFeedback();
+  else document.addEventListener('DOMContentLoaded', runFeedback);
+})();
+</script>
+
+</body>
+</html>

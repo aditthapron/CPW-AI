@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI for Ed — สัปดาห์ที่ 5: สำรวจข้อมูลด้วย Power BI</title>
+
+<!-- reveal.js core -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+<!-- Thai fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --ink: #1a2235; --muted: #5b6678; --line: #dfe4ec;
+  --blue: #1a73e8; --purple: #7b41d8; --teal: #0aa3a3;
+  --bg1: #f7f9fc; --card: #ffffff; --soft: #eef3fb;
+  --warn: #c2410c; --good: #0f8a4f;
+  --accent-grad: linear-gradient(90deg, var(--blue), var(--purple));
+}
+.reveal { font-family:'Sarabun','Noto Sans Thai','Outfit',sans-serif; color:var(--ink); font-size:28px; }
+.reveal .slides { text-align:left; }
+.reveal h1, .reveal h2, .reveal h3 { font-family:'Sarabun','Noto Sans Thai','Outfit',sans-serif; color:var(--ink); font-weight:700; text-transform:none; letter-spacing:0; line-height:1.35; }
+.reveal h1 { font-size:1.8em; margin-bottom: 0.5em; }
+.reveal h2 { font-size:1.35em; margin-bottom: 0.6em; }
+.reveal h3 { font-size:1.15em; color:var(--blue); margin-bottom: 0.4em; }
+.reveal p { line-height:1.75; margin-bottom: 0.7em; }
+.reveal ul { display:block; margin-bottom: 0.7em; }
+.reveal li { margin:.5em 0; line-height:1.65; }
+.reveal strong { color:var(--purple); }
+.reveal section { height:100%; overflow-y:auto; }
+.reveal section::-webkit-scrollbar { width:6px; }
+.reveal section::-webkit-scrollbar-track { background:transparent; }
+.reveal section::-webkit-scrollbar-thumb { background:var(--line); border-radius:99px; }
+.reveal section::-webkit-scrollbar-thumb:hover { background:var(--muted); }
+.reveal .slides section { padding:8px 20px; box-sizing:border-box; }
+.reveal h2 { margin-bottom:.4em; }
+
+/* accent header bar on each slide */
+.reveal .slides section > .kicker {
+  display:inline-block; font-size:.6em; font-weight:700; letter-spacing:.05em;
+  color:#fff; background:var(--accent-grad);
+  padding:.2em .9em; border-radius:999px; margin-bottom:.4em;
+}
+.reveal .q { background:var(--soft); border-left:5px solid var(--blue);
+  padding:.6em .9em; border-radius:10px; font-size:.9em; line-height:1.5; margin:.5em 0 .7em; }
+.reveal .note { color:var(--muted); font-size:.65em; }
+.reveal .rule { background:#fff6ed; border:1px solid #ffd8b8; color:var(--warn);
+  border-radius:10px; padding:.4em .8em; font-size:.78em; font-weight:600; }
+.reveal .good { color:var(--good); font-weight:700; }
+.reveal .warn { color:var(--warn); font-weight:600; }
+.reveal code { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; font-size:.85em;
+  background:var(--soft); color:var(--blue); padding:.06em .42em; border-radius:6px; white-space:nowrap; }
+.reveal a.tool { color:var(--blue); font-weight:700; text-decoration:underline; }
+
+/* title slide */
+.title-wrap { text-align:center; height:100%; display:flex; flex-direction:column;
+  justify-content:center; align-items:center; }
+.title-wrap .badge { font-size:.68em; color:#fff; background:var(--accent-grad);
+  padding:.3em 1.2em; border-radius:999px; font-weight:700; }
+.title-wrap h1 { background:var(--accent-grad);
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; margin:.2em 0; }
+.title-wrap .sub { font-size:1.0em; color:var(--ink); font-weight:600; }
+.title-wrap .meta { color:var(--muted); font-size:.75em; margin-top:.5em; }
+
+/* two-column helper */
+.cols { display:flex; gap:1.2em; align-items:flex-start; }
+.cols > div { flex:1; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:14px;
+  padding:.8em 1.0em; box-shadow:0 2px 8px rgba(20,30,60,.04); line-height:1.5; }
+.card h3 { margin-top:0; }
+.pill { display:inline-block; background:var(--soft); color:var(--blue);
+  border-radius:8px; padding:.08em .5em; font-size:.78em; font-weight:600; margin:.1em; }
+
+/* table styling inside reveal */
+.reveal table { width:100%; border-collapse:collapse; margin:.5em 0; font-size:.7em; }
+.reveal th { background:var(--soft); font-weight:700; border:1px solid var(--line); padding:6px 12px; }
+.reveal td { border:1px solid var(--line); padding:6px 12px; }
+
+/* worksheet fields */
+.ws-label { display:block; font-size:.7em; font-weight:700; color:var(--muted);
+  margin:.4em 0 .15em; }
+textarea.ws-field, input.save, select.save {
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:.7em; color:var(--ink);
+  width:100%; border:1.5px solid var(--line); border-radius:10px; padding:.5em .7em;
+  background:#fcfdff; box-sizing:border-box; resize:vertical !important; overflow:auto !important; }
+textarea.ws-field { min-height:120px; line-height:1.5; }
+textarea.ws-field:focus, input.save:focus, select.save:focus { outline:none; border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(26,115,232,.12); }
+input.save { height:auto; }
+select.save { height:auto; padding:.4em .6em; }
+
+/* thin scrollbar for all textareas */
+textarea::-webkit-scrollbar { width: 5px; }
+textarea::-webkit-scrollbar-track { background: transparent; }
+textarea::-webkit-scrollbar-thumb { background: var(--line); border-radius: 99px; }
+textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+.info-grid { display:grid; grid-template-columns:1fr; gap:.3em; max-width:620px; }
+.info-row { display:flex; gap:.8em; }
+.info-row > div { flex:1; }
+
+/* download button (floating) */
+#dlbtn { position:fixed; top:14px; right:16px; z-index:60;
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:15px; font-weight:700;
+  color:#fff; background:var(--accent-grad);
+  border:none; border-radius:999px; padding:10px 18px; cursor:pointer;
+  box-shadow:0 4px 14px rgba(76,40,160,.3); display:none; }
+#dlbtn:hover { filter:brightness(1.05); }
+#dlbtn:active { transform:translateY(1px); }
+#savehint { position:fixed; top:54px; right:18px; z-index:60; font-size:11px;
+  color:var(--good); font-family:'Sarabun',sans-serif; opacity:0; transition:opacity .3s; }
+.dlbig { font-size:.9em; font-weight:700; color:#fff;
+  background:var(--accent-grad); border:none;
+  border-radius:12px; padding:.5em 1.1em; cursor:pointer; box-shadow:0 4px 14px rgba(76,40,160,.25);
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; }
+
+/* assignment print area — hidden on screen, shown only when printing */
+#print-area { display:none; }
+.pdf-doc { font-family:'Sarabun','Noto Sans Thai',sans-serif; color:#11131a; padding:6px 4px; }
+.pdf-doc h1 { font-size:22px; margin:0 0 4px; color:#1a73e8; }
+.pdf-doc .pdf-meta { display:flex; gap:18px; font-size:13px; border-bottom:2px solid #1a73e8;
+  padding-bottom:8px; margin-bottom:12px; flex-wrap:wrap; }
+.pdf-doc h2 { font-size:15px; margin:16px 0 6px; color:#7b41d8; border-left:4px solid #7b41d8; padding-left:8px; }
+.pdf-item { margin:8px 0; page-break-inside:avoid; }
+.pdf-label { font-size:12.5px; font-weight:700; color:#333; margin-bottom:3px; }
+.pdf-answer { font-size:12.5px; line-height:1.5; border:1px solid #c9d2e0; border-radius:6px;
+  padding:7px 9px; white-space:pre-wrap; min-height:18px; background:#fbfcfe; }
+.pdf-answer .empty { color:#aab2c0; }
+@page { size:A4; margin:14mm; }
+@media print {
+  body.printing > *:not(#print-area) { display:none !important; }
+  body.printing #print-area { display:block !important; }
+  body.printing { background:#fff !important; }
+}
+.pdf-imgs img { display:block; max-width:100%; max-height:420px; margin-top:6px;
+  border:1px solid #c9d2e0; border-radius:6px; page-break-inside:avoid; }
+
+/* image attach / paste helper */
+.img-btn { display:inline-flex; align-items:center; gap:.3em; margin-top:.35em;
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:.6em; font-weight:700;
+  color:var(--blue); background:var(--soft); border:1.5px solid #cfe0fb;
+  border-radius:999px; padding:.4em .9em; cursor:pointer; }
+.img-btn:hover { filter:brightness(.98); }
+.img-hint { font-size:.55em; color:var(--muted); margin-left:.55em; }
+.img-tray { display:flex; flex-wrap:wrap; gap:.5em; margin-top:.4em; }
+.img-thumb { position:relative; width:96px; height:96px; border:1px solid var(--line);
+  border-radius:8px; overflow:hidden; background:#fafbff; }
+.img-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+.img-thumb .rm { position:absolute; top:2px; right:2px; width:20px; height:20px;
+  border:none; border-radius:50%; background:rgba(20,30,60,.7); color:#fff;
+  font-size:13px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.img-thumb .rm:hover { background:var(--warn); }
+
+/* ---- submission readiness panel ---- */
+.check-panel { max-width:780px; margin:0.3em auto 0; }
+.prog-meta { display:flex; justify-content:space-between; font-size:.64em; color:var(--muted);
+  font-weight:700; margin:.2em .2em .35em; }
+.prog-wrap { background:var(--soft); border-radius:999px; height:15px; overflow:hidden; border:1px solid var(--line); }
+.prog-bar  { height:100%; width:0%; border-radius:999px; background:var(--accent-grad); transition:width .35s ease; }
+.check-msg { text-align:center; font-size:.74em; font-weight:700; margin:.5em 0 .55em; color:var(--ink); }
+.check-grid { display:grid; grid-template-columns:1fr 1fr; gap:.4em; }
+.check-row { display:flex; align-items:flex-start; gap:.5em; font-size:.66em; line-height:1.4;
+  padding:.4em .65em; border:1px solid var(--line); border-radius:10px; background:#fff; }
+.check-row .ic { font-size:1.1em; line-height:1.3; flex:0 0 auto; }
+.check-row .body { flex:1; min-width:0; }
+.check-row .ttl { font-weight:700; color:var(--ink); }
+.check-row .sub { color:var(--muted); font-size:.92em; }
+.check-row .tip { display:block; color:#b4480c; font-size:.92em; margin-top:.15em; }
+.check-row.done { background:#f4fbf7; border-color:#cdeadb; }
+
+/* step box for workshop */
+.step-box { background:var(--soft); border:1.5px solid var(--line); border-radius:12px;
+  padding:.6em .8em; margin:.4em 0; font-size:.72em; line-height:1.6; }
+.step-box b { color:var(--purple); }
+.step-num { display:inline-flex; align-items:center; justify-content:center;
+  width:26px; height:26px; border-radius:50%; background:var(--accent-grad);
+  color:#fff; font-weight:700; font-size:.7em; margin-right:.4em; flex-shrink:0; }
+</style>
+</head>
+<body>
+
+<button id="dlbtn" onclick="downloadPDF()">ดาวน์โหลดใบงาน (PDF ไฟล์เดียว)</button>
+<div id="savehint">บันทึกแล้ว </div>
+
+<div class="reveal"><div class="slides">
+
+<!-- 1 TITLE -->
+<section>
+  <div class="title-wrap">
+    <span class="badge">AI for Ed · สัปดาห์ที่ 5</span>
+    <h1>สำรวจข้อมูลด้วย Power BI</h1>
+  </div>
+</section>
+
+<!-- 2 STUDENT INFO -->
+<section>
+  <span class="kicker">เริ่มต้นคลาส</span>
+  <h2>ระบุข้อมูลผู้เรียน</h2>
+  <div class="info-grid">
+    <div class="info-row">
+      <div>
+        <span class="ws-label">ชื่อ–นามสกุล คนที่ 1</span>
+        <input class="save" id="ws-name1" type="text" placeholder="เช่น นายสมชาย ตั้งใจเรียน">
+      </div>
+      <div>
+        <span class="ws-label">ชื่อ–นามสกุล คนที่ 2 (ถ้ามี)</span>
+        <input class="save" id="ws-name2" type="text" placeholder="เช่น นางสาวสมศรี รักเรียน">
+      </div>
+    </div>
+    <div class="info-row">
+      <div><span class="ws-label">ชั้น</span><input class="save" id="ws-class" type="text" placeholder="ม.1/2"></div>
+      <div><span class="ws-label">เลขที่นั่งสอบ/เรียน</span><input class="save" id="ws-no" type="text" placeholder="ระบุตัวเลข เช่น 15"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== LECTURE: DATA ANALYTICS INTRO ===================== -->
+
+<!-- 3a DATA ANALYTICS — ข้อมูลอยู่รอบตัว -->
+<section>
+  <span class="kicker">แนวคิด 1 · ข้อมูลอยู่รอบตัวเรา</span>
+  <h2>ข้อมูลอยู่ทุกที่รอบตัวเรา!</h2>
+  <div class="cols">
+    <div style="flex:1.1;">
+      <p style="font-size:0.78em; line-height:1.7;">ทุกวันเราสร้างและใช้ <b>ข้อมูล</b> โดยไม่รู้ตัว:</p>
+      <ul style="font-size:0.72em; line-height:1.6; padding-left:1.1em;">
+        <li><b>โซเชียลมีเดีย</b> — ยอดไลก์ ยอดวิว จำนวนผู้ติดตาม</li>
+        <li><b>ช้อปปิ้ง</b> — ราคาสินค้า ยอดขาย ดาวรีวิว</li>
+        <li><b>สภาพอากาศ</b> — อุณหภูมิ ปริมาณฝน</li>
+        <li><b>โรงเรียน</b> — คะแนนสอบ เกรด จำนวนนักเรียน</li>
+      </ul>
+    </div>
+    <div style="flex:1.0; text-align:center;">
+      <img src="images/data_everywhere.png" style="max-height: 380px; max-width: 100%; border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+    </div>
+  </div>
+</section>
+
+<!-- 3b DATA ANALYTICS — จากตัวเลข → คำตอบ -->
+<section>
+  <span class="kicker">แนวคิด 2 · เปลี่ยนตัวเลขเป็นคำตอบ</span>
+  <h2>Data Analytics = เปลี่ยนตัวเลข → คำตอบ</h2>
+  <div class="cols">
+    <div style="flex:1.1;">
+      <p style="font-size:0.78em; line-height:1.7;">ตัวเลขดิบๆ ดูแล้ว <b>ไม่เข้าใจอะไรเลย</b></p>
+      <p style="font-size:0.76em; line-height:1.6;"><strong>Data Analytics</strong> คือกระบวนการเปลี่ยนตัวเลขดิบ → <b>"คำตอบที่เข้าใจง่าย"</b></p>
+      <p style="font-size:0.76em; line-height:1.6;">คำตอบเหล่านี้เรียกว่า <strong>Insight</strong> (ข้อมูลเชิงลึก) ช่วยให้เราตัดสินใจได้ดีขึ้น!</p>
+      <div class="card" style="border-left:5px solid var(--purple); background:#fbf9ff; font-size:0.66em; line-height:1.55;">
+        <b style="color:var(--purple)">สรุป:</b> ข้อมูลดิบ (ตัวเลขเยอะๆ) → วิเคราะห์ → Insight (คำตอบ) → ตัดสินใจ!
+      </div>
+    </div>
+    <div style="flex:1.0; text-align:center;">
+      <img src="images/raw_to_insight.png" style="max-height: 380px; max-width: 100%; border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+    </div>
+  </div>
+</section>
+
+<!-- 3c ตัวอย่าง Netflix/YouTube -->
+<section>
+  <span class="kicker">ตัวอย่าง · Netflix & YouTube</span>
+  <h2>ตัวอย่าง: Netflix / YouTube รู้ว่าเราชอบดูอะไร!</h2>
+  <div class="cols">
+    <div style="flex:1.1;">
+      <p style="font-size:0.78em; line-height:1.7;">เคยสงสัยไหมว่า ทำไม Netflix/YouTube แนะนำคลิปที่เราชอบได้?</p>
+      <ul style="font-size:0.72em; line-height:1.6; padding-left:1.1em;">
+        <li>เก็บข้อมูลว่าเราดูอะไร นานแค่ไหน กดข้ามตอนไหน</li>
+        <li>วิเคราะห์ว่าคนที่ดูเหมือนเราชอบอะไรอีก</li>
+        <li>แนะนำคลิป/หนังที่เราน่าจะชอบ</li>
+      </ul>
+      <div class="card" style="border-top:4px solid var(--teal); font-size:0.64em; line-height:1.55;">
+        <b style="color:var(--teal)">ผลลัพธ์:</b> กว่า <b>75–80%</b> ของสิ่งที่คนดูบน Netflix มาจาก <b>ระบบแนะนำ</b> ที่วิเคราะห์จากข้อมูลการดูของเรา!
+      </div>
+    </div>
+    <div style="flex:1.0; text-align:center;">
+      <img src="images/netflix_recommend.png" style="max-height: 380px; max-width: 100%; border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+    </div>
+  </div>
+</section>
+
+<!-- 3d ตัวอย่าง Shopee -->
+<section>
+  <span class="kicker">ตัวอย่าง · Shopee & ร้านค้าออนไลน์</span>
+  <h2>ตัวอย่าง: Shopee รู้ว่าเราอยากซื้ออะไร!</h2>
+  <div class="cols">
+    <div style="flex:1.1;">
+      <p style="font-size:0.78em; line-height:1.7;">เปิด Shopee แล้วเห็นสินค้าที่ตรงใจ? นั่นคือ Data Analytics!</p>
+      <ul style="font-size:0.72em; line-height:1.6; padding-left:1.1em;">
+        <li>ดูว่าคนซื้ออะไรบ่อย → <b>แนะนำสินค้า</b></li>
+        <li>รู้ว่าช่วงเวลาไหนคนซื้อเยอะ → <b>จัดโปรโมชัน</b></li>
+        <li>วิเคราะห์รีวิว → <b>ปรับปรุงสินค้า</b></li>
+      </ul>
+      <div class="card" style="border-left:5px solid var(--warn); background:#fffcf8; font-size:0.64em; line-height:1.55;">
+        <b class="warn">สรุป:</b> ทุกครั้งที่เราคลิก กดไลก์ หรือซื้อของ — ข้อมูลเหล่านั้นถูกเก็บและวิเคราะห์!
+      </div>
+    </div>
+    <div style="flex:1.0; text-align:center;">
+      <img src="images/shopee_analytics.png" style="max-height: 380px; max-width: 100%; border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+    </div>
+  </div>
+</section>
+
+<!-- 4a ข้อมูลหมวดหมู่ -->
+<section>
+  <span class="kicker">ประเภทข้อมูล · หมวดหมู่</span>
+  <h2>ข้อมูลหมวดหมู่ (Category Data)</h2>
+  <div class="cols">
+    <div style="flex:1.1;">
+      <p style="font-size:0.78em; line-height:1.7;">ข้อมูลที่ <b>จัดเป็นกลุ่ม</b> ได้ แต่ <b>คำนวณไม่ได้</b></p>
+      <ul style="font-size:0.72em; line-height:1.6; padding-left:1.1em;">
+        <li><b>เพศ:</b> ชาย / หญิง — เอาไปบวกกันไม่ได้</li>
+        <li><b>ภาค:</b> เหนือ / อีสาน / กลาง / ใต้ / ตะวันออก / ตะวันตก / กทม.ฯ</li>
+        <li><b>ประเภทผู้ป่วย:</b> สัมผัสผู้ติดเชื้อ / บุคลากรทางการแพทย์ / มาจากต่างประเทศ</li>
+        <li><b>สีที่ชอบ:</b> แดง / น้ำเงิน / เขียว</li>
+      </ul>
+      <div class="card" style="border-top:4px solid var(--purple); font-size:0.64em; line-height:1.55;">
+        <b style="color:var(--purple)">จำง่าย:</b> ถ้าเอามา <b>บวก ลบ หาค่าเฉลี่ย ไม่ได้</b> = ข้อมูลหมวดหมู่<br>
+        <b>ข้อมูลหมวดหมู่ยังแบ่งย่อยได้อีก 2 แบบ</b> — เดี๋ยวดูกันในสไลด์ถัดๆ ไป
+      </div>
+    </div>
+    <div style="flex:1.0; text-align:center;">
+      <img src="images/data_types_simple.png" style="max-height: 380px; max-width: 100%; border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+    </div>
+  </div>
+</section>
+
+<!-- 4b ข้อมูลตัวเลข -->
+<section>
+  <span class="kicker">ประเภทข้อมูล · ตัวเลข</span>
+  <h2>ข้อมูลตัวเลข (Numerical Data)</h2>
+  <div class="cols">
+    <div style="flex:1.1;">
+      <p style="font-size:0.78em; line-height:1.7;">ข้อมูลที่เป็น <b>ตัวเลข</b> สามารถ <b>คำนวณ</b> ได้</p>
+      <ul style="font-size:0.72em; line-height:1.6; padding-left:1.1em;">
+        <li><b>อายุ:</b> 12, 25, 60 ปี — หาค่าเฉลี่ยได้</li>
+        <li><b>ส่วนสูง:</b> 150, 165, 180 ซม.</li>
+        <li><b>ราคาสินค้า:</b> 29, 199, 1500 บาท</li>
+        <li><b>จำนวนผู้ป่วย:</b> 100, 500, 2000 คน</li>
+      </ul>
+      <div class="card" style="border-top:4px solid var(--teal); font-size:0.64em; line-height:1.55;">
+        <b style="color:var(--teal)">จำง่าย:</b> ถ้าเอามา <b>บวก ลบ หาค่าเฉลี่ย ได้</b> = ข้อมูลตัวเลข<br>
+        <b>ในไฟล์ COVID:</b> ตัวเลข (Numerical) = อายุ, สัปดาห์ที่รายงาน, จำนวนผู้ป่วย
+      </div>
+    </div>
+    <div style="flex:1.0; text-align:center;">
+      <img src="images/data_insight_hero.png" style="max-height: 380px; max-width: 100%; border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+    </div>
+  </div>
+</section>
+
+<!-- 4c NOMINAL vs ORDINAL -->
+<section>
+  <span class="kicker">ประเภทข้อมูล · หมวดหมู่แบ่งย่อย</span>
+  <h2>ข้อมูลหมวดหมู่แบ่งเป็น 2 แบบ: Nominal &amp; Ordinal</h2>
+  <div style="text-align:center; margin:.1em 0 .45em;">
+    <img src="images/nominal_ordinal.png" alt="เปรียบเทียบ Nominal (ไม่มีลำดับ) กับ Ordinal (มีลำดับ)"
+         style="max-width:100%; max-height:230px; border-radius:12px; box-shadow:0 3px 10px rgba(0,0,0,0.08);">
+  </div>
+  <div class="cols" style="gap:.9em;">
+    <div class="card" style="flex:1; border-top:4px solid var(--blue); font-size:0.66em; line-height:1.5;">
+      <h3 style="font-size:1.05em; margin:0 0 .2em;">Nominal — <span style="color:var(--muted)">ไม่มีลำดับ</span></h3>
+      <p style="margin:.2em 0;">จัดกลุ่มได้ แต่ <b>สลับที่กันได้</b> ไม่มีอันไหนมาก่อน–หลัง (เหมือนสีในภาพ)</p>
+      <p style="margin:.2em 0;"><b>ตัวอย่าง:</b> เพศ, ภาค, จังหวัด, สีที่ชอบ</p>
+    </div>
+    <div class="card" style="flex:1; border-top:4px solid var(--purple); font-size:0.66em; line-height:1.5;">
+      <h3 style="font-size:1.05em; margin:0 0 .2em; color:var(--purple);">Ordinal — <span style="color:var(--muted)">มีลำดับ</span></h3>
+      <p style="margin:.2em 0;">จัดกลุ่มได้ <b>และมีลำดับชัดเจน</b> (น้อย → มาก เหมือนแท่งในภาพ)</p>
+      <p style="margin:.2em 0;"><b>ตัวอย่าง:</b> ช่วงอายุ, ระดับความพอใจ (น้อย/กลาง/มาก), เกรด (A/B/C)</p>
+    </div>
+  </div>
+  <div class="card" style="border-left:5px solid var(--teal); background:#f2fdfb; font-size:0.62em; line-height:1.55; margin-top:.5em;">
+    <b style="color:var(--teal)">ในไฟล์ COVID แยกได้ 3 แบบ:</b><br>
+    <b>Nominal:</b> เพศ, ภาค, จังหวัด, ประเภทผู้ป่วย, ความเสี่ยง &nbsp;|&nbsp;
+    <b>Ordinal:</b> ช่วงอายุ, สัปดาห์/วันที่รายงาน &nbsp;|&nbsp;
+    <b>Numerical:</b> อายุ (ตัวเลข)
+  </div>
+  <div class="rule" style="font-size:0.64em; margin-top:.4em;">
+    <b>จำง่าย:</b> <b>N</b>ominal = <b>N</b>ame (ชื่อเรียกเฉยๆ ไม่มีลำดับ) · <b>O</b>rdinal = <b>O</b>rder (มีลำดับ)
+  </div>
+</section>
+
+<!-- 5 FOUR TYPES OF ANALYTICS -->
+<section>
+  <span class="kicker">แนวคิด · 4 ระดับการวิเคราะห์</span>
+  <h2>4 ระดับของการวิเคราะห์ข้อมูล</h2>
+  <table style="font-size:0.62em;">
+    <thead><tr><th>ระดับ</th><th>คำถาม</th><th>ตัวอย่างง่ายๆ</th><th>ความยาก</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>1. Descriptive</b><br>(สรุปสิ่งที่เกิด)</td>
+        <td>"เกิดอะไรขึ้น?"</td>
+        <td>คลิปนี้มียอดวิว 1 ล้าน · ผู้ป่วย COVID ภาคกลางมากสุด</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><b>2. Diagnostic</b><br>(หาสาเหตุ)</td>
+        <td>"ทำไมถึงเกิด?"</td>
+        <td>ทำไมภาคกลางผู้ป่วยเยอะ? → เพราะมีสถานบันเทิง · คนแน่น</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><b>3. Predictive</b><br>(คาดการณ์)</td>
+        <td>"จะเกิดอะไรต่อ?"</td>
+        <td>เดือนหน้าจะมีผู้ป่วยเพิ่มกี่คน?</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><b>4. Prescriptive</b><br>(แนะนำ)</td>
+        <td>"ควรทำอะไร?"</td>
+        <td>ควรล็อคดาวน์ไหม? ต้องเพิ่มเตียงกี่เตียง?</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="card" style="border-left:5px solid var(--teal); background:#f2fdfb; font-size:0.66em; line-height:1.5; margin-top:.5em;">
+    <b style="color:var(--teal)">วันนี้เราจะเน้นระดับ 1 & 2:</b> สรุปข้อมูลเป็นกราฟ (Descriptive) แล้วตอบคำถาม "ทำไม" (Diagnostic) จากสิ่งที่เห็น
+  </div>
+</section>
+
+<!-- 6a PIE CHART -->
+<section>
+  <span class="kicker">กราฟ 1 · Pie Chart</span>
+  <h2>Pie Chart — ดูสัดส่วนเป็นเปอร์เซ็นต์</h2>
+  <div class="cols">
+    <div style="flex:1.1;">
+      <p style="font-size:0.78em; line-height:1.7;">แสดง <b>ส่วนแบ่ง</b> ของแต่ละกลุ่มเทียบกับทั้งหมด (100%)</p>
+      <ul style="font-size:0.72em; line-height:1.6; padding-left:1.1em;">
+        <li>เหมาะกับกลุ่ม <b>น้อยๆ</b> (2-5 กลุ่ม)</li>
+        <li>ตอบคำถาม: <b>"กลุ่มไหนมีสัดส่วนมากสุด?"</b></li>
+        <li>ถ้ากลุ่มเยอะเกิน → ดูยากมาก ใช้ Bar Chart ดีกว่า</li>
+      </ul>
+      <div class="card" style="border-top:4px solid var(--purple); font-size:0.64em; line-height:1.55;">
+        <b style="color:var(--purple)">ใน Workshop วันนี้:</b> สร้าง Pie Chart แสดงจำนวนผู้ป่วย COVID แยกตามภาค
+      </div>
+    </div>
+    <div style="flex:1.0; text-align:center;">
+      <img src="images/pie_example1.png" style="max-height: 220px; max-width: 100%; border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.08); margin-bottom: .5em;">
+      <img src="images/pie_example2.png" style="max-height: 180px; max-width: 100%; border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.08);">
+    </div>
+  </div>
+</section>
+
+<!-- 6b BAR CHART -->
+<section>
+  <span class="kicker">กราฟ 2 · Bar Chart</span>
+  <h2>Bar Chart — เปรียบเทียบจำนวนระหว่างกลุ่ม</h2>
+  <div class="cols">
+    <div style="flex:1.1;">
+      <p style="font-size:0.78em; line-height:1.7;">แท่งยาว = จำนวนเยอะ, แท่งสั้น = จำนวนน้อย</p>
+      <ul style="font-size:0.72em; line-height:1.6; padding-left:1.1em;">
+        <li>อ่านง่ายที่สุด ใช้บ่อยที่สุดในรายงาน</li>
+        <li>ตอบคำถาม: <b>"กลุ่มไหนมีจำนวนเยอะสุด/น้อยสุด?"</b></li>
+        <li><b>Stacked Bar</b> = แท่งต่อกัน แบ่งสีตามกลุ่มย่อย (เช่น เพศ)</li>
+      </ul>
+      <div class="card" style="border-top:4px solid var(--blue); font-size:0.64em; line-height:1.55;">
+        <b style="color:var(--blue)">ใน Workshop วันนี้:</b> สร้าง Stacked Bar นับผู้ป่วยแต่ละช่วงอายุ แยกตามเพศ
+      </div>
+    </div>
+    <div style="flex:1.0; text-align:center;">
+      <img src="images/bar_example1.png" style="max-height: 220px; max-width: 100%; border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.08); margin-bottom: .5em;">
+      <img src="images/bar_example2.png" style="max-height: 180px; max-width: 100%; border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.08);">
+    </div>
+  </div>
+</section>
+
+<!-- 6c FILLED MAP -->
+<section>
+  <span class="kicker">กราฟ 3 · Filled Map</span>
+  <h2>Filled Map — ดูข้อมูลบนแผนที่</h2>
+  <div class="cols">
+    <div style="flex:1.1;">
+      <p style="font-size:0.78em; line-height:1.7;">ระบายสีบนแผนที่ — สีเข้ม = ข้อมูลมาก, สีอ่อน = น้อย</p>
+      <ul style="font-size:0.72em; line-height:1.6; padding-left:1.1em;">
+        <li>ตอบคำถาม: <b>"พื้นที่ไหนมีข้อมูลมากสุด?"</b></li>
+        <li>เห็น <b>ภาพรวมทั้งประเทศ</b> ในหน้าเดียว</li>
+        <li>เหมาะกับข้อมูลที่มี <b>จังหวัด / ประเทศ / ภาค</b></li>
+      </ul>
+      <div class="card" style="border-top:4px solid var(--teal); font-size:0.64em; line-height:1.55;">
+        <b style="color:var(--teal)">ใน Workshop วันนี้:</b> สร้าง Filled Map ประเทศไทยแสดงผู้ป่วย แยกสีตามภาค
+      </div>
+    </div>
+    <div style="flex:1.0; text-align:center;">
+      <img src="images/map_example1.png" style="max-height: 220px; max-width: 100%; border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.08); margin-bottom: .5em;">
+      <img src="images/map_example2.png" style="max-height: 180px; max-width: 100%; border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.08);">
+    </div>
+  </div>
+</section>
+
+<!-- 6d TREE MAP -->
+<section>
+  <span class="kicker">กราฟ 4 · Tree Map</span>
+  <h2>Tree Map — ดูขนาดเปรียบเทียบ</h2>
+  <div class="cols">
+    <div style="flex:1.1;">
+      <p style="font-size:0.78em; line-height:1.7;">สี่เหลี่ยมใหญ่ = กลุ่มใหญ่, สี่เหลี่ยมเล็ก = กลุ่มเล็ก</p>
+      <ul style="font-size:0.72em; line-height:1.6; padding-left:1.1em;">
+        <li>ตอบคำถาม: <b>"กลุ่มไหนใหญ่สุด?"</b></li>
+        <li>แสดง <b>หลายระดับ</b> ได้ (กลุ่มใหญ่ + กลุ่มย่อย)</li>
+        <li>เหมาะกับข้อมูลที่มี <b>หมวดหมู่ซ้อนกัน</b></li>
+      </ul>
+      <div class="card" style="border-top:4px solid var(--purple); font-size:0.64em; line-height:1.55;">
+        <b style="color:var(--purple)">ใน Workshop วันนี้:</b> สร้าง Tree Map แยกประเภทผู้ป่วย + กลุ่มสำรวจ
+      </div>
+    </div>
+    <div style="flex:1.0; text-align:center;">
+      <img src="images/treemap_example1.png" style="max-height: 360px; max-width: 100%; border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.08);">
+    </div>
+  </div>
+</section>
+
+<!-- 6e KEY INFLUENCER -->
+<section>
+  <span class="kicker">กราฟ 5 · Key Influencer</span>
+  <h2>Key Influencer — หาปัจจัยที่มีผล</h2>
+  <div class="cols">
+    <div style="flex:1.1;">
+      <p style="font-size:0.78em; line-height:1.7;">กราฟพิเศษของ Power BI ที่ช่วยหาว่า <b>"อะไรมีผลมากที่สุด"</b></p>
+      <ul style="font-size:0.72em; line-height:1.6; padding-left:1.1em;">
+        <li>ตอบคำถาม: <b>"ปัจจัยอะไรทำให้เกิดผลลัพธ์นี้?"</b></li>
+        <li>Power BI วิเคราะห์ให้อัตโนมัติ เช่น เพศ/อายุ/ภาค ไหนมีผลมากสุด</li>
+        <li>แสดงเป็น <b>"กี่เท่า"</b> ที่ปัจจัยนั้นเพิ่มโอกาส</li>
+      </ul>
+      <div class="card" style="border-top:4px solid var(--warn); font-size:0.64em; line-height:1.55;">
+        <b class="warn">ใน Workshop วันนี้:</b> วิเคราะห์ว่าปัจจัยอะไรเพิ่มโอกาส "สัมผัสผู้ติดเชื้อ"
+      </div>
+    </div>
+    <div style="flex:1.0; text-align:center;">
+      <img src="images/key_influencer_example.png" style="max-height: 360px; max-width: 100%; border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.08);">
+    </div>
+  </div>
+</section>
+
+<!-- 7 POWER BI INTRO -->
+<section>
+  <span class="kicker">เครื่องมือ · Microsoft Power BI</span>
+  <h2>Power BI คืออะไร?</h2>
+  <div class="cols">
+    <div style="flex:1.2;">
+      <p style="font-size:0.76em; line-height:1.6;"><b>Power BI</b> เป็นโปรแกรมของ Microsoft ที่ช่วย <b>สร้างกราฟสวยๆ จากข้อมูล</b> — แค่ลากวาง ไม่ต้องเขียนโค้ด!</p>
+      <ul style="font-size:0.7em; line-height:1.55; padding-left:1.1em;">
+        <li>ดาวน์โหลด <b>ฟรี</b> (Power BI Desktop)</li>
+        <li>สร้างกราฟได้หลายแบบ: วงกลม, แท่ง, แผนที่, Tree Map</li>
+        <li>ใช้งานด้วยการ <b>ลากและวาง</b></li>
+        <li>เชื่อมต่อข้อมูลจาก Excel ได้ทันที</li>
+      </ul>
+      <div class="rule" style="font-size:0.66em; line-height:1.5;">
+        <b>เตรียมโปรแกรม:</b> ลง Power BI จาก Folder <b>BI</b> บน Desktop<br>
+        หรือดาวน์โหลดจาก <a class="tool" href="https://www.microsoft.com/th-th/download/details.aspx?id=58494" target="_blank">microsoft.com/download</a>
+      </div>
+    </div>
+    <div style="flex:1.0; text-align:center;">
+      <img src="images/powerbi_intro.png" style="max-height: 320px; max-width: 100%; border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+    </div>
+  </div>
+</section>
+
+<!-- ===================== WORKSHOP: COVID CASE ===================== -->
+
+<!-- 8 WORKSHOP INTRO -->
+<section>
+  <span class="kicker">Workshop · เริ่มต้น</span>
+  <h2>Workshop: วิเคราะห์ข้อมูลผู้ป่วย COVID ด้วย Power BI</h2>
+  <div class="cols">
+    <div style="flex:1;">
+      <div class="card" style="border-top:4px solid var(--warn); font-size:0.72em; line-height:1.6; margin-bottom:.5em;">
+        <b class="warn">สิ่งที่ต้องเตรียม:</b>
+        <ol style="margin:.2em 0 0; padding-left:1.2em;">
+          <li>เปิดโปรแกรม <b>Microsoft Power BI Desktop</b></li>
+          <li>ดาวน์โหลดไฟล์ข้อมูล → <a class="tool" href="images/Covid_Round_4_cases.xlsx" download="Covid_Round_4_cases.xlsx">Covid_Round_4_cases.xlsx</a></li>
+        </ol>
+      </div>
+      <div class="card" style="border-left:5px solid var(--teal); background:#f2fdfb; font-size:0.72em; line-height:1.6;">
+        <b style="color:var(--teal)">วิธีนำเข้าข้อมูลใน Power BI:</b>
+        <ol style="margin:.2em 0 0; padding-left:1.2em;">
+          <li>เปิด Power BI Desktop</li>
+          <li>กด <b>Get Data</b> → เลือก <b>Excel Workbook</b></li>
+          <li>เลือกไฟล์ <b>Covid_Round_4_cases.xlsx</b> (ดาวน์โหลดด้านบน)</li>
+          <li>เลือกชีตข้อมูล → กด <b>Load</b></li>
+        </ol>
+      </div>
+    </div>
+    <div style="flex:1;">
+      <div class="card" style="border-left:5px solid var(--blue); font-size:0.68em; line-height:1.55;">
+        <b style="color:var(--blue)">สิ่งที่ต้องทำวันนี้:</b>
+        <ul style="margin:.2em 0 0; padding-left:1.1em;">
+          <li>สร้างแผนภูมิทั้งหมด <b>4 หน้า</b> ใน Power BI</li>
+          <li>ตอบคำถามจากกราฟที่สร้าง</li>
+          <li>Save ไฟล์ Power BI → ส่งบน Google Classroom</li>
+          <li>ส่งคำตอบใน Google Form</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8b PRACTICE Q1 — DATA TYPES -->
+<section>
+  <span class="kicker">ก่อนเริ่ม · ข้อ 1</span>
+  <h2>ก่อนสร้างกราฟ: ลองจำแนกประเภทตัวแปร</h2>
+  <p style="font-size:0.72em; color:var(--muted); margin-bottom:.4em;">เปิดดูคอลัมน์ในไฟล์ COVID แล้วจำแนกตามที่เรียนมา (Nominal / Ordinal / Numerical) — ยกตัวอย่างอย่างละ 2 ตัว</p>
+  <span class="ws-label">1. ยกตัวอย่างตัวแปรในชุดข้อมูล COVID: Ordinal 2 ตัว / Nominal 2 ตัว / Numerical 2 ตัว</span>
+  <textarea class="save ws-field" id="q1_data_types" data-group="คำถาม COVID" data-label="Q1 — ตัวอย่างประเภทตัวแปร" style="height:110px;" placeholder="Ordinal (มีลำดับ): 1. ช่วงอายุ 2. ...&#10;Nominal (ไม่มีลำดับ): 1. เพศ 2. ...&#10;Numerical (ตัวเลข): 1. อายุ 2. ..."></textarea>
+</section>
+
+<!-- 9 PAGE 1 — PIE CHART -->
+<section>
+  <span class="kicker">หน้า 1 · ข้อ 1.1</span>
+  <h2>สร้าง Pie Chart — จำนวนผู้ป่วยแยกตามภาค</h2>
+  <div class="step-box">
+    <span class="step-num">1</span> คลิกที่ <b>Visualizations</b> ด้านขวา → เลือกไอคอน <b>Pie Chart</b> (รูปวงกลม)
+  </div>
+  <div class="step-box">
+    <span class="step-num">2</span> ลาก <b>ภาค</b> ไปวางในช่อง <b>Legend</b>
+  </div>
+  <div class="step-box">
+    <span class="step-num">3</span> ลาก <b>ภาค</b> (หรือคอลัมน์ที่ระบุผู้ป่วย) ไปวางในช่อง <b>Values</b> → เลือก <b>Count</b>
+  </div>
+  <div class="step-box">
+    <span class="step-num">4</span> จะได้วงกลมแสดงสัดส่วนจำนวนผู้ป่วยแต่ละภาค
+  </div>
+  <div class="card" style="border-left:5px solid var(--purple); background:#fbf9ff; font-size:0.66em; line-height:1.5; margin-top:.4em;">
+    <b style="color:var(--purple)">สังเกต:</b> ภาคไหนมีจำนวนผู้ป่วยมากที่สุด? ภาคไหนน้อยที่สุด? → <b>ใช้ตอบคำถามข้อ 2</b><br>
+    <span class="note" style="font-size:.85em;">ภาคมี ~7 กลุ่ม ถ้าวงกลมดูแน่นเกินไป ลองเปลี่ยนเป็น Bar Chart จะเปรียบเทียบง่ายกว่า</span>
+  </div>
+  <span class="ws-label" style="margin-top:.5em;">2. ภาคไหนมีจำนวนผู้ติดเชื้อน้อยสุด? (คิดว่าแปลกหรือเปล่า? ทำไม?)</span>
+  <textarea class="save ws-field" id="q2_least_region" data-group="คำถาม COVID" data-label="Q2 — ภาคที่ผู้ติดเชื้อน้อยสุด" style="height:75px;" placeholder="ภาค... มีจำนวนน้อยสุด เพราะ..."></textarea>
+</section>
+
+<!-- 10 PAGE 1 — STACKED BAR -->
+<section>
+  <span class="kicker">หน้า 1 · ข้อ 1.2</span>
+  <h2>สร้าง Stacked Bar Chart — ช่วงอายุแยกตามเพศ</h2>
+  <div class="step-box">
+    <span class="step-num">1</span> คลิกพื้นที่ว่าง → เลือก <b>Stacked Bar Chart</b> จาก Visualizations
+  </div>
+  <div class="step-box">
+    <span class="step-num">2</span> ลาก <b>ช่วงอายุ</b> (หรือ กลุ่มอายุ) ไปวางในช่อง <b>Y-axis</b>
+  </div>
+  <div class="step-box">
+    <span class="step-num">3</span> ลากคอลัมน์ตัวนับ ไปวางในช่อง <b>X-axis</b> → เลือก <b>Count</b>
+  </div>
+  <div class="step-box">
+    <span class="step-num">4</span> ลาก <b>เพศ</b> ไปวางในช่อง <b>Legend</b> → จะเห็นแท่งแบ่งสีตามเพศ
+  </div>
+  <div class="card" style="border-left:5px solid var(--teal); background:#f2fdfb; font-size:0.66em; line-height:1.5; margin-top:.4em;">
+    <b style="color:var(--teal)">สังเกต:</b> ช่วงอายุไหนติดเชื้อเยอะที่สุด? เพศชายหรือหญิงมากกว่า?
+  </div>
+</section>
+
+<!-- 11 PAGE 2 — FILLED MAP + AVERAGE + TREEMAP -->
+<section>
+  <span class="kicker">หน้า 2 · ข้อ 2.1–2.3</span>
+  <h2>หน้า 2: แผนที่ + ค่าเฉลี่ยอายุ + Tree Map</h2>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:.6em;">
+    <div>
+      <div class="card" style="border-top:4px solid var(--blue); font-size:0.64em; line-height:1.55;">
+        <b style="color:var(--blue)">2.1 Filled Map ประเทศไทย</b>
+        <ol style="margin:.2em 0 0; padding-left:1.2em;">
+          <li>สร้างหน้าใหม่ (กด + ด้านล่าง)</li>
+          <li>เลือก <b>Filled Map</b> จาก Visualizations</li>
+          <li>ลาก <b>จังหวัด</b> ไปในช่อง <b>Location</b></li>
+          <li>ลาก <b>ภาค</b> ไปในช่อง <b>Legend</b> (ให้สีแยกตามภาค)</li>
+          <li>ลากคอลัมน์นับจำนวน ไปในช่อง <b>Tooltips</b></li>
+        </ol>
+      </div>
+      <div class="card" style="border-top:4px solid var(--teal); font-size:0.64em; line-height:1.55; margin-top:.4em;">
+        <b style="color:var(--teal)">2.2 คำนวณค่าเฉลี่ยอายุ</b>
+        <ol style="margin:.2em 0 0; padding-left:1.2em;">
+          <li>เลือก Visualization <b>Card</b></li>
+          <li>ลาก <b>อายุ</b> ไปในช่อง <b>Fields</b></li>
+          <li>คลิกลูกศรลง → เปลี่ยนจาก Sum เป็น <b>Average</b></li>
+        </ol>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="border-top:4px solid var(--purple); font-size:0.64em; line-height:1.55;">
+        <b style="color:var(--purple)">2.3 Tree Map — ประเภทผู้ป่วย + กลุ่มสำรวจ</b>
+        <ol style="margin:.2em 0 0; padding-left:1.2em;">
+          <li>เลือก <b>Treemap</b> จาก Visualizations</li>
+          <li>ลาก <b>ประเภทผู้ป่วย</b> ไปในช่อง <b>Category</b></li>
+          <li>ลาก <b>กลุ่มสำรวจ</b> ไปในช่อง <b>Details</b></li>
+          <li>ลากคอลัมน์นับจำนวน ไปในช่อง <b>Values</b></li>
+        </ol>
+      </div>
+      <div class="card" style="border-left:5px solid var(--warn); background:#fffcf8; font-size:0.62em; line-height:1.5; margin-top:.4em;">
+        <b class="warn">เคล็ดลับ:</b> ถ้า Filled Map ไม่แสดงแผนที่ไทย → ไปที่ File > Options > Security > เปิด Map and Filled Map visuals
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 11b PAGE 3.1 — REGION x GENDER (20-29) -->
+<section>
+  <span class="kicker">หน้า 3 · ข้อ 3.1</span>
+  <h2>หน้า 3: เพศชาย–หญิงแต่ละภาค (เฉพาะอายุ 20–29)</h2>
+  <div class="step-box">
+    <span class="step-num">1</span> สร้างหน้าใหม่ (กด + ด้านล่าง) → เลือก <b>Clustered Bar Chart</b>
+  </div>
+  <div class="step-box">
+    <span class="step-num">2</span> ลาก <b>ภาค</b> ไปวางในช่อง <b>Y-axis</b>
+  </div>
+  <div class="step-box">
+    <span class="step-num">3</span> ลากคอลัมน์ใดก็ได้ (เช่น เพศ) ไปวางในช่อง <b>X-axis</b> → เลือก <b>Count</b>
+  </div>
+  <div class="step-box">
+    <span class="step-num">4</span> ลาก <b>เพศ</b> ไปวางในช่อง <b>Legend</b>
+  </div>
+  <div class="step-box">
+    <span class="step-num">5</span> ที่แถบ <b>Filters</b> ของกราฟนี้ → ลาก <b>ช่วงอายุ</b> เข้ามา → ติ๊กเฉพาะ <b>20–29 ปี</b>
+  </div>
+  <span class="ws-label" style="margin-top:.4em;">3. ในกลุ่มอายุ 20-29 ปี ภาคใดที่มีอัตราส่วนเพศชายติดเชื้อมากกว่าเพศหญิง?</span>
+  <textarea class="save ws-field" id="q3_male_ratio" data-group="คำถาม COVID" data-label="Q3 — ภาคที่เพศชาย 20-29 มากกว่า" style="height:70px;" placeholder="ภาค..."></textarea>
+</section>
+
+<!-- 11c PAGE 3.2 — AVG AGE BY REGION -->
+<section>
+  <span class="kicker">หน้า 3 · ข้อ 3.2</span>
+  <h2>หน้า 3: ค่าเฉลี่ยอายุ แยกตามภาค</h2>
+  <div class="step-box">
+    <span class="step-num">1</span> ในหน้า 3 เดิม คลิกพื้นที่ว่าง → เลือก <b>Clustered Bar Chart</b> อันใหม่
+  </div>
+  <div class="step-box">
+    <span class="step-num">2</span> ลาก <b>ภาค</b> ไปวางในช่อง <b>Y-axis</b>
+  </div>
+  <div class="step-box">
+    <span class="step-num">3</span> ลาก <b>อายุ</b> ไปวางในช่อง <b>X-axis</b> → คลิกลูกศรลง เปลี่ยนเป็น <b>Average</b>
+  </div>
+  <span class="ws-label" style="margin-top:.4em;">4. ภาคใดมีค่าเฉลี่ยอายุมากที่สุด?</span>
+  <textarea class="save ws-field" id="q4_avg_age" data-group="คำถาม COVID" data-label="Q4 — ภาคที่ค่าเฉลี่ยอายุสูงสุด" style="height:70px;" placeholder="ภาค... มีค่าเฉลี่ยอายุ...ปี"></textarea>
+</section>
+
+<!-- 11d PAGE 3.3 — ENTERTAINMENT RISK -->
+<section>
+  <span class="kicker">หน้า 3 · ข้อ 3.3</span>
+  <h2>หน้า 3: ความเสี่ยง "สถานบันเทิง" — ภาคไหน เพศอะไร</h2>
+  <div class="step-box">
+    <span class="step-num">1</span> ในหน้า 3 เดิม เลือก <b>Stacked Bar Chart</b> อันใหม่
+  </div>
+  <div class="step-box">
+    <span class="step-num">2</span> ลาก <b>ภาค</b> ไปช่อง <b>Y-axis</b> · ลากคอลัมน์ใดก็ได้ ไปช่อง <b>X-axis</b> → <b>Count</b>
+  </div>
+  <div class="step-box">
+    <span class="step-num">3</span> ลาก <b>เพศ</b> ไปวางในช่อง <b>Legend</b> (แท่งจะแบ่งสีตามเพศ)
+  </div>
+  <div class="step-box">
+    <span class="step-num">4</span> ที่แถบ <b>Filters</b> → ลาก <b>ความเสี่ยง</b> → ติ๊กเฉพาะ <b>สถานบันเทิง</b>
+  </div>
+  <span class="ws-label" style="margin-top:.4em;">5. ความเสี่ยงที่จะติดจากสถานบันเทิงเกิดขึ้นที่ภาคใด ส่วนใหญ่เป็นเพศอะไร?</span>
+  <textarea class="save ws-field" id="q5_entertainment" data-group="คำถาม COVID" data-label="Q5 — ความเสี่ยงจากสถานบันเทิง" style="height:80px;" placeholder="ภาค... เพศ..."></textarea>
+</section>
+
+<!-- 11e PAGE 3.4 — PROVINCE MIN AGE -->
+<section>
+  <span class="kicker">หน้า 3 · ข้อ 3.4</span>
+  <h2>หน้า 3: หาข้อมูลอายุที่ผิดปกติ (รายจังหวัด)</h2>
+  <div class="step-box">
+    <span class="step-num">1</span> ในหน้า 3 เดิม เลือก <b>Table</b> (ตาราง)
+  </div>
+  <div class="step-box">
+    <span class="step-num">2</span> ลาก <b>จังหวัด</b> และ <b>อายุ</b> เข้าไปในตาราง
+  </div>
+  <div class="step-box">
+    <span class="step-num">3</span> คลิกลูกศรที่ <b>อายุ</b> → เปลี่ยนเป็น <b>Minimum</b>
+  </div>
+  <div class="step-box">
+    <span class="step-num">4</span> คลิกหัวคอลัมน์ <b>อายุ</b> เพื่อเรียงจาก <b>น้อย → มาก</b>
+  </div>
+  <span class="ws-label" style="margin-top:.4em;">6. จังหวัดใด ข้อมูลอายุผู้ป่วยมีปัญหา? (ข้อมูลผิดปกติ)</span>
+  <textarea class="save ws-field" id="q6_data_issue" data-group="คำถาม COVID" data-label="Q6 — จังหวัดที่ข้อมูลอายุมีปัญหา" style="height:80px;" placeholder="จังหวัด... เพราะ..."></textarea>
+</section>
+
+<!-- 12 PAGE 4 — KEY INFLUENCER -->
+<section>
+  <span class="kicker">หน้า 4 · ข้อ 4.1</span>
+  <h2>Key Influencer — วิเคราะห์ปัจจัยผู้ติดเชื้อ</h2>
+  <div class="cols">
+    <div style="flex:1.2;">
+      <p style="font-size:0.76em; line-height:1.6;"><b>Key Influencer</b> คือ กราฟพิเศษของ Power BI ที่ช่วยหาว่า <b>"ปัจจัยอะไร"</b> ทำให้เกิดผลลัพธ์ที่เราสนใจ</p>
+      <div class="step-box">
+        <span class="step-num">1</span> สร้างหน้าใหม่ → เลือก <b>Key Influencers</b> จาก Visualizations
+      </div>
+      <div class="step-box">
+        <span class="step-num">2</span> ลาก <b>ประเภทผู้ป่วย</b> ไปในช่อง <b>Analyze</b>
+      </div>
+      <div class="step-box">
+        <span class="step-num">3</span> ลาก <b>เพศ, ภาค, ช่วงอายุ, กลุ่มสำรวจ</b> ไปในช่อง <b>Explain by</b>
+      </div>
+      <div class="step-box">
+        <span class="step-num">4</span> ที่ด้านบน เลือกค่า <b>"2.สัมผัสผู้ติดเชื้อ"</b>
+      </div>
+      <div class="step-box">
+        <span class="step-num">5</span> อ่านผล: Power BI จะบอกว่า <b>ปัจจัยไหน</b> เพิ่มโอกาสติดจาก "สัมผัสผู้ติดเชื้อ" มากที่สุด
+      </div>
+    </div>
+    <div style="flex:0.8;">
+      <div class="card" style="border-left:5px solid var(--purple); background:#fbf9ff; font-size:0.64em; line-height:1.55;">
+        <b style="color:var(--purple)">Key Influencer อ่านอย่างไร:</b>
+        <ul style="margin:.2em 0 0; padding-left:1em;">
+          <li>ดูว่า <b>เพศ, ภาค, หรืออายุ</b> ไหนทำให้โอกาสติดจาก "สัมผัสผู้ติดเชื้อ" สูงขึ้น</li>
+          <li>ตัวเลข <b>"is X times more likely"</b> หมายความว่าปัจจัยนั้นเพิ่มโอกาสกี่เท่า</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SCREENSHOTS + SUBMIT ===================== -->
+
+<!-- 13b IMAGE ATTACH FOR SCREENSHOTS -->
+<section>
+  <span class="kicker">แนบภาพ · ภาพหน้าจอ Power BI</span>
+  <h3>แนบภาพหน้าจอจาก Power BI (ประกอบคำตอบ)</h3>
+  <p style="font-size:0.72em; color:var(--muted); margin-bottom:.4em;">จับภาพหน้าจอ Power BI แต่ละหน้า แล้วแนบที่นี่</p>
+
+  <span class="ws-label">ภาพหน้า 1 (Pie Chart + Stacked Bar):</span>
+  <input class="save ws-field" id="q_img_page1" data-group="ภาพหน้าจอ Power BI" data-label="ภาพหน้า 1" type="text" readonly placeholder="ยังไม่ได้แนบภาพ" style="font-size:0.72em;">
+  <div id="q_img_page1_tray" class="img-tray"></div>
+
+  <span class="ws-label">ภาพหน้า 2 (Map + Average + Tree Map):</span>
+  <input class="save ws-field" id="q_img_page2" data-group="ภาพหน้าจอ Power BI" data-label="ภาพหน้า 2" type="text" readonly placeholder="ยังไม่ได้แนบภาพ" style="font-size:0.72em;">
+  <div id="q_img_page2_tray" class="img-tray"></div>
+
+  <span class="ws-label">ภาพหน้า 3 (เพศ/อายุ/ความเสี่ยง/จังหวัด):</span>
+  <input class="save ws-field" id="q_img_page3" data-group="ภาพหน้าจอ Power BI" data-label="ภาพหน้า 3" type="text" readonly placeholder="ยังไม่ได้แนบภาพ" style="font-size:0.72em;">
+  <div id="q_img_page3_tray" class="img-tray"></div>
+
+  <span class="ws-label">ภาพหน้า 4 (Key Influencer):</span>
+  <input class="save ws-field" id="q_img_page4" data-group="ภาพหน้าจอ Power BI" data-label="ภาพหน้า 4" type="text" readonly placeholder="ยังไม่ได้แนบภาพ" style="font-size:0.72em;">
+  <div id="q_img_page4_tray" class="img-tray"></div>
+</section>
+
+<!-- 14 SUBMIT -->
+<section>
+  <span class="kicker">ส่งงาน</span>
+  <h2>ส่งงาน</h2>
+  <div class="cols">
+    <div class="card" style="flex:1; border-top:4px solid var(--blue); font-size:0.72em; line-height:1.6;">
+      <b style="color:var(--blue)">1 ส่งไฟล์ Power BI</b>
+      <ol style="margin:.2em 0 0; padding-left:1.2em;">
+        <li>กด <b>File → Save As</b> ตั้งชื่อเป็น <b>ชื่อ_ชั้น_COVID.pbix</b></li>
+        <li>อัปโหลดไฟล์ <b>.pbix</b> บน <b>Google Classroom</b></li>
+      </ol>
+    </div>
+    <div class="card" style="flex:1; border-top:4px solid var(--purple); font-size:0.72em; line-height:1.6;">
+      <b style="color:var(--purple)">2 ส่งคำตอบใน Google Form</b>
+      <ol style="margin:.2em 0 0; padding-left:1.2em;">
+        <li>ตอบคำถามทั้ง 6 ข้อ</li>
+        <li>แนบภาพหน้าจอประกอบ</li>
+      </ol>
+    </div>
+  </div>
+  <div style="text-align:center; margin-top:.8em;">
+    <button class="dlbig" onclick="downloadPDF()">ดาวน์โหลดใบงาน (PDF)</button>
+  </div>
+</section>
+
+<!-- submission check panel removed -->
+
+</div></div>
+
+<!-- ===================== PDF PRINT AREA ===================== -->
+<div id="print-area"></div>
+
+<!-- ===================== REVEAL.JS INIT ===================== -->
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script>
+Reveal.initialize({
+  hash: true, slideNumber: 'c/t', controlsTutorial: false,
+  width: 1100, height: 700, margin: 0.04,
+  transition: 'slide', backgroundTransition: 'slide'
+});
+</script>
+
+<!-- ===================== LOCALSTORAGE AUTO-SAVE ===================== -->
+<script>
+(function(){
+  const SAVE_KEY = 'aied_w5_data';
+
+  function setCookie(name, value, days) {
+    let expires = "";
+    if (days) {
+      const date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/; SameSite=Lax";
+  }
+
+  function getCookie(name) {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(';');
+    for(let i=0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+    }
+    return null;
+  }
+
+  function store(){
+    let data = {};
+    try {
+      const local = localStorage.getItem(SAVE_KEY);
+      if (local) data = JSON.parse(local);
+    } catch(e) {}
+    
+    // Fallback/sync check with cookies
+    try {
+      const cook = getCookie(SAVE_KEY);
+      if (cook) {
+        const cookData = JSON.parse(cook);
+        for (const k in cookData) {
+          if (data[k] === undefined) {
+            data[k] = cookData[k];
+          }
+        }
+      }
+    } catch(e) {}
+    return data;
+  }
+
+  function persist(d){
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify(d));
+    } catch(e) {}
+    
+    try {
+      // Filter out base64 images to stay within cookie size limit (4KB)
+      const textData = {};
+      for (const k in d) {
+        if (!k.startsWith('img:') && !k.startsWith('q_img') && typeof d[k] === 'string' && d[k].length < 1000) {
+          textData[k] = d[k];
+        }
+      }
+      setCookie(SAVE_KEY, JSON.stringify(textData), 30);
+    } catch(e) {}
+  }
+
+  function flash(){ const h=document.getElementById('savehint'); h.style.opacity='1'; setTimeout(()=>h.style.opacity='0',1200); }
+
+  window.saveField = function(el){
+    const d=store(); d[el.id]=el.value; persist(d); flash();
+  };
+
+  function loadAll(){
+    const d=store();
+    document.querySelectorAll('.save').forEach(el=>{
+      if(d[el.id]!==undefined) el.value=d[el.id];
+    });
+  }
+
+  document.addEventListener('input', e=>{
+    if(e.target.classList && e.target.classList.contains('save')) saveField(e.target);
+  });
+  document.addEventListener('change', e=>{
+    if(e.target.classList && e.target.classList.contains('save')) saveField(e.target);
+  });
+
+  if(document.readyState!=='loading') loadAll();
+  else document.addEventListener('DOMContentLoaded', loadAll);
+
+  // show download button after first field is filled
+  const obs = new MutationObserver(()=>{
+    const d=store();
+    const any = Object.values(d).some(v=>v&&v.length>0);
+    document.getElementById('dlbtn').style.display = any ? 'block' : 'none';
+  });
+  document.addEventListener('input', ()=>{
+    const d=store();
+    const any = Object.values(d).some(v=>v&&v.length>0);
+    document.getElementById('dlbtn').style.display = any ? 'block' : 'none';
+  });
+  setTimeout(()=>{
+    const d=store();
+    const any = Object.values(d).some(v=>v&&v.length>0);
+    document.getElementById('dlbtn').style.display = any ? 'block' : 'none';
+  }, 500);
+})();
+</script>
+
+<!-- ===================== PDF DOWNLOAD ===================== -->
+<script>
+  function downloadPDF(){
+    const fields = document.querySelectorAll('.save[data-group]');
+    const groups = {};
+    fields.forEach(f=>{
+      const g = f.getAttribute('data-group');
+      const l = f.getAttribute('data-label');
+      if(!groups[g]) groups[g]=[];
+      groups[g].push({ label:l, value:(f.value||'').trim() });
+    });
+
+    const name1 = (document.getElementById('ws-name1')||{}).value||'';
+    const name2 = (document.getElementById('ws-name2')||{}).value||'';
+    const cls = (document.getElementById('ws-class')||{}).value||'';
+    const no = (document.getElementById('ws-no')||{}).value||'';
+
+    let html = '<div class="pdf-doc">';
+    html += '<h1>AI for Ed — สัปดาห์ที่ 5: สำรวจข้อมูลด้วย Power BI</h1>';
+    html += '<div class="pdf-meta">';
+    html += '<span><b>ชื่อ:</b> '+(name1||'—')+(name2?' / '+name2:'')+'</span>';
+    html += '<span><b>ชั้น:</b> '+(cls||'—')+'</span>';
+    html += '<span><b>เลขที่:</b> '+(no||'—')+'</span>';
+    html += '</div>';
+
+    // images from localStorage
+    let imgStore = {};
+    try { imgStore = JSON.parse(localStorage.getItem('aied_w5_data')||'{}'); } catch(e){}
+
+    for(const [gName, items] of Object.entries(groups)){
+      html += '<h2>'+gName+'</h2>';
+      items.forEach(it=>{
+        html += '<div class="pdf-item">';
+        html += '<div class="pdf-label">'+it.label+'</div>';
+        html += '<div class="pdf-answer">'+(it.value||'<span class="empty">(ยังไม่ได้ตอบ)</span>')+'</div>';
+
+        // check if this field has images
+        const imgs = imgStore['img:'+it.label];
+        if(imgs && imgs.length){
+          html += '<div class="pdf-imgs">';
+          imgs.forEach(src=>{ html += '<img src="'+src+'">'; });
+          html += '</div>';
+        }
+        html += '</div>';
+      });
+    }
+    html += '</div>';
+
+    const area = document.getElementById('print-area');
+    area.innerHTML = html;
+    document.body.classList.add('printing');
+    setTimeout(()=>{
+      window.print();
+      setTimeout(()=>{ document.body.classList.remove('printing'); },500);
+    },300);
+  }
+  window.downloadPDF = downloadPDF;
+</script>
+
+<!-- ===================== IMAGE ATTACH ===================== -->
+<script>
+(function(){
+  const SAVE_KEY = 'aied_w5_data';
+  const IMG_TARGETS = ['q_img_page1', 'q_img_page2', 'q_img_page3', 'q_img_page4'];
+  const MAX_KB = 800;
+
+  function store(){ try{ return JSON.parse(localStorage.getItem(SAVE_KEY)||'{}'); }catch(e){ return {}; } }
+  function persist(d){ localStorage.setItem(SAVE_KEY, JSON.stringify(d)); }
+
+  function renderTray(id){
+    const tray = document.getElementById(id+'_tray'); if(!tray) return;
+    const d = store();
+    const imgs = d['img:'+id] || [];
+    tray.innerHTML='';
+    const inp = document.getElementById(id);
+    if(inp) inp.value = imgs.length ? imgs.length+' ภาพ' : '';
+
+    imgs.forEach((src, i)=>{
+      const th = document.createElement('div'); th.className='img-thumb';
+      const im = document.createElement('img'); im.src=src;
+      const rm = document.createElement('button'); rm.className='rm'; rm.type='button'; rm.textContent='×';
+      rm.addEventListener('click', ()=>{
+        const dd=store(); dd['img:'+id].splice(i,1); persist(dd); renderTray(id);
+        if(window.refreshFeedback) window.refreshFeedback();
+      });
+      th.appendChild(im); th.appendChild(rm); tray.appendChild(th);
+    });
+  }
+
+  function addImg(id, dataURL){
+    const d=store();
+    if(!d['img:'+id]) d['img:'+id]=[];
+    d['img:'+id].push(dataURL);
+    persist(d);
+    renderTray(id);
+    if(window.refreshFeedback) window.refreshFeedback();
+  }
+
+  function attach(id){
+    const inp = document.getElementById(id); if(!inp) return;
+    const btn = document.createElement('button'); btn.className='img-btn'; btn.type='button';
+    btn.textContent='แนบภาพหน้าจอ';
+    const hint = document.createElement('span'); hint.className='img-hint';
+    hint.textContent='วาง (Ctrl+V) หรือเลือกไฟล์';
+    const file = document.createElement('input'); file.type='file'; file.accept='image/*'; file.style.display='none';
+    btn.addEventListener('click', ()=>file.click());
+    file.addEventListener('change', ()=>{
+      if(file.files && file.files[0]){
+        const reader = new FileReader();
+        reader.onload = e=>{
+          // resize if needed
+          const img = new Image();
+          img.onload = ()=>{
+            const canvas = document.createElement('canvas');
+            let w=img.width, h=img.height;
+            const maxDim = 1200;
+            if(w>maxDim){ h=h*(maxDim/w); w=maxDim; }
+            if(h>maxDim){ w=w*(maxDim/h); h=maxDim; }
+            canvas.width=w; canvas.height=h;
+            canvas.getContext('2d').drawImage(img,0,0,w,h);
+            addImg(id, canvas.toDataURL('image/jpeg',0.7));
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file.files[0]);
+      }
+      file.value='';
+    });
+    inp.insertAdjacentElement('afterend', file);
+    inp.insertAdjacentElement('afterend', hint);
+    inp.insertAdjacentElement('afterend', btn);
+  }
+
+  // paste handler
+  document.addEventListener('paste', e=>{
+    const items = (e.clipboardData||{}).items;
+    if(!items) return;
+    for(const item of items){
+      if(item.type.indexOf('image')===0){
+        e.preventDefault();
+        const blob = item.getAsFile();
+        const reader = new FileReader();
+        reader.onload = ev=>{
+          // find the currently visible image target
+          const active = Reveal.getCurrentSlide();
+          const targetIds = IMG_TARGETS.filter(id=>active.querySelector('#'+id) || active.querySelector('#'+id+'_tray'));
+          const tid = targetIds[0] || IMG_TARGETS[0];
+          const img = new Image();
+          img.onload = ()=>{
+            const canvas = document.createElement('canvas');
+            let w=img.width, h=img.height;
+            const maxDim = 1200;
+            if(w>maxDim){ h=h*(maxDim/w); w=maxDim; }
+            if(h>maxDim){ w=w*(maxDim/h); h=maxDim; }
+            canvas.width=w; canvas.height=h;
+            canvas.getContext('2d').drawImage(img,0,0,w,h);
+            addImg(tid, canvas.toDataURL('image/jpeg',0.7));
+          };
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(blob);
+        break;
+      }
+    }
+  });
+
+  function init(){
+    IMG_TARGETS.forEach(id=>{
+      attach(id);
+      renderTray(id);
+    });
+  }
+  if(document.readyState!=='loading') init();
+  else document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+
+<!-- ===================== LIVE FEEDBACK & SUBMISSION CHECK ===================== -->
+<script>
+(function(){
+  function txt(id){ const e=document.getElementById(id); return e ? (e.value||'').trim() : ''; }
+  function imgCount(id){ try{ const d=JSON.parse(localStorage.getItem('aied_w5_data')||'{}'); return (d['img:'+id]||[]).length; }catch(e){ return 0; } }
+
+  const ACTS=[
+    {name:'คำถาม COVID', slots:[['t','q1_data_types'],['t','q2_least_region'],['t','q3_male_ratio'],['t','q4_avg_age'],['t','q5_entertainment'],['t','q6_data_issue']]},
+    {name:'ภาพหน้าจอ Power BI', slots:[['i','q_img_page1'],['i','q_img_page2'],['i','q_img_page3'],['i','q_img_page4']]}
+  ];
+
+  function slotFilled(type,id){
+    if(type==='i') return imgCount(id)>=1;
+    return txt(id).length>=2;
+  }
+  function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function renderPanel(){
+    const rows=document.getElementById('check-rows'); if(!rows) return;
+    let done=0, total=0, html='';
+    ACTS.forEach(a=>{
+      let f=0; a.slots.forEach(sl=>{ total++; if(slotFilled(sl[0],sl[1])){ f++; done++; } });
+      const all=f===a.slots.length;
+      const ic = all ? '' : (f>0 ? '◑' : '○');
+      html += `<div class="check-row${all?' done':''}"><span class="ic">${ic}</span><span class="body"><span class="ttl">${esc(a.name)}</span> <span class="sub">(${f}/${a.slots.length})</span></span></div>`;
+    });
+    rows.innerHTML=html;
+    const bar=document.getElementById('prog-bar'), cnt=document.getElementById('prog-count'), msg=document.getElementById('check-msg');
+    const pct = total ? Math.round(done/total*100) : 0;
+    if(bar) bar.style.width = pct+'%';
+    if(cnt) cnt.textContent = done+' / '+total+' ช่อง ('+pct+'%)';
+    if(msg){
+      const name1 = txt('ws-name1');
+      if(done===total && name1) msg.textContent='เยี่ยมมาก! ใบงานครบทุกช่องแล้ว กดบันทึกเป็น PDF ส่งครูได้เลย';
+      else if(done===total && !name1) msg.textContent='ตอบครบแล้ว เหลือกรอกชื่อ–นามสกุลในสไลด์ที่ 2 ก่อนบันทึก';
+      else if(pct>=60) msg.textContent='เกือบครบแล้ว! เหลืออีก '+(total-done)+' ช่อง สู้ๆ ';
+      else if(done>0) msg.textContent='ทำไปแล้ว '+done+' จาก '+total+' ช่อง — ทำต่อให้ครบนะ';
+      else msg.textContent='กรอกใบงานให้ครบ ระบบจะตรวจและให้คำแนะนำอัตโนมัติ';
+    }
+  }
+
+  window.refreshFeedback = renderPanel;
+  document.addEventListener('input', e=>{ if(e.target.classList && e.target.classList.contains('save')) renderPanel(); });
+  document.addEventListener('change', e=>{ if(e.target.classList && e.target.classList.contains('save')) renderPanel(); });
+  if(window.Reveal) Reveal.on('slidechanged', renderPanel);
+  if(document.readyState!=='loading') renderPanel();
+  else document.addEventListener('DOMContentLoaded', renderPanel);
+})();
+</script>
+
+</body>
+</html>

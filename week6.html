@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI for Ed — สัปดาห์ที่ 6: กรองข้อมูล และทำความสะอาดข้อมูลด้วย Power BI</title>
+
+<!-- reveal.js core -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css" integrity="sha384-YgvgKeZJykuztG+iQPoZHNZENTFZvOcOJ/uRzmJTje6GHYN9zAw+y5rx/L8MQKA/" crossorigin="anonymous">
+<!-- Thai fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --ink: #1a2235; --muted: #5b6678; --line: #dfe4ec;
+  --blue: #1a73e8; --purple: #7b41d8; --teal: #0aa3a3;
+  --bg1: #f7f9fc; --card: #ffffff; --soft: #eef3fb;
+  --warn: #c2410c; --good: #0f8a4f;
+  --accent-grad: linear-gradient(90deg, var(--blue), var(--purple));
+}
+.reveal { font-family:'Sarabun','Noto Sans Thai','Outfit',sans-serif; color:var(--ink); font-size:28px; }
+.reveal .slides { text-align:left; }
+.reveal h1, .reveal h2, .reveal h3 { font-family:'Sarabun','Noto Sans Thai','Outfit',sans-serif; color:var(--ink); font-weight:700; text-transform:none; letter-spacing:0; line-height:1.35; }
+.reveal h1 { font-size:1.8em; margin-bottom: 0.5em; }
+.reveal h2 { font-size:1.35em; margin-bottom: 0.6em; }
+.reveal h3 { font-size:1.15em; color:var(--blue); margin-bottom: 0.4em; }
+.reveal p { line-height:1.75; margin-bottom: 0.7em; }
+.reveal ul { display:block; margin-bottom: 0.7em; }
+.reveal li { margin:.5em 0; line-height:1.65; }
+.reveal strong { color:var(--purple); }
+.reveal section { height:100%; overflow-y:auto; }
+.reveal section::-webkit-scrollbar { width:6px; }
+.reveal section::-webkit-scrollbar-track { background:transparent; }
+.reveal section::-webkit-scrollbar-thumb { background:var(--line); border-radius:99px; }
+.reveal section::-webkit-scrollbar-thumb:hover { background:var(--muted); }
+.reveal .slides section { padding:8px 20px; box-sizing:border-box; }
+.reveal h2 { margin-bottom:.4em; }
+
+/* accent header bar on each slide */
+.reveal .slides section > .kicker {
+  display:inline-block; font-size:.6em; font-weight:700; letter-spacing:.05em;
+  color:#fff; background:var(--accent-grad);
+  padding:.2em .9em; border-radius:999px; margin-bottom:.4em;
+}
+.reveal .q { background:var(--soft); border-left:5px solid var(--blue);
+  padding:.6em .9em; border-radius:10px; font-size:.9em; line-height:1.5; margin:.5em 0 .7em; }
+.reveal .note { color:var(--muted); font-size:.65em; }
+.reveal .rule { background:#fff6ed; border:1px solid #ffd8b8; color:var(--warn);
+  border-radius:10px; padding:.4em .8em; font-size:.78em; font-weight:600; }
+.reveal .good { color:var(--good); font-weight:700; }
+.reveal .warn { color:var(--warn); font-weight:600; }
+.reveal code { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; font-size:.85em;
+  background:var(--soft); color:var(--blue); padding:.06em .42em; border-radius:6px; white-space:nowrap; }
+.reveal a.tool { color:var(--blue); font-weight:700; text-decoration:underline; }
+
+/* title slide */
+.title-wrap { text-align:center; height:100%; display:flex; flex-direction:column;
+  justify-content:center; align-items:center; }
+.title-wrap .badge { font-size:.68em; color:#fff; background:var(--accent-grad);
+  padding:.3em 1.2em; border-radius:999px; font-weight:700; }
+.title-wrap h1 { background:var(--accent-grad);
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; margin:.2em 0; }
+.title-wrap .sub { font-size:1.0em; color:var(--ink); font-weight:600; }
+.title-wrap .meta { color:var(--muted); font-size:.75em; margin-top:.5em; }
+
+/* two-column helper */
+.cols { display:flex; gap:1.2em; align-items:flex-start; }
+.cols > div { flex:1; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:14px;
+  padding:.8em 1.0em; box-shadow:0 2px 8px rgba(20,30,60,.04); line-height:1.5; }
+.card h3 { margin-top:0; }
+.pill { display:inline-block; background:var(--soft); color:var(--blue);
+  border-radius:8px; padding:.08em .5em; font-size:.78em; font-weight:600; margin:.1em; }
+
+/* table styling inside reveal */
+.reveal table { width:100%; border-collapse:collapse; margin:.5em 0; font-size:.7em; }
+.reveal th { background:var(--soft); font-weight:700; border:1px solid var(--line); padding:6px 12px; }
+.reveal td { border:1px solid var(--line); padding:6px 12px; }
+
+/* worksheet fields */
+.ws-label { display:block; font-size:.7em; font-weight:700; color:var(--muted);
+  margin:.4em 0 .15em; }
+textarea.ws-field, input.save, select.save {
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:.7em; color:var(--ink);
+  width:100%; border:1.5px solid var(--line); border-radius:10px; padding:.5em .7em;
+  background:#fcfdff; box-sizing:border-box; resize:vertical !important; overflow:auto !important; }
+textarea.ws-field { min-height:120px; line-height:1.5; }
+textarea.ws-field:focus, input.save:focus, select.save:focus { outline:none; border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(26,115,232,.12); }
+input.save { height:auto; }
+select.save { height:auto; padding:.4em .6em; }
+
+/* thin scrollbar for all textareas */
+textarea::-webkit-scrollbar { width: 5px; }
+textarea::-webkit-scrollbar-track { background: transparent; }
+textarea::-webkit-scrollbar-thumb { background: var(--line); border-radius: 99px; }
+textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+.info-grid { display:grid; grid-template-columns:1fr; gap:.3em; max-width:620px; }
+.info-row { display:flex; gap:.8em; }
+.info-row > div { flex:1; }
+
+/* download button (floating) */
+#dlbtn { position:fixed; top:14px; right:16px; z-index:60;
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:15px; font-weight:700;
+  color:#fff; background:var(--accent-grad);
+  border:none; border-radius:999px; padding:10px 18px; cursor:pointer;
+  box-shadow:0 4px 14px rgba(76,40,160,.3); display:none; }
+#dlbtn:hover { filter:brightness(1.05); }
+#dlbtn:active { transform:translateY(1px); }
+#savehint { position:fixed; top:54px; right:18px; z-index:60; font-size:11px;
+  color:var(--good); font-family:'Sarabun',sans-serif; opacity:0; transition:opacity .3s; }
+.dlbig { font-size:.9em; font-weight:700; color:#fff;
+  background:var(--accent-grad); border:none;
+  border-radius:12px; padding:.5em 1.1em; cursor:pointer; box-shadow:0 4px 14px rgba(76,40,160,.25);
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; }
+
+/* assignment print area — hidden on screen, shown only when printing */
+#print-area { display:none; }
+.pdf-doc { font-family:'Sarabun','Noto Sans Thai',sans-serif; color:#11131a; padding:6px 4px; }
+.pdf-doc h1 { font-size:22px; margin:0 0 4px; color:#1a73e8; }
+.pdf-doc .pdf-meta { display:flex; gap:18px; font-size:13px; border-bottom:2px solid #1a73e8;
+  padding-bottom:8px; margin-bottom:12px; flex-wrap:wrap; }
+.pdf-doc h2 { font-size:15px; margin:16px 0 6px; color:#7b41d8; border-left:4px solid #7b41d8; padding-left:8px; }
+.pdf-item { margin:8px 0; page-break-inside:avoid; }
+.pdf-label { font-size:12.5px; font-weight:700; color:#333; margin-bottom:3px; }
+.pdf-answer { font-size:12.5px; line-height:1.5; border:1px solid #c9d2e0; border-radius:6px;
+  padding:7px 9px; white-space:pre-wrap; min-height:18px; background:#fbfcfe; }
+.pdf-answer .empty { color:#aab2c0; }
+@page { size:A4; margin:14mm; }
+@media print {
+  body.printing > *:not(#print-area) { display:none !important; }
+  body.printing #print-area { display:block !important; }
+  body.printing { background:#fff !important; }
+}
+.pdf-imgs img { display:block; max-width:100%; max-height:420px; margin-top:6px;
+  border:1px solid #c9d2e0; border-radius:6px; page-break-inside:avoid; }
+
+/* image attach / paste helper */
+.img-btn { display:inline-flex; align-items:center; gap:.3em; margin-top:.35em;
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:.6em; font-weight:700;
+  color:var(--blue); background:var(--soft); border:1.5px solid #cfe0fb;
+  border-radius:999px; padding:.4em .9em; cursor:pointer; }
+.img-btn:hover { filter:brightness(.98); }
+.img-hint { font-size:.55em; color:var(--muted); margin-left:.55em; }
+.img-tray { display:flex; flex-wrap:wrap; gap:.5em; margin-top:.4em; }
+.img-thumb { position:relative; width:96px; height:96px; border:1px solid var(--line);
+  border-radius:8px; overflow:hidden; background:#fafbff; }
+.img-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+.img-thumb .rm { position:absolute; top:2px; right:2px; width:20px; height:20px;
+  border:none; border-radius:50%; background:rgba(20,30,60,.7); color:#fff;
+  font-size:13px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.img-thumb .rm:hover { background:var(--warn); }
+
+/* ---- submission readiness panel ---- */
+.check-panel { max-width:780px; margin:0.3em auto 0; }
+.prog-meta { display:flex; justify-content:space-between; font-size:.64em; color:var(--muted);
+  font-weight:700; margin:.2em .2em .35em; }
+.prog-wrap { background:var(--soft); border-radius:999px; height:15px; overflow:hidden; border:1px solid var(--line); }
+.prog-bar  { height:100%; width:0%; border-radius:999px; background:var(--accent-grad); transition:width .35s ease; }
+.check-msg { text-align:center; font-size:.74em; font-weight:700; margin:.5em 0 .55em; color:var(--ink); }
+.check-grid { display:grid; grid-template-columns:1fr 1fr; gap:.4em; }
+.check-row { display:flex; align-items:flex-start; gap:.5em; font-size:.66em; line-height:1.4;
+  padding:.4em .65em; border:1px solid var(--line); border-radius:10px; background:#fff; }
+.check-row .ic { font-size:1.1em; line-height:1.3; flex:0 0 auto; }
+.check-row .body { flex:1; min-width:0; }
+.check-row .ttl { font-weight:700; color:var(--ink); }
+.check-row .sub { color:var(--muted); font-size:.92em; }
+.check-row .tip { display:block; color:#b4480c; font-size:.92em; margin-top:.15em; }
+.check-row.done { background:#f4fbf7; border-color:#cdeadb; }
+
+/* step box for workshop */
+.step-box { background:var(--soft); border:1.5px solid var(--line); border-radius:12px;
+  padding:.6em .8em; margin:.4em 0; font-size:.72em; line-height:1.6; }
+.step-box b { color:var(--purple); }
+.step-num { display:inline-flex; align-items:center; justify-content:center;
+  width:26px; height:26px; border-radius:50%; background:var(--accent-grad);
+  color:#fff; font-weight:700; font-size:.7em; margin-right:.4em; flex-shrink:0; }
+</style>
+</head>
+<body>
+
+<button id="dlbtn" onclick="downloadPDF()">ดาวน์โหลดใบงาน (PDF ไฟล์เดียว)</button>
+<div id="savehint">บันทึกแล้ว </div>
+
+<div class="reveal"><div class="slides">
+
+<!-- 1 TITLE -->
+<section>
+  <div class="title-wrap">
+    <span class="badge">AI for Ed · สัปดาห์ที่ 6</span>
+    <h1>กรองข้อมูล และทำความสะอาดข้อมูล ด้วย Power BI</h1>
+  </div>
+</section>
+
+<!-- 2 STUDENT INFO -->
+<section>
+  <span class="kicker">เริ่มต้นคลาส</span>
+  <h2>ระบุข้อมูลผู้เรียน</h2>
+  <div class="info-grid">
+    <div class="info-row">
+      <div>
+        <span class="ws-label">ชื่อ–นามสกุล คนที่ 1</span>
+        <input class="save" id="ws-name1" type="text" placeholder="เช่น นายสมชาย ตั้งใจเรียน">
+      </div>
+      <div>
+        <span class="ws-label">ชื่อ–นามสกุล คนที่ 2 (ถ้ามี)</span>
+        <input class="save" id="ws-name2" type="text" placeholder="เช่น นางสาวสมศรี รักเรียน">
+      </div>
+    </div>
+    <div class="info-row">
+      <div><span class="ws-label">ชั้น</span><input class="save" id="ws-class" type="text" placeholder="ม.1/2"></div>
+      <div><span class="ws-label">เลขที่นั่งสอบ/เรียน</span><input class="save" id="ws-no" type="text" placeholder="ระบุตัวเลข เช่น 15"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 RECAP -->
+<section>
+  <span class="kicker">ทบทวน · สัปดาห์ที่ 5</span>
+  <h2>สัปดาห์ก่อนเราทำอะไรไปแล้วบ้าง?</h2>
+  <div class="cols">
+    <div class="card" style="flex:1; border-top:4px solid var(--blue); font-size:0.7em; line-height:1.6;">
+      <b style="color:var(--blue)">กราฟที่สร้างไปแล้ว (หน้า 1–2)</b>
+      <ul style="margin:.2em 0 0; padding-left:1.1em;">
+        <li>Pie Chart — จำนวนผู้ป่วยแยกตามภาค</li>
+        <li>Stacked Bar — ช่วงอายุแยกตามเพศ</li>
+        <li>Filled Map, ค่าเฉลี่ยอายุ, Tree Map</li>
+        <li>Clustered Bar + Filter อายุ 20–29 → ตอบข้อ 3 แล้ว</li>
+      </ul>
+    </div>
+    <div class="card" style="flex:1; border-left:5px solid var(--warn); background:#fffcf8; font-size:0.72em; line-height:1.6;">
+      <b class="warn">ก่อนเริ่มวันนี้:</b>
+      <ol style="margin:.2em 0 0; padding-left:1.2em;">
+        <li>เปิดไฟล์ Power BI (.pbix) ของสัปดาห์ที่แล้ว ที่ Save ไว้</li>
+        <li>ถ้ายังตอบไม่ครบ ข้อ 4–6 (หน้า 3) ไม่ต้องกังวล — เดี๋ยวเราจะทำให้ครบกันในสไลด์ถัดไปก่อน</li>
+        <li>ไฟล์หาย/หาไม่เจอ? ดาวน์โหลดชุดข้อมูลใหม่ได้ที่นี่ → <a class="tool" href="images/Covid_Round_4_cases.xlsx" download="Covid_Round_4_cases.xlsx">Covid_Round_4_cases.xlsx</a> แล้วเริ่มที่หน้า 5 ของวันนี้ได้เลย</li>
+      </ol>
+    </div>
+  </div>
+  <div class="card" style="border-left:5px solid var(--teal); background:#f2fdfb; font-size:0.7em; line-height:1.55; margin-top:.5em;">
+    <b style="color:var(--teal)">ก่อนอื่นเราจะทำข้อ 4–6 (หน้า 3) ให้เสร็จก่อน</b> — จากนั้นจะสร้างหน้าใหม่ (หน้า 5) ต่อในไฟล์เดิม เรียนรู้เรื่อง <b>Filter</b> และ <b>การทำความสะอาดข้อมูล (Data Cleaning)</b> แล้วตอบคำถามใหม่อีก 4 ข้อ
+  </div>
+</section>
+
+<!-- ===================== CATCH-UP: FINISH PAGE 3 (Q4-Q6 FROM WEEK 5) ===================== -->
+
+<!-- 3b CATCHUP INTRO -->
+<section>
+  <span class="kicker">ต่อจากสัปดาห์ที่ 5 · หน้า 3</span>
+  <h2>ทำข้อ 4–6 ในหน้า 3 ให้เสร็จก่อนเริ่มเนื้อหาใหม่</h2>
+  <div class="card" style="border-left:5px solid var(--warn); background:#fffcf8; font-size:0.74em; line-height:1.6;">
+    <b class="warn">สัปดาห์ที่แล้วหลายคนตอบได้ถึงแค่ข้อ 3</b> — วันนี้เราจะใช้เวลาสั้นๆ สร้างอีก 3 กราฟที่เหลือในหน้า 3 (ไฟล์ Power BI เดิม) ให้เสร็จ แล้วค่อยไปเรียนเรื่องใหม่
+  </div>
+</section>
+
+<!-- 3c PAGE 3.2 — AVG AGE BY REGION (Q4) -->
+<section>
+  <span class="kicker">หน้า 3 · ข้อ 4</span>
+  <h2>หน้า 3: ค่าเฉลี่ยอายุ แยกตามภาค</h2>
+  <div class="step-box">
+    <span class="step-num">1</span> ในหน้า 3 เดิม คลิกพื้นที่ว่าง → เลือก <b>Clustered Bar Chart</b> อันใหม่
+  </div>
+  <div class="step-box">
+    <span class="step-num">2</span> ลาก <b>ภาค</b> ไปวางในช่อง <b>Y-axis</b>
+  </div>
+  <div class="step-box">
+    <span class="step-num">3</span> ลาก <b>อายุ</b> ไปวางในช่อง <b>X-axis</b> → คลิกลูกศรลง เปลี่ยนเป็น <b>Average</b>
+  </div>
+  <span class="ws-label" style="margin-top:.4em;">4. ภาคใดมีค่าเฉลี่ยอายุมากที่สุด?</span>
+  <textarea class="save ws-field" id="q4_avg_age" data-group="คำถาม COVID (ต่อจากสัปดาห์ที่ 5)" data-label="Q4 — ภาคที่ค่าเฉลี่ยอายุสูงสุด" style="height:70px;" placeholder="ภาค... มีค่าเฉลี่ยอายุ...ปี"></textarea>
+</section>
+
+<!-- 3d PAGE 3.3 — ENTERTAINMENT RISK (Q5) -->
+<section>
+  <span class="kicker">หน้า 3 · ข้อ 5</span>
+  <h2>หน้า 3: ความเสี่ยง "สถานบันเทิง" — ภาคไหน เพศอะไร</h2>
+  <div class="step-box">
+    <span class="step-num">1</span> ในหน้า 3 เดิม เลือก <b>Stacked Bar Chart</b> อันใหม่
+  </div>
+  <div class="step-box">
+    <span class="step-num">2</span> ลาก <b>ภาค</b> ไปช่อง <b>Y-axis</b> · ลากคอลัมน์ใดก็ได้ ไปช่อง <b>X-axis</b> → <b>Count</b>
+  </div>
+  <div class="step-box">
+    <span class="step-num">3</span> ลาก <b>เพศ</b> ไปวางในช่อง <b>Legend</b> (แท่งจะแบ่งสีตามเพศ)
+  </div>
+  <div class="step-box">
+    <span class="step-num">4</span> ที่แถบ <b>Filters</b> → ลาก <b>ความเสี่ยง</b> → ติ๊กเฉพาะ <b>สถานบันเทิง</b>
+  </div>
+  <span class="ws-label" style="margin-top:.4em;">5. ความเสี่ยงที่จะติดจากสถานบันเทิงเกิดขึ้นที่ภาคใด ส่วนใหญ่เป็นเพศอะไร?</span>
+  <textarea class="save ws-field" id="q5_entertainment" data-group="คำถาม COVID (ต่อจากสัปดาห์ที่ 5)" data-label="Q5 — ความเสี่ยงจากสถานบันเทิง" style="height:80px;" placeholder="ภาค... เพศ..."></textarea>
+</section>
+
+<!-- 3e PAGE 3.4 — PROVINCE MIN AGE (Q6) -->
+<section>
+  <span class="kicker">หน้า 3 · ข้อ 6</span>
+  <h2>หน้า 3: หาข้อมูลอายุที่ผิดปกติ (รายจังหวัด)</h2>
+  <div class="step-box">
+    <span class="step-num">1</span> ในหน้า 3 เดิม เลือก <b>Table</b> (ตาราง)
+  </div>
+  <div class="step-box">
+    <span class="step-num">2</span> ลาก <b>จังหวัด</b> และ <b>อายุ</b> เข้าไปในตาราง
+  </div>
+  <div class="step-box">
+    <span class="step-num">3</span> คลิกลูกศรที่ <b>อายุ</b> → เปลี่ยนเป็น <b>Minimum</b>
+  </div>
+  <div class="step-box">
+    <span class="step-num">4</span> คลิกหัวคอลัมน์ <b>อายุ</b> เพื่อเรียงจาก <b>น้อย → มาก</b>
+  </div>
+  <span class="ws-label" style="margin-top:.4em;">6. จังหวัดใด ข้อมูลอายุผู้ป่วยมีปัญหา? (ข้อมูลผิดปกติ)</span>
+  <textarea class="save ws-field" id="q6_data_issue" data-group="คำถาม COVID (ต่อจากสัปดาห์ที่ 5)" data-label="Q6 — จังหวัดที่ข้อมูลอายุมีปัญหา" style="height:80px;" placeholder="จังหวัด... เพราะ..."></textarea>
+</section>
+
+<!-- ===================== LECTURE: FILTERS ===================== -->
+
+<!-- 4a FILTER INTRO -->
+<section>
+  <span class="kicker">แนวคิด 1 · Filter คืออะไร</span>
+  <h2>Filter — เลือกดูเฉพาะข้อมูลที่สนใจ</h2>
+  <div class="cols">
+    <div style="flex:1.1;">
+      <p style="font-size:0.78em; line-height:1.7;">จำได้ไหม? สัปดาห์ที่แล้วตอนตอบ <b>ข้อ 3</b> เราเคยลาก <b>ช่วงอายุ</b> ไปที่ช่อง Filters แล้วติ๊กเฉพาะ <b>20–29 ปี</b> — นั่นคือการ <b>Filter</b> แล้ว!</p>
+      <p style="font-size:0.76em; line-height:1.6;"><strong>Filter</strong> คือการ <b>คัดกรอง</b> ให้กราฟแสดงเฉพาะข้อมูลบางส่วน แทนที่จะแสดงข้อมูลทั้งหมด</p>
+      <div class="card" style="border-top:4px solid var(--purple); font-size:0.66em; line-height:1.55;">
+        <b style="color:var(--purple)">วันนี้เราจะไปลึกกว่าเดิม:</b> Power BI มี Filter <b>3 ระดับ</b> ที่ควบคุมพื้นที่ต่างกัน — และมีเครื่องมือใหม่ชื่อ <b>Slicer</b>
+      </div>
+    </div>
+    <div style="flex:1.0; text-align:center;">
+      <img src="images/filter_concept.png" style="max-width:100%; max-height:340px; border-radius:14px; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+    </div>
+  </div>
+</section>
+
+<!-- 4b FILTER 3 LEVELS TABLE -->
+<section>
+  <span class="kicker">แนวคิด 2 · 3 ระดับของ Filter</span>
+  <h2>Filter 3 ระดับ ต่างกันอย่างไร?</h2>
+  <table style="font-size:0.66em;">
+    <thead><tr><th>ระดับ</th><th>มีผลกับ</th><th>ตัวอย่าง</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b style="color:var(--blue)">Report level</b></td>
+        <td>ทุกหน้าในรายงาน</td>
+        <td>กรองเฉพาะปี 2021 ทุกหน้าจะเห็นแค่ปีนี้</td>
+      </tr>
+      <tr>
+        <td><b style="color:var(--purple)">Page level</b></td>
+        <td>เฉพาะหน้าที่กำลังดู</td>
+        <td>หน้า 3 กรองเฉพาะช่วงอายุ 20–29 (แบบสัปดาห์ที่แล้ว)</td>
+      </tr>
+      <tr>
+        <td><b style="color:var(--teal)">Visual level</b></td>
+        <td>เฉพาะกราฟชิ้นเดียว</td>
+        <td>กราฟเดียวกรองเฉพาะความเสี่ยง = สถานบันเทิง</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="card" style="border-left:5px solid var(--teal); background:#f2fdfb; font-size:0.66em; line-height:1.5; margin-top:.5em;">
+    <b style="color:var(--teal)">จำง่าย:</b> ยิ่งอยู่แถบ Filters สูง (Report) ยิ่งมีผลกว้าง · ยิ่งอยู่ต่ำ (Visual) ยิ่งมีผลแคบ
+  </div>
+</section>
+
+<!-- 4c SLICER -->
+<section>
+  <span class="kicker">เครื่องมือใหม่ · Slicer</span>
+  <h2>Slicer — Filter ที่กดเลือกได้บนหน้ากราฟ</h2>
+  <div class="cols">
+    <div style="flex:1.1;">
+      <p style="font-size:0.78em; line-height:1.7;">แทนที่จะไปตั้งค่าในแถบ Filters ทุกครั้ง <b>Slicer</b> คือกราฟชนิดหนึ่งที่วางไว้บนหน้า ให้คน<b>ดูรายงานกดเลือกกรองได้เอง</b></p>
+      <ul style="font-size:0.72em; line-height:1.6; padding-left:1.1em;">
+        <li>เลือกไอคอน <b>Slicer</b> จาก Visualizations</li>
+        <li>ลากคอลัมน์ที่ต้องการกรอง (เช่น <b>กลุ่มสำรวจ</b>) เข้าไป</li>
+        <li>คลิกเลือกค่าบน Slicer → กราฟหน้านั้นทั้งหมดกรองตามทันที</li>
+      </ul>
+      <div class="card" style="border-top:4px solid var(--warn); font-size:0.64em; line-height:1.55;">
+        <b class="warn">ใน Workshop วันนี้:</b> ใช้ Slicer กรอง "กลุ่มสำรวจ" เพื่อดูเฉพาะผู้ป่วยที่เดินทางมาจากต่างประเทศ
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== LECTURE: DATA CLEANING ===================== -->
+
+<!-- 5a WHY CLEAN DATA -->
+<section>
+  <span class="kicker">แนวคิด 3 · ทำไมต้องทำความสะอาดข้อมูล</span>
+  <h2>Garbage In, Garbage Out</h2>
+  <div class="cols">
+    <div style="flex:1.1;">
+      <p style="font-size:0.78em; line-height:1.7;">ถ้าข้อมูลตั้งต้น <b>สกปรก</b> (ซ้ำ ขาดหาย เขียนไม่ตรงกัน) — ต่อให้กราฟสวยแค่ไหน <b>คำตอบก็ผิด</b></p>
+      <ul style="font-size:0.72em; line-height:1.6; padding-left:1.1em;">
+        <li><b>ข้อมูลซ้ำ (Duplicate)</b> — แถวเดิมถูกนับซ้ำ ทำให้ตัวเลขสูงเกินจริง</li>
+        <li><b>ข้อมูลขาดหาย (Missing)</b> — บางช่องว่างเปล่า</li>
+        <li><b>ชื่อไม่ตรงกัน (Inconsistent)</b> — สถานที่เดียวกัน แต่เขียนคนละแบบ</li>
+        <li><b>คอลัมน์ไม่มีประโยชน์</b> — ทุกแถวว่างหรือค่าเดียวกันหมด</li>
+      </ul>
+    </div>
+    <div style="flex:1.0; text-align:center;">
+      <img src="images/data_cleaning_before_after.png" style="max-width:100%; max-height:300px; border-radius:14px; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+    </div>
+  </div>
+</section>
+
+<!-- 5b REAL PROBLEMS IN OUR DATASET -->
+<section>
+  <span class="kicker">ตรวจสอบจริง · ไฟล์ COVID ของเรา</span>
+  <h2>ปัญหาที่พบจริงในไฟล์ Covid_Round_4_cases.xlsx</h2>
+  <table style="font-size:0.62em;">
+    <thead><tr><th>ปัญหา</th><th>พบเท่าไหร่</th><th>ทำไมต้องแก้</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b class="warn">แถวซ้ำ (Duplicate rows)</b></td>
+        <td>157 จาก 1,000 แถว</td>
+        <td>นับผู้ป่วยซ้ำ ทำให้ทุกกราฟสูงเกินจริง ~16%</td>
+      </tr>
+      <tr>
+        <td><b class="warn">คอลัมน์ว่างทั้งหมด</b></td>
+        <td>"job" ว่าง 1,000/1,000</td>
+        <td>ไม่มีข้อมูลเลย ไม่ควรเก็บไว้ในรายงาน</td>
+      </tr>
+      <tr>
+        <td><b class="warn">ชื่อจังหวัดไม่ตรงกัน</b></td>
+        <td>"กรุงเทพมหานคร" (127) กับ "กทม." (24)</td>
+        <td>ที่เดียวกันแต่ถูกนับแยกเป็น 2 กลุ่ม</td>
+      </tr>
+      <tr>
+        <td><b class="warn">อายุ/เพศ ขาดหาย</b></td>
+        <td>อายุว่าง 110 แถว · เพศ "ไม่ระบุ" 67 แถว</td>
+        <td>กราฟที่ใช้อายุ/เพศ จะไม่นับแถวเหล่านี้อัตโนมัติ</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="card" style="border-left:5px solid var(--purple); background:#fbf9ff; font-size:0.64em; line-height:1.55; margin-top:.5em;">
+    <b style="color:var(--purple)">ชวนคิด:</b> ตัวเลขในกราฟสัปดาห์ที่แล้วของเรา (เช่น ภาคอีสาน 280 ราย) ยังไม่ได้ลบข้อมูลซ้ำออก! วันนี้เราจะแก้ให้ถูกต้อง
+  </div>
+</section>
+
+<!-- 5c POWER QUERY HOW-TO -->
+<section>
+  <span class="kicker">เครื่องมือ · Power Query Editor</span>
+  <h2>ทำความสะอาดข้อมูลด้วย Power Query</h2>
+  <div class="step-box">
+    <span class="step-num">1</span> แถบ <b>Home</b> → กด <b>Transform Data</b> (จะเปิดหน้าต่าง Power Query Editor)
+  </div>
+  <div class="step-box">
+    <span class="step-num">2</span> <b>ลบแถวซ้ำ:</b> คลิกขวาที่หัวตาราง (มุมซ้ายบน) เพื่อเลือกทุกคอลัมน์ → <b>Remove Rows → Remove Duplicates</b>
+  </div>
+  <div class="step-box">
+    <span class="step-num">3</span> <b>ลบคอลัมน์ที่ไม่มีข้อมูล:</b> คลิกขวาที่หัวคอลัมน์ <b>job</b> → <b>Remove Columns</b>
+  </div>
+  <div class="step-box">
+    <span class="step-num">4</span> <b>รวมชื่อจังหวัดที่ซ้ำกัน:</b> คลิกขวาที่หัวคอลัมน์ <b>จังหวัด</b> → <b>Replace Values</b> → ค้นหา <code>กทม.</code> แทนที่ด้วย <code>กรุงเทพมหานคร</code>
+  </div>
+  <div class="step-box">
+    <span class="step-num">5</span> กด <b>Close &amp; Apply</b> (มุมซ้ายบน) เพื่อบันทึกและกลับไปหน้ารายงาน
+  </div>
+  <div class="card" style="border-left:5px solid var(--teal); background:#f2fdfb; font-size:0.64em; line-height:1.5; margin-top:.4em;">
+    <b style="color:var(--teal)">สังเกต:</b> มุมล่างซ้ายของ Power Query Editor จะบอกจำนวนแถวและคอลัมน์ปัจจุบัน — ดูตัวเลขก่อนและหลังลบแถวซ้ำ!
+  </div>
+</section>
+
+<!-- ===================== WORKSHOP: PAGE 5 ===================== -->
+
+<!-- 6 WORKSHOP INTRO -->
+<section>
+  <span class="kicker">Workshop · หน้า 5</span>
+  <h2>Workshop: สร้างหน้า 5 ในไฟล์ Power BI เดิม</h2>
+  <div class="cols">
+    <div style="flex:1;">
+      <div class="card" style="border-top:4px solid var(--warn); font-size:0.72em; line-height:1.6; margin-bottom:.5em;">
+        <b class="warn">สิ่งที่ต้องทำ:</b>
+        <ol style="margin:.2em 0 0; padding-left:1.2em;">
+          <li>ทำความสะอาดข้อมูลตามขั้นตอน Power Query ด้านบน</li>
+          <li>สร้างหน้าใหม่ (หน้า 5) ในไฟล์เดิม</li>
+          <li>ตอบคำถาม 4 ข้อใหม่ (ข้อ 7–10)</li>
+        </ol>
+      </div>
+    </div>
+    <div style="flex:1;">
+      <div class="card" style="border-left:5px solid var(--blue); font-size:0.68em; line-height:1.55;">
+        <b style="color:var(--blue)">ส่งงานท้ายคาบ:</b>
+        <ul style="margin:.2em 0 0; padding-left:1.1em;">
+          <li>Save ไฟล์ Power BI → ส่งบน Google Classroom</li>
+          <li>ส่งคำตอบใน Google Form</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 Q7 — REMOVE DUPLICATES -->
+<section>
+  <span class="kicker">หน้า 5 · ข้อ 7</span>
+  <h2>ข้อ 7: ลบข้อมูลซ้ำแล้วเหลือกี่แถว?</h2>
+  <div class="step-box">
+    <span class="step-num">1</span> ก่อนลบ ให้จดจำนวนแถวเดิม (มุมล่างซ้ายของ Power Query Editor ควรขึ้น <b>1000</b>)
+  </div>
+  <div class="step-box">
+    <span class="step-num">2</span> ทำตามขั้นตอน <b>Remove Duplicates</b> ด้านบน แล้วดูจำนวนแถวใหม่
+  </div>
+  <span class="ws-label" style="margin-top:.4em;">7. ก่อนลบแถวซ้ำมีข้อมูลกี่แถว และหลังลบมีเหลือกี่แถว?</span>
+  <textarea class="save ws-field" id="q7_dedup_count" data-group="คำถาม Filter & Data Cleaning" data-label="Q7 — จำนวนแถวก่อน/หลังลบซ้ำ" style="height:75px;" placeholder="ก่อนลบ ... แถว หลังลบ ... แถว"></textarea>
+</section>
+
+<!-- 8 Q8 — REPLACE VALUES -->
+<section>
+  <span class="kicker">หน้า 5 · ข้อ 8</span>
+  <h2>ข้อ 8: รวมชื่อจังหวัดที่ซ้ำกันแล้ว กรุงเทพฯ มีกี่ราย?</h2>
+  <div class="step-box">
+    <span class="step-num">1</span> ทำขั้นตอน <b>Replace Values</b> (กทม. → กรุงเทพมหานคร) ตามด้านบนให้เสร็จ
+  </div>
+  <div class="step-box">
+    <span class="step-num">2</span> ในหน้า 5 สร้าง <b>Table</b> หรือ <b>Bar Chart</b>: ลาก <b>จังหวัด</b> และคอลัมน์นับจำนวน (Count) เข้าไป
+  </div>
+  <div class="step-box">
+    <span class="step-num">3</span> หาแถว/แท่งของ <b>กรุงเทพมหานคร</b> — ตอนนี้ควรมีแค่แท่งเดียว (ไม่แยกเป็น 2 แบบเดิม)
+  </div>
+  <span class="ws-label" style="margin-top:.4em;">8. หลังรวมชื่อ "กรุงเทพมหานคร" กับ "กทม." เป็นชื่อเดียวกันแล้ว ยอดผู้ป่วยกรุงเทพฯ รวมเป็นกี่ราย?</span>
+  <textarea class="save ws-field" id="q8_bkk_merged" data-group="คำถาม Filter & Data Cleaning" data-label="Q8 — ยอดกรุงเทพฯ หลังรวมชื่อ" style="height:70px;" placeholder="กรุงเทพมหานคร รวม ... ราย"></textarea>
+</section>
+
+<!-- 9 Q9 — SLICER -->
+<section>
+  <span class="kicker">หน้า 5 · ข้อ 9</span>
+  <h2>ข้อ 9: ใช้ Slicer กรองกลุ่ม "เดินทางมาจากต่างประเทศ"</h2>
+  <div class="step-box">
+    <span class="step-num">1</span> ในหน้า 5 สร้าง <b>Clustered Bar Chart</b>: ลาก <b>ภาค</b> ไปช่อง Y-axis · ลากคอลัมน์นับจำนวน ไปช่อง X-axis
+  </div>
+  <div class="step-box">
+    <span class="step-num">2</span> เพิ่ม <b>Slicer</b> จาก Visualizations → ลาก <b>กลุ่มสำรวจ</b> เข้าไปในช่อง Field
+  </div>
+  <div class="step-box">
+    <span class="step-num">3</span> คลิกที่ Slicer เลือก <b>"เดินทางมาจากต่างประเทศ"</b> → กราฟ Bar Chart จะกรองตามทันที
+  </div>
+  <span class="ws-label" style="margin-top:.4em;">9. เมื่อกรองเฉพาะกลุ่ม "เดินทางมาจากต่างประเทศ" ภาคใดมีจำนวนผู้ป่วยกลุ่มนี้มากที่สุด?</span>
+  <textarea class="save ws-field" id="q9_foreign_region" data-group="คำถาม Filter & Data Cleaning" data-label="Q9 — ภาคที่รับผู้เดินทางจากต่างประเทศมากสุด" style="height:70px;" placeholder="ภาค..."></textarea>
+</section>
+
+<!-- 10 Q10 — OPEN VISUALIZATION + INSIGHT -->
+<section>
+  <span class="kicker">หน้า 5 · ข้อ 10</span>
+  <h2>ข้อ 10: สร้างกราฟเพศเอง แล้วเล่า Insight</h2>
+  <div class="step-box">
+    <span class="step-num">1</span> เลือกกราฟที่คิดว่าเหมาะกับการดูสัดส่วน (เช่น <b>Pie</b> หรือ <b>Donut Chart</b>) — เลือกเองได้
+  </div>
+  <div class="step-box">
+    <span class="step-num">2</span> ลาก <b>เพศ</b> ไปช่อง Legend · ลากคอลัมน์นับจำนวน ไปช่อง Values
+  </div>
+  <div class="step-box">
+    <span class="step-num">3</span> สังเกตว่ามี 3 กลุ่ม: <b>ชาย / หญิง / ไม่ระบุ</b>
+  </div>
+  <div class="card" style="border-left:5px solid var(--purple); background:#fbf9ff; font-size:0.64em; line-height:1.5; margin-top:.4em;">
+    <b style="color:var(--purple)">คิดต่อ:</b> ทำไมข้อมูลบางแถวถึง "ไม่ระบุ" เพศ? คิดว่าเกิดจากอะไรในขั้นตอนเก็บข้อมูลจริง?
+  </div>
+  <span class="ws-label" style="margin-top:.5em;">10. จากกราฟเพศที่สร้าง สัดส่วนแต่ละกลุ่มเป็นเท่าไหร่ และคิดว่าทำไมถึงมีข้อมูล "ไม่ระบุเพศ"?</span>
+  <textarea class="save ws-field" id="q10_gender_insight" data-group="คำถาม Filter & Data Cleaning" data-label="Q10 — สัดส่วนเพศ และเหตุผลที่ไม่ระบุ" style="height:90px;" placeholder="ชาย ... % หญิง ... % ไม่ระบุ ... % เพราะ..."></textarea>
+</section>
+
+<!-- ===================== SCREENSHOTS + SUBMIT ===================== -->
+
+<!-- 11 IMAGE ATTACH FOR SCREENSHOTS -->
+<section>
+  <span class="kicker">แนบภาพ · ภาพหน้าจอ Power BI</span>
+  <h3>แนบภาพหน้าจอจาก Power BI (ประกอบคำตอบ)</h3>
+  <p style="font-size:0.72em; color:var(--muted); margin-bottom:.4em;">จับภาพหน้าจอ Power BI แล้วแนบที่นี่</p>
+
+  <span class="ws-label">ภาพหน้า 3 (ค่าเฉลี่ยอายุ / ความเสี่ยงสถานบันเทิง / ตารางจังหวัด):</span>
+  <input class="save ws-field" id="q_img_page3" data-group="ภาพหน้าจอ Power BI" data-label="ภาพหน้า 3" type="text" readonly placeholder="ยังไม่ได้แนบภาพ" style="font-size:0.72em;">
+  <div id="q_img_page3_tray" class="img-tray"></div>
+
+  <span class="ws-label">ภาพ Power Query Editor (ก่อน/หลังทำความสะอาดข้อมูล):</span>
+  <input class="save ws-field" id="q_img_pq" data-group="ภาพหน้าจอ Power BI" data-label="ภาพ Power Query Editor" type="text" readonly placeholder="ยังไม่ได้แนบภาพ" style="font-size:0.72em;">
+  <div id="q_img_pq_tray" class="img-tray"></div>
+
+  <span class="ws-label">ภาพหน้า 5 (Bar Chart + Slicer + กราฟเพศ):</span>
+  <input class="save ws-field" id="q_img_page5" data-group="ภาพหน้าจอ Power BI" data-label="ภาพหน้า 5" type="text" readonly placeholder="ยังไม่ได้แนบภาพ" style="font-size:0.72em;">
+  <div id="q_img_page5_tray" class="img-tray"></div>
+</section>
+
+<!-- 12 SUBMIT -->
+<section>
+  <span class="kicker">ส่งงาน</span>
+  <h2>ส่งงาน</h2>
+  <div class="cols">
+    <div class="card" style="flex:1; border-top:4px solid var(--blue); font-size:0.72em; line-height:1.6;">
+      <b style="color:var(--blue)">1 ส่งไฟล์ Power BI</b>
+      <ol style="margin:.2em 0 0; padding-left:1.2em;">
+        <li>กด <b>File → Save As</b> ตั้งชื่อเป็น <b>ชื่อ_ชั้น_COVID.pbix</b></li>
+        <li>อัปโหลดไฟล์ <b>.pbix</b> บน <b>Google Classroom</b></li>
+      </ol>
+    </div>
+    <div class="card" style="flex:1; border-top:4px solid var(--purple); font-size:0.72em; line-height:1.6;">
+      <b style="color:var(--purple)">2 ส่งคำตอบใน Google Form</b>
+      <ol style="margin:.2em 0 0; padding-left:1.2em;">
+        <li>ตอบคำถามข้อ 4–6 (ทบทวน) และข้อ 7–10 (ใหม่) ให้ครบ</li>
+        <li>แนบภาพหน้าจอประกอบ</li>
+      </ol>
+    </div>
+  </div>
+  <div style="text-align:center; margin-top:.8em;">
+    <button class="dlbig" onclick="downloadPDF()">ดาวน์โหลดใบงาน (PDF)</button>
+  </div>
+</section>
+
+</div></div>
+
+<!-- ===================== PDF PRINT AREA ===================== -->
+<div id="print-area"></div>
+
+<!-- ===================== REVEAL.JS INIT ===================== -->
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js" integrity="sha384-M/JtqCVlLcK9lwVnBnMXP0V577CBULkjodKsR/PITOe4MSKNbbwqCemEyluOw0+5" crossorigin="anonymous"></script>
+<script>
+Reveal.initialize({
+  hash: true, slideNumber: 'c/t', controlsTutorial: false,
+  width: 1100, height: 700, margin: 0.04,
+  transition: 'slide', backgroundTransition: 'slide'
+});
+</script>
+
+<!-- ===================== LOCALSTORAGE AUTO-SAVE ===================== -->
+<script>
+(function(){
+  const SAVE_KEY = 'aied_w6_data';
+
+  function setCookie(name, value, days) {
+    let expires = "";
+    if (days) {
+      const date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/; SameSite=Lax";
+  }
+
+  function getCookie(name) {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(';');
+    for(let i=0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+    }
+    return null;
+  }
+
+  function store(){
+    let data = {};
+    try {
+      const local = localStorage.getItem(SAVE_KEY);
+      if (local) data = JSON.parse(local);
+    } catch(e) {}
+
+    // Fallback/sync check with cookies
+    try {
+      const cook = getCookie(SAVE_KEY);
+      if (cook) {
+        const cookData = JSON.parse(cook);
+        for (const k in cookData) {
+          if (data[k] === undefined) {
+            data[k] = cookData[k];
+          }
+        }
+      }
+    } catch(e) {}
+    return data;
+  }
+
+  function persist(d){
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify(d));
+    } catch(e) {}
+
+    try {
+      // Filter out base64 images to stay within cookie size limit (4KB)
+      const textData = {};
+      for (const k in d) {
+        if (!k.startsWith('img:') && !k.startsWith('q_img') && typeof d[k] === 'string' && d[k].length < 1000) {
+          textData[k] = d[k];
+        }
+      }
+      setCookie(SAVE_KEY, JSON.stringify(textData), 30);
+    } catch(e) {}
+  }
+
+  function flash(){ const h=document.getElementById('savehint'); h.style.opacity='1'; setTimeout(()=>h.style.opacity='0',1200); }
+
+  window.saveField = function(el){
+    const d=store(); d[el.id]=el.value; persist(d); flash();
+  };
+
+  function loadAll(){
+    const d=store();
+    document.querySelectorAll('.save').forEach(el=>{
+      if(d[el.id]!==undefined) el.value=d[el.id];
+    });
+  }
+
+  document.addEventListener('input', e=>{
+    if(e.target.classList && e.target.classList.contains('save')) saveField(e.target);
+  });
+  document.addEventListener('change', e=>{
+    if(e.target.classList && e.target.classList.contains('save')) saveField(e.target);
+  });
+
+  if(document.readyState!=='loading') loadAll();
+  else document.addEventListener('DOMContentLoaded', loadAll);
+
+  // show download button after first field is filled
+  const obs = new MutationObserver(()=>{
+    const d=store();
+    const any = Object.values(d).some(v=>v&&v.length>0);
+    document.getElementById('dlbtn').style.display = any ? 'block' : 'none';
+  });
+  document.addEventListener('input', ()=>{
+    const d=store();
+    const any = Object.values(d).some(v=>v&&v.length>0);
+    document.getElementById('dlbtn').style.display = any ? 'block' : 'none';
+  });
+  setTimeout(()=>{
+    const d=store();
+    const any = Object.values(d).some(v=>v&&v.length>0);
+    document.getElementById('dlbtn').style.display = any ? 'block' : 'none';
+  }, 500);
+})();
+</script>
+
+<!-- ===================== PDF DOWNLOAD ===================== -->
+<script>
+  function downloadPDF(){
+    const fields = document.querySelectorAll('.save[data-group]');
+    const groups = {};
+    fields.forEach(f=>{
+      const g = f.getAttribute('data-group');
+      const l = f.getAttribute('data-label');
+      if(!groups[g]) groups[g]=[];
+      groups[g].push({ label:l, value:(f.value||'').trim() });
+    });
+
+    const name1 = (document.getElementById('ws-name1')||{}).value||'';
+    const name2 = (document.getElementById('ws-name2')||{}).value||'';
+    const cls = (document.getElementById('ws-class')||{}).value||'';
+    const no = (document.getElementById('ws-no')||{}).value||'';
+
+    let html = '<div class="pdf-doc">';
+    html += '<h1>AI for Ed — สัปดาห์ที่ 6: กรองข้อมูล และทำความสะอาดข้อมูลด้วย Power BI</h1>';
+    html += '<div class="pdf-meta">';
+    html += '<span><b>ชื่อ:</b> '+(name1||'—')+(name2?' / '+name2:'')+'</span>';
+    html += '<span><b>ชั้น:</b> '+(cls||'—')+'</span>';
+    html += '<span><b>เลขที่:</b> '+(no||'—')+'</span>';
+    html += '</div>';
+
+    // images from localStorage
+    let imgStore = {};
+    try { imgStore = JSON.parse(localStorage.getItem('aied_w6_data')||'{}'); } catch(e){}
+
+    for(const [gName, items] of Object.entries(groups)){
+      html += '<h2>'+gName+'</h2>';
+      items.forEach(it=>{
+        html += '<div class="pdf-item">';
+        html += '<div class="pdf-label">'+it.label+'</div>';
+        html += '<div class="pdf-answer">'+(it.value||'<span class="empty">(ยังไม่ได้ตอบ)</span>')+'</div>';
+
+        // check if this field has images
+        const imgs = imgStore['img:'+it.label];
+        if(imgs && imgs.length){
+          html += '<div class="pdf-imgs">';
+          imgs.forEach(src=>{ html += '<img src="'+src+'">'; });
+          html += '</div>';
+        }
+        html += '</div>';
+      });
+    }
+    html += '</div>';
+
+    const area = document.getElementById('print-area');
+    area.innerHTML = html;
+    document.body.classList.add('printing');
+    setTimeout(()=>{
+      window.print();
+      setTimeout(()=>{ document.body.classList.remove('printing'); },500);
+    },300);
+  }
+  window.downloadPDF = downloadPDF;
+</script>
+
+<!-- ===================== IMAGE ATTACH ===================== -->
+<script>
+(function(){
+  const SAVE_KEY = 'aied_w6_data';
+  const IMG_TARGETS = ['q_img_page3', 'q_img_pq', 'q_img_page5'];
+  const MAX_KB = 800;
+
+  function store(){ try{ return JSON.parse(localStorage.getItem(SAVE_KEY)||'{}'); }catch(e){ return {}; } }
+  function persist(d){ localStorage.setItem(SAVE_KEY, JSON.stringify(d)); }
+
+  function renderTray(id){
+    const tray = document.getElementById(id+'_tray'); if(!tray) return;
+    const d = store();
+    const imgs = d['img:'+id] || [];
+    tray.innerHTML='';
+    const inp = document.getElementById(id);
+    if(inp) inp.value = imgs.length ? imgs.length+' ภาพ' : '';
+
+    imgs.forEach((src, i)=>{
+      const th = document.createElement('div'); th.className='img-thumb';
+      const im = document.createElement('img'); im.src=src;
+      const rm = document.createElement('button'); rm.className='rm'; rm.type='button'; rm.textContent='×';
+      rm.addEventListener('click', ()=>{
+        const dd=store(); dd['img:'+id].splice(i,1); persist(dd); renderTray(id);
+        if(window.refreshFeedback) window.refreshFeedback();
+      });
+      th.appendChild(im); th.appendChild(rm); tray.appendChild(th);
+    });
+  }
+
+  function addImg(id, dataURL){
+    const d=store();
+    if(!d['img:'+id]) d['img:'+id]=[];
+    d['img:'+id].push(dataURL);
+    persist(d);
+    renderTray(id);
+    if(window.refreshFeedback) window.refreshFeedback();
+  }
+
+  function attach(id){
+    const inp = document.getElementById(id); if(!inp) return;
+    const btn = document.createElement('button'); btn.className='img-btn'; btn.type='button';
+    btn.textContent='แนบภาพหน้าจอ';
+    const hint = document.createElement('span'); hint.className='img-hint';
+    hint.textContent='วาง (Ctrl+V) หรือเลือกไฟล์';
+    const file = document.createElement('input'); file.type='file'; file.accept='image/*'; file.style.display='none';
+    btn.addEventListener('click', ()=>file.click());
+    file.addEventListener('change', ()=>{
+      if(file.files && file.files[0]){
+        const reader = new FileReader();
+        reader.onload = e=>{
+          // resize if needed
+          const img = new Image();
+          img.onload = ()=>{
+            const canvas = document.createElement('canvas');
+            let w=img.width, h=img.height;
+            const maxDim = 1200;
+            if(w>maxDim){ h=h*(maxDim/w); w=maxDim; }
+            if(h>maxDim){ w=w*(maxDim/h); h=maxDim; }
+            canvas.width=w; canvas.height=h;
+            canvas.getContext('2d').drawImage(img,0,0,w,h);
+            addImg(id, canvas.toDataURL('image/jpeg',0.7));
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file.files[0]);
+      }
+      file.value='';
+    });
+    inp.insertAdjacentElement('afterend', file);
+    inp.insertAdjacentElement('afterend', hint);
+    inp.insertAdjacentElement('afterend', btn);
+  }
+
+  // paste handler
+  document.addEventListener('paste', e=>{
+    const items = (e.clipboardData||{}).items;
+    if(!items) return;
+    for(const item of items){
+      if(item.type.indexOf('image')===0){
+        e.preventDefault();
+        const blob = item.getAsFile();
+        const reader = new FileReader();
+        reader.onload = ev=>{
+          // find the currently visible image target
+          const active = Reveal.getCurrentSlide();
+          const targetIds = IMG_TARGETS.filter(id=>active.querySelector('#'+id) || active.querySelector('#'+id+'_tray'));
+          const tid = targetIds[0] || IMG_TARGETS[0];
+          const img = new Image();
+          img.onload = ()=>{
+            const canvas = document.createElement('canvas');
+            let w=img.width, h=img.height;
+            const maxDim = 1200;
+            if(w>maxDim){ h=h*(maxDim/w); w=maxDim; }
+            if(h>maxDim){ w=w*(maxDim/h); h=maxDim; }
+            canvas.width=w; canvas.height=h;
+            canvas.getContext('2d').drawImage(img,0,0,w,h);
+            addImg(tid, canvas.toDataURL('image/jpeg',0.7));
+          };
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(blob);
+        break;
+      }
+    }
+  });
+
+  function init(){
+    IMG_TARGETS.forEach(id=>{
+      attach(id);
+      renderTray(id);
+    });
+  }
+  if(document.readyState!=='loading') init();
+  else document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+
+<!-- ===================== LIVE FEEDBACK & SUBMISSION CHECK ===================== -->
+<script>
+(function(){
+  function txt(id){ const e=document.getElementById(id); return e ? (e.value||'').trim() : ''; }
+  function imgCount(id){ try{ const d=JSON.parse(localStorage.getItem('aied_w6_data')||'{}'); return (d['img:'+id]||[]).length; }catch(e){ return 0; } }
+
+  const ACTS=[
+    {name:'คำถาม COVID (ต่อจากสัปดาห์ที่ 5)', slots:[['t','q4_avg_age'],['t','q5_entertainment'],['t','q6_data_issue']]},
+    {name:'คำถาม Filter & Data Cleaning', slots:[['t','q7_dedup_count'],['t','q8_bkk_merged'],['t','q9_foreign_region'],['t','q10_gender_insight']]},
+    {name:'ภาพหน้าจอ Power BI', slots:[['i','q_img_page3'],['i','q_img_pq'],['i','q_img_page5']]}
+  ];
+
+  function slotFilled(type,id){
+    if(type==='i') return imgCount(id)>=1;
+    return txt(id).length>=2;
+  }
+  function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function renderPanel(){
+    const rows=document.getElementById('check-rows'); if(!rows) return;
+    let done=0, total=0, html='';
+    ACTS.forEach(a=>{
+      let f=0; a.slots.forEach(sl=>{ total++; if(slotFilled(sl[0],sl[1])){ f++; done++; } });
+      const all=f===a.slots.length;
+      const ic = all ? '' : (f>0 ? '◑' : '○');
+      html += `<div class="check-row${all?' done':''}"><span class="ic">${ic}</span><span class="body"><span class="ttl">${esc(a.name)}</span> <span class="sub">(${f}/${a.slots.length})</span></span></div>`;
+    });
+    rows.innerHTML=html;
+    const bar=document.getElementById('prog-bar'), cnt=document.getElementById('prog-count'), msg=document.getElementById('check-msg');
+    const pct = total ? Math.round(done/total*100) : 0;
+    if(bar) bar.style.width = pct+'%';
+    if(cnt) cnt.textContent = done+' / '+total+' ช่อง ('+pct+'%)';
+    if(msg){
+      const name1 = txt('ws-name1');
+      if(done===total && name1) msg.textContent='เยี่ยมมาก! ใบงานครบทุกช่องแล้ว กดบันทึกเป็น PDF ส่งครูได้เลย';
+      else if(done===total && !name1) msg.textContent='ตอบครบแล้ว เหลือกรอกชื่อ–นามสกุลในสไลด์ที่ 2 ก่อนบันทึก';
+      else if(pct>=60) msg.textContent='เกือบครบแล้ว! เหลืออีก '+(total-done)+' ช่อง สู้ๆ ';
+      else if(done>0) msg.textContent='ทำไปแล้ว '+done+' จาก '+total+' ช่อง — ทำต่อให้ครบนะ';
+      else msg.textContent='กรอกใบงานให้ครบ ระบบจะตรวจและให้คำแนะนำอัตโนมัติ';
+    }
+  }
+
+  window.refreshFeedback = renderPanel;
+  document.addEventListener('input', e=>{ if(e.target.classList && e.target.classList.contains('save')) renderPanel(); });
+  document.addEventListener('change', e=>{ if(e.target.classList && e.target.classList.contains('save')) renderPanel(); });
+  if(window.Reveal) Reveal.on('slidechanged', renderPanel);
+  if(document.readyState!=='loading') renderPanel();
+  else document.addEventListener('DOMContentLoaded', renderPanel);
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI for Ed — สัปดาห์ที่ 7: สร้างติวเตอร์ส่วนตัวด้วย NotebookLM</title>
+
+<!-- reveal.js core -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css" integrity="sha384-YgvgKeZJykuztG+iQPoZHNZENTFZvOcOJ/uRzmJTje6GHYN9zAw+y5rx/L8MQKA/" crossorigin="anonymous">
+<!-- Thai fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --ink: #1a2235; --muted: #5b6678; --line: #dfe4ec;
+  --blue: #1a73e8; --purple: #7b41d8; --teal: #0aa3a3;
+  --bg1: #f7f9fc; --card: #ffffff; --soft: #eef3fb;
+  --warn: #c2410c; --good: #0f8a4f;
+  --accent-grad: linear-gradient(90deg, var(--blue), var(--purple));
+}
+.reveal { font-family:'Sarabun','Noto Sans Thai','Outfit',sans-serif; color:var(--ink); font-size:28px; }
+.reveal .slides { text-align:left; }
+.reveal h1, .reveal h2, .reveal h3 { font-family:'Sarabun','Noto Sans Thai','Outfit',sans-serif; color:var(--ink); font-weight:700; text-transform:none; letter-spacing:0; line-height:1.35; }
+.reveal h1 { font-size:1.8em; margin-bottom: 0.5em; }
+.reveal h2 { font-size:1.35em; margin-bottom: 0.4em; }
+.reveal h3 { font-size:1.15em; color:var(--blue); margin-bottom: 0.4em; }
+.reveal p { line-height:1.75; margin-bottom: 0.7em; }
+.reveal ul { display:block; margin-bottom: 0.7em; }
+.reveal li { margin:.5em 0; line-height:1.65; }
+.reveal strong { color:var(--purple); }
+.reveal section { height:100%; overflow-y:auto; }
+.reveal section::-webkit-scrollbar { width:6px; }
+.reveal section::-webkit-scrollbar-track { background:transparent; }
+.reveal section::-webkit-scrollbar-thumb { background:var(--line); border-radius:99px; }
+.reveal section::-webkit-scrollbar-thumb:hover { background:var(--muted); }
+.reveal .slides section { padding:8px 20px; box-sizing:border-box; }
+
+/* accent header bar on each slide */
+.reveal .slides section > .kicker {
+  display:inline-block; font-size:.6em; font-weight:700; letter-spacing:.05em;
+  color:#fff; background:var(--accent-grad);
+  padding:.2em .9em; border-radius:999px; margin-bottom:.4em;
+}
+.reveal .q { background:var(--soft); border-left:5px solid var(--blue);
+  padding:.6em .9em; border-radius:10px; font-size:.9em; line-height:1.5; margin:.5em 0 .7em; }
+.reveal .note { color:var(--muted); font-size:.65em; }
+.reveal .rule { background:#fff6ed; border:1px solid #ffd8b8; color:var(--warn);
+  border-radius:10px; padding:.4em .8em; font-size:.78em; font-weight:600; }
+.reveal .good { color:var(--good); font-weight:700; }
+.reveal .warn { color:var(--warn); font-weight:600; }
+.reveal code { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; font-size:.85em;
+  background:var(--soft); color:var(--blue); padding:.06em .42em; border-radius:6px; white-space:nowrap; }
+.reveal a.tool { color:var(--blue); font-weight:700; text-decoration:underline; word-break:break-all; }
+
+/* title slide */
+.title-wrap { text-align:center; height:100%; display:flex; flex-direction:column;
+  justify-content:center; align-items:center; }
+.title-wrap .badge { font-size:.68em; color:#fff; background:var(--accent-grad);
+  padding:.3em 1.2em; border-radius:999px; font-weight:700; }
+.title-wrap h1 { background:var(--accent-grad);
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; margin:.2em 0; }
+.title-wrap .sub { font-size:1.0em; color:var(--ink); font-weight:600; }
+.title-wrap .meta { color:var(--muted); font-size:.75em; margin-top:.5em; }
+
+/* two-column helper */
+.cols { display:flex; gap:1.2em; align-items:flex-start; }
+.cols > div { flex:1; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:14px;
+  padding:.8em 1.0em; box-shadow:0 2px 8px rgba(20,30,60,.04); line-height:1.5; }
+.card h3 { margin-top:0; }
+.pill { display:inline-block; background:var(--soft); color:var(--blue);
+  border-radius:8px; padding:.08em .5em; font-size:.78em; font-weight:600; margin:.1em; }
+
+/* table styling inside reveal */
+.reveal table { width:100%; border-collapse:collapse; margin:.5em 0; font-size:.7em; }
+.reveal th { background:var(--soft); font-weight:700; border:1px solid var(--line); padding:6px 12px; }
+.reveal td { border:1px solid var(--line); padding:6px 12px; }
+
+/* worksheet fields */
+.ws-label { display:block; font-size:.7em; font-weight:700; color:var(--muted);
+  margin:.4em 0 .15em; }
+textarea.ws-field, input.save, select.save {
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:.7em; color:var(--ink);
+  width:100%; border:1.5px solid var(--line); border-radius:10px; padding:.5em .7em;
+  background:#fcfdff; box-sizing:border-box; resize:vertical !important; overflow:auto !important; }
+textarea.ws-field { min-height:100px; line-height:1.5; }
+textarea.ws-field:focus, input.save:focus, select.save:focus { outline:none; border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(26,115,232,.12); }
+input.save { height:auto; }
+select.save { height:auto; padding:.4em .6em; }
+
+textarea::-webkit-scrollbar { width: 5px; }
+textarea::-webkit-scrollbar-track { background: transparent; }
+textarea::-webkit-scrollbar-thumb { background: var(--line); border-radius: 99px; }
+textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+.info-grid { display:grid; grid-template-columns:1fr; gap:.3em; max-width:620px; }
+.info-row { display:flex; gap:.8em; }
+.info-row > div { flex:1; }
+
+/* source table for activity 1 */
+.src-block { border:1.5px solid var(--line); border-radius:12px; padding:.5em .7em; margin:.4em 0;
+  background:#fcfdff; }
+.src-block > b { font-size:.7em; color:var(--purple); }
+
+/* download button (floating) */
+#dlbtn { position:fixed; top:14px; right:16px; z-index:60;
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:15px; font-weight:700;
+  color:#fff; background:var(--accent-grad);
+  border:none; border-radius:999px; padding:10px 18px; cursor:pointer;
+  box-shadow:0 4px 14px rgba(76,40,160,.3); display:none; }
+#dlbtn:hover { filter:brightness(1.05); }
+#dlbtn:active { transform:translateY(1px); }
+#savehint { position:fixed; top:54px; right:18px; z-index:60; font-size:11px;
+  color:var(--good); font-family:'Sarabun',sans-serif; opacity:0; transition:opacity .3s; }
+#quotawarn { position:fixed; top:54px; right:18px; z-index:61; font-size:12px; font-weight:700;
+  color:#fff; background:var(--warn); border-radius:8px; padding:6px 10px; max-width:320px;
+  font-family:'Sarabun',sans-serif; display:none; line-height:1.4; }
+.dlbig { font-size:.9em; font-weight:700; color:#fff;
+  background:var(--accent-grad); border:none;
+  border-radius:12px; padding:.5em 1.1em; cursor:pointer; box-shadow:0 4px 14px rgba(76,40,160,.25);
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; }
+
+/* assignment print area — hidden on screen, shown only when printing */
+#print-area { display:none; }
+.pdf-doc { font-family:'Sarabun','Noto Sans Thai',sans-serif; color:#11131a; padding:6px 4px; }
+.pdf-doc h1 { font-size:20px; margin:0 0 4px; color:#1a73e8; }
+.pdf-doc .pdf-meta { display:flex; gap:18px; font-size:13px; border-bottom:2px solid #1a73e8;
+  padding-bottom:8px; margin-bottom:12px; flex-wrap:wrap; }
+.pdf-doc h2 { font-size:15px; margin:16px 0 6px; color:#7b41d8; border-left:4px solid #7b41d8; padding-left:8px; }
+.pdf-item { margin:8px 0; page-break-inside:avoid; }
+.pdf-label { font-size:12.5px; font-weight:700; color:#333; margin-bottom:3px; }
+.pdf-answer { font-size:12.5px; line-height:1.5; border:1px solid #c9d2e0; border-radius:6px;
+  padding:7px 9px; white-space:pre-wrap; min-height:18px; background:#fbfcfe; }
+.pdf-answer .empty { color:#aab2c0; }
+@page { size:A4; margin:14mm; }
+@media print {
+  body.printing > *:not(#print-area) { display:none !important; }
+  body.printing #print-area { display:block !important; }
+  body.printing { background:#fff !important; }
+}
+.pdf-imgs img { display:block; max-width:100%; max-height:420px; margin-top:6px;
+  border:1px solid #c9d2e0; border-radius:6px; page-break-inside:avoid; }
+
+/* image attach / paste helper */
+.img-btn { display:inline-flex; align-items:center; gap:.3em; margin-top:.35em;
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:.6em; font-weight:700;
+  color:var(--blue); background:var(--soft); border:1.5px solid #cfe0fb;
+  border-radius:999px; padding:.4em .9em; cursor:pointer; }
+.img-btn:hover { filter:brightness(.98); }
+.img-hint { font-size:.55em; color:var(--muted); margin-left:.55em; }
+.img-tray { display:flex; flex-wrap:wrap; gap:.5em; margin-top:.4em; }
+.img-thumb { position:relative; width:96px; height:96px; border:1px solid var(--line);
+  border-radius:8px; overflow:hidden; background:#fafbff; }
+.img-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+.img-thumb .rm { position:absolute; top:2px; right:2px; width:20px; height:20px;
+  border:none; border-radius:50%; background:rgba(20,30,60,.7); color:#fff;
+  font-size:13px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.img-thumb .rm:hover { background:var(--warn); }
+
+/* ---- submission readiness panel ---- */
+.check-panel { max-width:860px; margin:0.3em auto 0; }
+.prog-meta { display:flex; justify-content:space-between; font-size:.64em; color:var(--muted);
+  font-weight:700; margin:.2em .2em .35em; }
+.prog-wrap { background:var(--soft); border-radius:999px; height:15px; overflow:hidden; border:1px solid var(--line); }
+.prog-bar  { height:100%; width:0%; border-radius:999px; background:var(--accent-grad); transition:width .35s ease; }
+.check-msg { text-align:center; font-size:.74em; font-weight:700; margin:.5em 0 .55em; color:var(--ink); }
+.check-grid { display:grid; grid-template-columns:1fr 1fr; gap:.4em; }
+.check-row { display:flex; align-items:flex-start; gap:.5em; font-size:.66em; line-height:1.4;
+  padding:.4em .65em; border:1px solid var(--line); border-radius:10px; background:#fff; }
+.check-row .ic { font-size:1.1em; line-height:1.3; flex:0 0 auto; }
+.check-row .body { flex:1; min-width:0; }
+.check-row .ttl { font-weight:700; color:var(--ink); }
+.check-row .sub { color:var(--muted); font-size:.92em; }
+.check-row.done { background:#f4fbf7; border-color:#cdeadb; }
+
+/* step box */
+.step-box { background:var(--soft); border:1.5px solid var(--line); border-radius:12px;
+  padding:.55em .8em; margin:.35em 0; font-size:.7em; line-height:1.6; }
+.step-box b { color:var(--purple); }
+.step-num { display:inline-flex; align-items:center; justify-content:center;
+  width:26px; height:26px; border-radius:50%; background:var(--accent-grad);
+  color:#fff; font-weight:700; font-size:.7em; margin-right:.4em; flex-shrink:0; }
+
+/* topic banner */
+.topic-banner { background:linear-gradient(90deg,#eef3fb,#f7f0ff); border:1.5px solid #d9e2f5;
+  border-radius:14px; padding:.7em 1em; margin:.4em 0; }
+.topic-banner .tb-l { font-size:.62em; font-weight:700; color:var(--muted); letter-spacing:.04em; }
+.topic-banner .tb-t { font-size:.95em; font-weight:700; color:var(--purple); line-height:1.4; }
+.topic-banner .tb-h { font-size:.66em; color:var(--ink); margin-top:.25em; line-height:1.5; }
+</style>
+</head>
+<body>
+
+<button id="dlbtn" onclick="downloadPDF()">⬇ บันทึกใบงานเป็น PDF</button>
+<div id="savehint">บันทึกแล้ว ✓</div>
+<div id="quotawarn"></div>
+
+<div class="reveal"><div class="slides">
+
+<!-- ===== 1 TITLE ===== -->
+<section>
+  <div class="title-wrap">
+    <span class="badge">AI for Ed · สัปดาห์ที่ 7</span>
+    <h1>สร้างติวเตอร์ส่วนตัวด้วย NotebookLM</h1>
+  </div>
+</section>
+
+<!-- ===== 2 STUDENT INFO ===== -->
+<section>
+  <span class="kicker">เริ่มต้นคลาส</span>
+  <h2>ระบุข้อมูลผู้เรียน</h2>
+  <div class="info-grid">
+    <div class="info-row">
+      <div>
+        <span class="ws-label">ชื่อ–นามสกุล</span>
+        <input class="save" id="ws-name1" type="text" placeholder="เช่น นายสมชาย ตั้งใจเรียน">
+      </div>
+    </div>
+    <div class="info-row">
+      <div><span class="ws-label">ชั้น</span><input class="save" id="ws-class" type="text" placeholder="เช่น ม.6/2"></div>
+      <div><span class="ws-label">เลขที่</span><input class="save" id="ws-no" type="text" placeholder="ระบุตัวเลข เช่น 15"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 3 PLAN ===== -->
+<section>
+  <span class="kicker">วันนี้เราจะทำอะไร</span>
+  <h2>แผนการเรียน</h2>
+  <div class="cols">
+    <div>
+      <table style="font-size:.66em;">
+        <thead><tr><th>กิจกรรม</th></tr></thead>
+        <tbody>
+          <tr><td><b>1 คัดแหล่ง</b> — หาและประเมินเอกสาร 2 แหล่ง</td></tr>
+          <tr><td><b>2 ถามไต่ระดับ</b> — ถาม 4 ขั้น + ตรวจแหล่งอ้างอิง</td></tr>
+          <tr><td><b>3 ให้ AI ติวกลับ</b> — Study Guide · Mind Map · ควิซ</td></tr>
+          <tr><td><b>4 สรุปเป็นภาพ</b> — ทำ Infographic หรือสไลด์สรุป</td></tr>
+          <tr><td>ตรวจความครบถ้วน + บันทึก PDF ส่ง</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="flex:.85;">
+      <div class="card" style="border-left:5px solid var(--purple); background:#fbf9ff; font-size:.68em; line-height:1.6;">
+        <b style="color:var(--purple)">ทำไมคาบนี้ถึงสำคัญ</b><br>
+        ทักษะที่จำเป็นที่สุดในยุค AI ไม่ใช่ "ใช้ AI เป็น" แต่คือ <b>เรียนเองให้เป็น</b> และ <b>ตรวจสอบให้เป็น</b><br><br>
+        วันนี้ให้ใช้ NotebookLM เป็นติวเตอร์ส่วนตัว แล้วพิสูจน์ว่าคุณเรียนเองได้จริง
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 4 RECAP NOTEBOOKLM / RAG ===== -->
+<section>
+  <span class="kicker">ทบทวน · จากสัปดาห์ที่ 2</span>
+  <h2>ทวน NotebookLM ต่างจาก Gemini อย่างไร</h2>
+  <div style="text-align:center; margin:.2em 0 .5em;">
+    <img src="images/rag_vs_llm.png" alt="เปรียบเทียบ Gemini (LLM) กับ NotebookLM (RAG)"
+         style="max-width:100%; max-height:190px; border-radius:12px;">
+  </div>
+  <div class="cols">
+    <div class="card" style="border-top:4px solid var(--blue); font-size:.68em; line-height:1.6;">
+      <b style="color:var(--blue)">Gemini (LLM ล้วน)</b>
+      <ul style="margin:.2em 0 0; padding-left:1.1em;">
+        <li>ตอบจากสิ่งที่เรียนมาทั้งอินเทอร์เน็ต</li>
+        <li>ตอบได้เกือบทุกคำถาม</li>
+        <li>ไม่รู้ก็ยัง "เดา" ให้ → <b class="warn">Hallucination</b></li>
+        <li>บอกไม่ได้ว่าคำตอบมาจากไหน</li>
+      </ul>
+    </div>
+    <div class="card" style="border-top:4px solid var(--teal); font-size:.68em; line-height:1.6;">
+      <b style="color:var(--teal)">NotebookLM (RAG)</b>
+      <ul style="margin:.2em 0 0; padding-left:1.1em;">
+        <li>ตอบจาก <b>เอกสารที่เราใส่เข้าไปเท่านั้น</b></li>
+        <li>ไม่มีในเอกสาร → บอกว่า <b>ไม่พบข้อมูล</b></li>
+        <li>ทุกประโยคมี <b>citation</b> กดดูต้นทางได้</li>
+        <li>คุณภาพคำตอบ = คุณภาพแหล่งที่เราเลือก</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card" style="border-left:5px solid var(--purple); background:#fbf9ff; font-size:.66em; line-height:1.55; margin-top:.5em;">
+    <b style="color:var(--purple)">RAG</b> = Retrieval-Augmented Generation — "ค้นก่อน แล้วค่อยตอบ" AI จะไปค้นข้อความจริงจากเอกสารของเราก่อน แล้วเรียบเรียงคำตอบจากข้อความนั้น
+    <br>👉 <b>เพราะแบบนี้ ถ้าเราใส่แหล่งขยะเข้าไป คำตอบก็จะขยะตาม</b> — กิจกรรมที่ 1 จึงสำคัญที่สุด
+  </div>
+</section>
+
+<!-- ===== 5 YOUR TOPIC ===== -->
+<section>
+  <span class="kicker">หัวข้อประจำตัว</span>
+  <h2>หัวข้อของคุณ (ตามเลขที่)</h2>
+  <div class="topic-banner">
+    <div class="tb-l">📋 หัวข้อประจำเลขที่ของคุณ</div>
+    <div class="tb-t" data-var="topic">— (กรอก "เลขที่" ในสไลด์ที่ 2 ก่อน)</div>
+    <div class="tb-h"><b>คำถามชวนคิด:</b> <span data-var="hook">—</span></div>
+  </div>
+  <div class="card" style="border-left:5px solid var(--blue); font-size:.7em; line-height:1.6; margin-top:.5em;">
+    <b style="color:var(--blue)">แหล่งตั้งต้นที่ครูเตรียมให้ (ใส่เข้า NotebookLM เป็นแหล่งแรก)</b><br>
+    <span data-var="srcName">—</span><br>
+    <a class="tool" data-var-href="srcUrl" data-var="srcUrl" href="#" target="_blank" rel="noopener">—</a>
+  </div>
+</section>
+
+<!-- ===== 6 SOURCE RULES ===== -->
+<section>
+  <span class="kicker">กติกา · แหล่งข้อมูล</span>
+  <h2>แหล่งแบบไหนใช้ได้ แบบไหนใช้ไม่ได้</h2>
+  <div style="text-align:center; margin:.2em 0 .45em;">
+    <img src="images/source_quality.png" alt="แหล่งที่เชื่อถือได้ เทียบกับแหล่งที่ควรเลี่ยง"
+         style="max-width:100%; max-height:175px; border-radius:12px;">
+  </div>
+  <div class="cols">
+    <div class="card" style="border-top:4px solid var(--good); font-size:.66em; line-height:1.6;">
+      <b class="good">✅ ใช้ได้</b>
+      <ul style="margin:.2em 0 0; padding-left:1.1em;">
+        <li>เว็บ<b>หน่วยงานรัฐ / องค์กร</b> (เช่น ETDA, TDRI, BDI)</li>
+        <li><b>สำนักข่าว</b>ที่ระบุผู้เขียนและวันที่</li>
+        <li><b>บทความวิชาการ</b> / เว็บมหาวิทยาลัย</li>
+        <li>คลิป YouTube ของช่องที่มีตัวตนชัดเจน</li>
+      </ul>
+    </div>
+    <div class="card" style="border-top:4px solid var(--warn); font-size:.66em; line-height:1.6;">
+      <b class="warn">❌ ใช้ไม่ได้</b>
+      <ul style="margin:.2em 0 0; padding-left:1.1em;">
+        <li>บล็อก<b>ไม่ระบุชื่อผู้เขียน</b></li>
+        <li>บทความที่ <b>AI เขียนขึ้นเอง</b></li>
+        <li>โพสต์โซเชียลที่ไม่มีที่มา</li>
+        <li>เว็บที่มีแต่โฆษณา / ขายของ</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card" style="border-left:5px solid var(--teal); background:#f2fdfb; font-size:.66em; line-height:1.55; margin-top:.5em;">
+    <b style="color:var(--teal)">🛟 ถ้าใส่ลิงก์แล้ว NotebookLM ดึงเนื้อหาไม่ได้</b> (บางเว็บบล็อกไว้) →
+    เปิดหน้าเว็บนั้น กด <code>Ctrl+A</code> แล้ว <code>Ctrl+C</code> คัดลอกข้อความทั้งหน้า →
+    ใน NotebookLM เลือกเพิ่มแหล่งแบบ <b>"ข้อความคัดลอกมาวาง" (Copied text)</b> แล้ววางลงไป
+  </div>
+</section>
+
+<!-- ===== 7 ACT1 INTRO ===== -->
+<section>
+  <span class="kicker">กิจกรรมที่ 1 · 35 นาที</span>
+  <h2>🔎 คัดแหล่ง — สร้างคลังความรู้ของตัวเอง</h2>
+  <div class="step-box">
+    <span class="step-num">1</span> เปิด <a class="tool" href="https://notebooklm.google.com" target="_blank" rel="noopener">notebooklm.google.com</a> → ล็อกอินบัญชี Google → กด <b>Create new</b>
+  </div>
+  <div class="step-box">
+    <span class="step-num">2</span> ตั้งชื่อ Notebook เป็น <b>[หัวข้อของคุณ] – เลขที่ __</b>
+  </div>
+  <div class="step-box">
+    <span class="step-num">3</span> ใส่ <b>แหล่งตั้งต้น</b> ที่ครูให้ (สไลด์ก่อนหน้า) เป็นแหล่งแรก
+  </div>
+  <div class="step-box">
+    <span class="step-num">4</span> <b>ค้นหาเอง</b> อีก <b>2 แหล่ง</b> ที่เกี่ยวกับหัวข้อเดียวกัน → ใส่เข้า Notebook → กรอกตารางในสไลด์ถัดไป
+  </div>
+  <div class="rule" style="margin-top:.5em;">
+    ⚠️ อย่างน้อย <b>1 ใน 2 แหล่งที่หาเอง</b> ต้องมาจากหน่วยงาน องค์กร หรือสื่อที่<b>ระบุผู้เขียนได้</b>
+  </div>
+</section>
+
+<!-- ===== 8 ACT1 SOURCE TABLE ===== -->
+<section>
+  <span class="kicker">กิจกรรมที่ 1 · ข้อ 1.1</span>
+  <h2>บันทึกแหล่งที่หาเอง 2 แหล่ง</h2>
+
+  <div class="src-block">
+    <b>แหล่งที่ 1</b>
+    <div class="info-row">
+      <div><span class="ws-label">ชื่อแหล่ง / ชื่อบทความ</span>
+        <input class="save" id="s1_name" data-group="กิจกรรมที่ 1 — คัดแหล่ง" data-label="แหล่งที่ 1 — ชื่อ" type="text" placeholder="เช่น รู้ทัน AI Deepfake — ETDA"></div>
+      <div><span class="ws-label">ประเภทแหล่ง</span>
+        <select class="save" id="s1_type" data-group="กิจกรรมที่ 1 — คัดแหล่ง" data-label="แหล่งที่ 1 — ประเภท">
+          <option value="">— เลือก —</option>
+          <option>หน่วยงานรัฐ</option><option>องค์กร/สถาบัน</option><option>สำนักข่าว</option>
+          <option>บทความวิชาการ/มหาวิทยาลัย</option><option>คลิป YouTube</option><option>อื่น ๆ</option>
+        </select></div>
+    </div>
+    <span class="ws-label">URL</span>
+    <input class="save" id="s1_url" data-group="กิจกรรมที่ 1 — คัดแหล่ง" data-label="แหล่งที่ 1 — URL" type="text" placeholder="https://...">
+    <span class="ws-label">เชื่อถือได้เพราะอะไร (2 บรรทัด — บอกเหตุผล ไม่ใช่ "เพราะเป็นเว็บดัง")</span>
+    <textarea class="save ws-field" id="s1_why" data-group="กิจกรรมที่ 1 — คัดแหล่ง" data-label="แหล่งที่ 1 — เหตุผลความน่าเชื่อถือ" style="min-height:70px;" placeholder="เช่น เผยแพร่โดยหน่วยงานรัฐที่ดูแลเรื่องนี้โดยตรง ระบุวันที่เผยแพร่ และอ้างอิงงานวิจัยประกอบ"></textarea>
+  </div>
+
+  <div class="src-block">
+    <b>แหล่งที่ 2</b>
+    <div class="info-row">
+      <div><span class="ws-label">ชื่อแหล่ง / ชื่อบทความ</span>
+        <input class="save" id="s2_name" data-group="กิจกรรมที่ 1 — คัดแหล่ง" data-label="แหล่งที่ 2 — ชื่อ" type="text" placeholder=""></div>
+      <div><span class="ws-label">ประเภทแหล่ง</span>
+        <select class="save" id="s2_type" data-group="กิจกรรมที่ 1 — คัดแหล่ง" data-label="แหล่งที่ 2 — ประเภท">
+          <option value="">— เลือก —</option>
+          <option>หน่วยงานรัฐ</option><option>องค์กร/สถาบัน</option><option>สำนักข่าว</option>
+          <option>บทความวิชาการ/มหาวิทยาลัย</option><option>คลิป YouTube</option><option>อื่น ๆ</option>
+        </select></div>
+    </div>
+    <span class="ws-label">URL</span>
+    <input class="save" id="s2_url" data-group="กิจกรรมที่ 1 — คัดแหล่ง" data-label="แหล่งที่ 2 — URL" type="text" placeholder="https://...">
+    <span class="ws-label">เชื่อถือได้เพราะอะไร (2 บรรทัด)</span>
+    <textarea class="save ws-field" id="s2_why" data-group="กิจกรรมที่ 1 — คัดแหล่ง" data-label="แหล่งที่ 2 — เหตุผลความน่าเชื่อถือ" style="min-height:70px;" placeholder=""></textarea>
+  </div>
+</section>
+
+<!-- ===== 9 ACT1 SCREENSHOT ===== -->
+<section>
+  <span class="kicker">กิจกรรมที่ 1 · ข้อ 1.2</span>
+  <h2>📸 ภาพหน้าจอ: Notebook ที่มีครบ 3 แหล่ง</h2>
+  <p style="font-size:.72em; color:var(--muted);">จับภาพหน้าจอ NotebookLM ให้เห็น <b>แผงรายการแหล่ง (Sources) ครบทั้ง 3 แหล่ง</b> และเห็น <b>ชื่อ Notebook</b> ของคุณ</p>
+  <span class="ws-label">แนบภาพหน้าจอแผงแหล่งข้อมูล</span>
+  <input class="save ws-field" id="q_img_sources" data-group="กิจกรรมที่ 1 — คัดแหล่ง" data-label="ภาพหน้าจอ — แหล่งครบ 3 แหล่ง" type="text" readonly placeholder="ยังไม่ได้แนบภาพ" style="font-size:.72em;">
+  <div id="q_img_sources_tray" class="img-tray"></div>
+  <div class="card" style="border-left:5px solid var(--teal); background:#f2fdfb; font-size:.64em; line-height:1.55; margin-top:.6em;">
+    <b style="color:var(--teal)">วิธีจับภาพหน้าจอ</b> · Windows: กด <code>Win + Shift + S</code> ลากคลุมพื้นที่ → กลับมาที่หน้านี้แล้วกด <code>Ctrl+V</code> · หรือกดปุ่ม "แนบภาพหน้าจอ" เพื่อเลือกไฟล์
+  </div>
+</section>
+
+<!-- ===== 10 ACT2 INTRO ===== -->
+<section>
+  <span class="kicker">กิจกรรมที่ 2 · 45 นาที</span>
+  <h2>🪜 ถามไต่ระดับ 4 ขั้น</h2>
+  <p style="font-size:.74em; line-height:1.7;">การเรียนเองที่ดี ไม่ใช่ถามคำถามเดียวแล้วจบ — แต่คือ <b>ไต่จากง่ายไปยาก</b> ทีละขั้น</p>
+  <div style="text-align:center; margin:.2em 0 .45em;">
+    <img src="images/question_ladder.png" alt="บันไดคำถาม 4 ขั้น: นิยาม กลไก เทียบแหล่ง ประยุกต์"
+         style="max-width:100%; max-height:185px; border-radius:12px;">
+  </div>
+  <table style="font-size:.64em;">
+    <thead><tr><th>ขั้น</th><th>ถามอะไร</th><th>ได้อะไร</th></tr></thead>
+    <tbody>
+      <tr><td><b style="color:var(--blue)">1 นิยาม</b></td><td>มันคืออะไร</td><td>รู้ว่ากำลังพูดถึงอะไร</td></tr>
+      <tr><td><b style="color:var(--blue)">2 กลไก</b></td><td>มันทำงาน/เกิดขึ้นอย่างไร</td><td>เข้าใจเหตุและผล</td></tr>
+      <tr><td><b style="color:var(--purple)">3 เทียบแหล่ง</b></td><td>แหล่งทั้ง 3 เห็นตรงกันไหม</td><td>เห็นว่าความรู้ไม่ได้มีคำตอบเดียว</td></tr>
+      <tr><td><b style="color:var(--teal)">4 ประยุกต์</b></td><td>เกี่ยวกับชีวิตเรายังไง</td><td>เอาไปใช้ได้จริง</td></tr>
+    </tbody>
+  </table>
+  <div class="rule" style="margin-top:.4em;">
+    📌 <b>ทุกข้อ</b> ต้องกดดู <b>citation</b> (ตัวเลขเล็ก ๆ ท้ายประโยค) แล้วจดว่าคำตอบนั้นมาจากแหล่งไหน
+  </div>
+</section>
+
+<!-- ===== 11 Q2.1 ===== -->
+<section>
+  <span class="kicker">กิจกรรมที่ 2 · ข้อ 2.1 — ขั้นนิยาม</span>
+  <h2>ถามให้ AI อธิบายว่า "มันคืออะไร"</h2>
+  <div class="q" style="font-size:.72em;">
+    <b>โจทย์:</b> เขียน prompt ให้ NotebookLM อธิบายว่า <b data-var="topic">หัวข้อของคุณ</b> คืออะไร
+    ให้ <b>นักเรียน ม.6 เข้าใจภายใน 5 บรรทัด</b>
+  </div>
+  <span class="ws-label">✏️ Prompt ที่ใช้</span>
+  <textarea class="save ws-field" id="q21_prompt" data-group="กิจกรรมที่ 2 — ถามไต่ระดับ" data-label="2.1 นิยาม — Prompt" style="min-height:70px;" placeholder="คุณเป็น... ช่วยอธิบาย... ให้... ในรูปแบบ..."></textarea>
+  <span class="ws-label">🤖 สรุปคำตอบที่ได้</span>
+  <textarea class="save ws-field" id="q21_ans" data-group="กิจกรรมที่ 2 — ถามไต่ระดับ" data-label="2.1 นิยาม — สรุปคำตอบ" style="min-height:80px;"></textarea>
+  <span class="ws-label">🔗 คำตอบนี้อ้างจากแหล่งไหน (กดดู citation แล้วจดชื่อแหล่ง)</span>
+  <input class="save" id="q21_cite" data-group="กิจกรรมที่ 2 — ถามไต่ระดับ" data-label="2.1 นิยาม — แหล่งอ้างอิง" type="text" placeholder="เช่น แหล่งตั้งต้น (ETDA) / แหล่งที่ 2">
+</section>
+
+<!-- ===== 12 Q2.2 ===== -->
+<section>
+  <span class="kicker">กิจกรรมที่ 2 · ข้อ 2.2 — ขั้นกลไก</span>
+  <h2>ถามว่า "มันทำงาน / เกิดขึ้นได้อย่างไร"</h2>
+  <div class="q" style="font-size:.72em;">
+    <b>โจทย์:</b> เขียน prompt ขอให้ NotebookLM อธิบาย <b>กลไก / ขั้นตอน / สาเหตุ</b> ของเรื่องนี้ <b>ทีละขั้น</b>
+  </div>
+  <span class="ws-label">✏️ Prompt ที่ใช้</span>
+  <textarea class="save ws-field" id="q22_prompt" data-group="กิจกรรมที่ 2 — ถามไต่ระดับ" data-label="2.2 กลไก — Prompt" style="min-height:70px;"></textarea>
+  <span class="ws-label">🤖 สรุปคำตอบที่ได้ — เขียนเป็นลำดับขั้นตอน อย่างน้อย 3 ขั้น ว่า "เกิดอะไรขึ้นก่อน แล้วเกิดอะไรต่อ"</span>
+  <textarea class="save ws-field" id="q22_ans" data-group="กิจกรรมที่ 2 — ถามไต่ระดับ" data-label="2.2 กลไก — สรุปคำตอบ" style="min-height:90px;" placeholder="ขั้นที่ 1: เริ่มจาก ...&#10;ขั้นที่ 2: จากนั้น ...&#10;ขั้นที่ 3: สุดท้ายทำให้ ..."></textarea>
+  <span class="ws-label">🔗 คำตอบนี้อ้างจากแหล่งไหน</span>
+  <input class="save" id="q22_cite" data-group="กิจกรรมที่ 2 — ถามไต่ระดับ" data-label="2.2 กลไก — แหล่งอ้างอิง" type="text">
+</section>
+
+<!-- ===== 13 Q2.3 ===== -->
+<section>
+  <span class="kicker">กิจกรรมที่ 2 · ข้อ 2.3 — ขั้นเทียบแหล่ง ⭐</span>
+  <h2>ถามว่า "แหล่งทั้ง 3 เห็นตรงกันหรือต่างกัน"</h2>
+  <div class="q" style="font-size:.72em;">
+    <b>โจทย์:</b> เขียน prompt ให้ NotebookLM <b>เปรียบเทียบแหล่งทั้ง 3</b> ว่าประเด็นไหนตรงกัน ประเด็นไหนต่างกัน หรือแหล่งไหนพูดถึงเรื่องที่แหล่งอื่นไม่ได้พูด
+  </div>
+  <div class="card" style="border-left:5px solid var(--purple); background:#fbf9ff; font-size:.64em; line-height:1.55;">
+    ⭐ <b>ข้อนี้ Gemini ทำไม่ได้</b> เพราะ Gemini ไม่รู้ว่า "แหล่งทั้ง 3 ของคุณ" คืออะไร — นี่คือสิ่งที่ RAG ทำได้เท่านั้น
+  </div>
+  <span class="ws-label">✏️ Prompt ที่ใช้</span>
+  <textarea class="save ws-field" id="q23_prompt" data-group="กิจกรรมที่ 2 — ถามไต่ระดับ" data-label="2.3 เทียบแหล่ง — Prompt" style="min-height:70px;"></textarea>
+  <span class="ws-label">🤖 สรุปคำตอบ: ตรงกันตรงไหน / ต่างกันตรงไหน</span>
+  <textarea class="save ws-field" id="q23_ans" data-group="กิจกรรมที่ 2 — ถามไต่ระดับ" data-label="2.3 เทียบแหล่ง — สรุปคำตอบ" style="min-height:90px;" placeholder="ตรงกัน: ... / ต่างกัน: ..."></textarea>
+  <span class="ws-label">🔗 คำตอบนี้อ้างจากแหล่งไหนบ้าง</span>
+  <input class="save" id="q23_cite" data-group="กิจกรรมที่ 2 — ถามไต่ระดับ" data-label="2.3 เทียบแหล่ง — แหล่งอ้างอิง" type="text">
+</section>
+
+<!-- ===== 14 Q2.4 ===== -->
+<section>
+  <span class="kicker">กิจกรรมที่ 2 · ข้อ 2.4 — ขั้นประยุกต์</span>
+  <h2>ถามว่า "เรื่องนี้เกี่ยวกับชีวิตเราอย่างไร"</h2>
+  <div class="q" style="font-size:.72em;">
+    <b>โจทย์:</b> เขียน prompt ขอให้ NotebookLM ยกตัวอย่าง <b>2 สถานการณ์</b> ที่เรื่องนี้เกี่ยวข้องกับชีวิตนักเรียน ม.6 โดยตรง
+  </div>
+  <span class="ws-label">✏️ Prompt ที่ใช้</span>
+  <textarea class="save ws-field" id="q24_prompt" data-group="กิจกรรมที่ 2 — ถามไต่ระดับ" data-label="2.4 ประยุกต์ — Prompt" style="min-height:70px;"></textarea>
+  <span class="ws-label">🤖 สรุป 2 สถานการณ์ที่ได้</span>
+  <textarea class="save ws-field" id="q24_ans" data-group="กิจกรรมที่ 2 — ถามไต่ระดับ" data-label="2.4 ประยุกต์ — สรุปคำตอบ" style="min-height:90px;" placeholder="สถานการณ์ที่ 1: ...&#10;สถานการณ์ที่ 2: ..."></textarea>
+  <span class="ws-label">🔗 คำตอบนี้อ้างจากแหล่งไหน</span>
+  <input class="save" id="q24_cite" data-group="กิจกรรมที่ 2 — ถามไต่ระดับ" data-label="2.4 ประยุกต์ — แหล่งอ้างอิง" type="text">
+</section>
+
+<!-- ===== 15 ACT2 SCREENSHOT ===== -->
+<section>
+  <span class="kicker">กิจกรรมที่ 2 · ข้อ 2.5</span>
+  <h2>📸 ภาพหน้าจอ: คำตอบที่เปิด citation ให้เห็น</h2>
+  <p style="font-size:.72em; color:var(--muted);">
+    เลือกคำตอบจากข้อ 2.1–2.4 มา 1 ข้อ → <b>คลิกที่ตัวเลข citation</b> ท้ายประโยค เพื่อให้แผงข้อความต้นทางเปิดออก → จับภาพหน้าจอที่<b>เห็นทั้งคำตอบและข้อความต้นทาง</b>
+  </p>
+  <span class="ws-label">แนบภาพหน้าจอที่เปิด citation</span>
+  <input class="save ws-field" id="q_img_citation" data-group="กิจกรรมที่ 2 — ถามไต่ระดับ" data-label="ภาพหน้าจอ — คำตอบพร้อม citation" type="text" readonly placeholder="ยังไม่ได้แนบภาพ" style="font-size:.72em;">
+  <div id="q_img_citation_tray" class="img-tray"></div>
+</section>
+
+<!-- ===== 16 ACT3 INTRO ===== -->
+<section>
+  <span class="kicker">กิจกรรมที่ 3 · 30 นาที</span>
+  <h2>🎓 ให้ AI ติวกลับ</h2>
+  <p style="font-size:.74em; line-height:1.7;">ที่ผ่านมาเรา <b>ถาม</b> AI — คราวนี้ให้ AI <b>ติวเรา</b> แล้ววัดว่าเราเข้าใจจริงหรือยัง</p>
+  <div class="cols">
+    <div class="card" style="border-top:4px solid var(--blue); font-size:.66em; line-height:1.6;">
+      <b style="color:var(--blue)">Study Guide</b><br>สรุปหัวข้อสำคัญทั้งหมดให้เป็นระเบียบ
+    </div>
+    <div class="card" style="border-top:4px solid var(--purple); font-size:.66em; line-height:1.6;">
+      <b style="color:var(--purple)">Mind Map</b><br>เห็นภาพรวมว่าแนวคิดไหนเชื่อมกับแนวคิดไหน
+    </div>
+    <div class="card" style="border-top:4px solid var(--teal); font-size:.66em; line-height:1.6;">
+      <b style="color:var(--teal)">ควิซ</b><br>วัดตัวเองว่าเข้าใจจริงไหม
+    </div>
+  </div>
+  <div class="rule" style="margin-top:.5em;">
+    🔎 หาปุ่มเหล่านี้ได้ที่แผง <b>Studio</b> ทางขวาของ NotebookLM (บางบัญชีชื่อเมนูอาจต่างเล็กน้อย — มองหาคำว่า Study guide / Mind map)
+  </div>
+</section>
+
+<!-- ===== 17 Q3.1 STUDY GUIDE ===== -->
+<section>
+  <span class="kicker">กิจกรรมที่ 3 · ข้อ 3.1</span>
+  <h2>สร้าง Study Guide</h2>
+  <div class="step-box"><span class="step-num">1</span> ที่แผง <b>Studio</b> กด <b>Study guide</b> → รอสักครู่</div>
+  <div class="step-box"><span class="step-num">2</span> อ่านผลลัพธ์ แล้วจด <b>หัวข้อย่อยที่สำคัญที่สุด 3 หัวข้อ</b></div>
+  <span class="ws-label">✏️ 3 หัวข้อย่อยที่ได้จาก Study Guide</span>
+  <textarea class="save ws-field" id="q31_topics" data-group="กิจกรรมที่ 3 — ให้ AI ติวกลับ" data-label="3.1 Study Guide — 3 หัวข้อย่อย" style="min-height:90px;" placeholder="1. ...&#10;2. ...&#10;3. ..."></textarea>
+  <span class="ws-label">📸 แนบภาพหน้าจอ Study Guide</span>
+  <input class="save ws-field" id="q_img_guide" data-group="กิจกรรมที่ 3 — ให้ AI ติวกลับ" data-label="ภาพหน้าจอ — Study Guide" type="text" readonly placeholder="ยังไม่ได้แนบภาพ" style="font-size:.72em;">
+  <div id="q_img_guide_tray" class="img-tray"></div>
+</section>
+
+<!-- ===== 18 Q3.2 MIND MAP ===== -->
+<section>
+  <span class="kicker">กิจกรรมที่ 3 · ข้อ 3.2</span>
+  <h2>สร้าง Mind Map</h2>
+  <div class="step-box"><span class="step-num">1</span> ที่แผง <b>Studio</b> กด <b>Mind map</b> → กดขยายกิ่งต่าง ๆ ออกดู</div>
+  <div class="step-box"><span class="step-num">2</span> มองหา <b>ความเชื่อมโยง 1 คู่</b> ที่คุณ<b>ไม่เคยคิดมาก่อน</b>ว่ามันเกี่ยวกัน</div>
+  <span class="ws-label">✏️ ความเชื่อมโยง 1 คู่ที่ไม่เคยคิดมาก่อน — และทำไมมันถึงเชื่อมกัน</span>
+  <textarea class="save ws-field" id="q32_link" data-group="กิจกรรมที่ 3 — ให้ AI ติวกลับ" data-label="3.2 Mind Map — ความเชื่อมโยงที่ค้นพบ" style="min-height:90px;" placeholder="เดิมผมไม่เคยคิดว่า ... กับ ... เกี่ยวกัน แต่จาก Mind Map เห็นว่า ... เพราะ ..."></textarea>
+  <span class="ws-label">📸 แนบภาพหน้าจอ Mind Map</span>
+  <input class="save ws-field" id="q_img_mindmap" data-group="กิจกรรมที่ 3 — ให้ AI ติวกลับ" data-label="ภาพหน้าจอ — Mind Map" type="text" readonly placeholder="ยังไม่ได้แนบภาพ" style="font-size:.72em;">
+  <div id="q_img_mindmap_tray" class="img-tray"></div>
+</section>
+
+<!-- ===== 19 Q3.3 QUIZ ===== -->
+<section>
+  <span class="kicker">กิจกรรมที่ 3 · ข้อ 3.3</span>
+  <h2>ให้ AI ออกควิซ แล้วทำเอง</h2>
+  <div class="step-box"><span class="step-num">1</span> พิมพ์ใน NotebookLM: <i>"ออกข้อสอบปรนัย 5 ข้อจากแหล่งข้อมูลทั้งหมด <b>ยังไม่ต้องเฉลย</b>"</i></div>
+  <div class="step-box"><span class="step-num">2</span> <b>ทำเองก่อน</b> โดยไม่เลื่อนดูอะไรทั้งนั้น — จดคำตอบไว้ในกระดาษทดหรือในหัว</div>
+  <div class="step-box"><span class="step-num">3</span> ค่อยพิมพ์ขอเฉลย → ตรวจว่าตัวเองทำถูกกี่ข้อ</div>
+  <div class="info-row">
+    <div><span class="ws-label">ทำถูกกี่ข้อ จาก 5 ข้อ</span>
+      <input class="save" id="q33_score" data-group="กิจกรรมที่ 3 — ให้ AI ติวกลับ" data-label="3.3 ควิซ — ทำถูกกี่ข้อ" type="text" placeholder="เช่น 4 / 5"></div>
+  </div>
+  <span class="ws-label">✏️ ข้อที่ทำผิดเป็นเรื่องอะไร และเข้าใจผิดตรงไหน (ถ้าถูกหมด ให้เขียนว่าข้อไหนยากที่สุดและเพราะอะไร)</span>
+  <textarea class="save ws-field" id="q33_wrong" data-group="กิจกรรมที่ 3 — ให้ AI ติวกลับ" data-label="3.3 ควิซ — วิเคราะห์ข้อที่ผิด" style="min-height:90px;" placeholder="ผิดข้อที่ ... เรื่อง ... เพราะเข้าใจว่า ... แต่จริง ๆ แล้ว ..."></textarea>
+  <span class="ws-label">📸 แนบภาพหน้าจอควิซ 5 ข้อ</span>
+  <input class="save ws-field" id="q_img_quiz" data-group="กิจกรรมที่ 3 — ให้ AI ติวกลับ" data-label="ภาพหน้าจอ — ควิซ 5 ข้อ" type="text" readonly placeholder="ยังไม่ได้แนบภาพ" style="font-size:.72em;">
+  <div id="q_img_quiz_tray" class="img-tray"></div>
+</section>
+
+<!-- ===== 20 ACT4 INTRO ===== -->
+<section>
+  <span class="kicker">กิจกรรมที่ 4</span>
+  <h2>🎨 สรุปเป็นภาพ — Infographic หรือสไลด์</h2>
+  <p style="font-size:.74em; line-height:1.7;">
+    ขั้นสุดท้ายของการเรียนเอง คือ <b>เอาสิ่งที่เข้าใจมาเล่าให้คนอื่นเข้าใจได้</b>
+    — ครั้งนี้ให้สรุปหัวข้อของคุณออกมาเป็น <b>ภาพ</b>
+  </p>
+  <div class="step-box">
+    <span class="step-num">1</span> เลือกอย่างใดอย่างหนึ่ง — ทำเป็น <b>Infographic 1 หน้า</b> หรือ <b>สไลด์สรุป 3–5 หน้า</b>
+  </div>
+  <div class="step-box">
+    <span class="step-num">2</span> เนื้อหาต้องมาจาก <b>แหล่งทั้ง 3 แหล่งของคุณ</b> เท่านั้น — ห้ามใส่เนื้อหาที่ไม่มีในแหล่ง
+  </div>
+  <div class="step-box">
+    <span class="step-num">3</span> <b>ทางที่ง่ายที่สุด: ใช้ NotebookLM ทำให้เลย</b> — ที่แผง <b>Studio</b> มองหา <b>Infographic</b> หรือ <b>Slide deck</b>
+    กดสร้างจากแหล่งทั้ง 3 ของคุณได้โดยตรง (ข้อดีคือเนื้อหาถูกดึงมาจากแหล่งของเราจริง ๆ)
+  </div>
+  <div class="step-box">
+    <span class="step-num">4</span> ถ้าบัญชีของคุณยังไม่มีปุ่มนั้น จะใช้เครื่องมืออื่นก็ได้ — Canva, Gamma, Google Slides หรือให้ Gemini ช่วยจัดหน้า แล้วตกแต่งเอง
+  </div>
+  <div class="rule" style="margin-top:.5em;">
+    📌 สิ่งที่ต้องมีในชิ้นงาน: <b>ชื่อหัวข้อ</b> · <b>ใจความหลัก 3–5 ข้อ</b> · <b>ชื่อแหล่งที่อ้างอิง</b> · <b>ชื่อ–เลขที่ของคุณ</b>
+  </div>
+</section>
+
+<!-- ===== 21 Q4.1 INFOGRAPHIC ===== -->
+<section>
+  <span class="kicker">กิจกรรมที่ 4 · ข้อ 4.1</span>
+  <h2>แนบผลงาน และเช็คว่าภาพขึ้นจริง</h2>
+  <div class="info-row">
+    <div><span class="ws-label">ทำเป็นแบบไหน</span>
+      <select class="save" id="q41_kind" data-group="กิจกรรมที่ 4 — สรุปเป็นภาพ" data-label="4.1 รูปแบบชิ้นงาน">
+        <option value="">— เลือก —</option>
+        <option>Infographic 1 หน้า</option>
+        <option>สไลด์สรุป 3–5 หน้า</option>
+      </select></div>
+    <div><span class="ws-label">ใช้เครื่องมืออะไรทำ</span>
+      <input class="save" id="q41_tool" data-group="กิจกรรมที่ 4 — สรุปเป็นภาพ" data-label="4.1 เครื่องมือที่ใช้" type="text" placeholder="เช่น NotebookLM (Studio) / Canva / Gamma / Google Slides"></div>
+  </div>
+  <span class="ws-label">✏️ ใจความ 3–5 ข้อที่คุณใส่ลงไป และแต่ละข้อมาจากแหล่งไหน</span>
+  <textarea class="save ws-field" id="q41_points" data-group="กิจกรรมที่ 4 — สรุปเป็นภาพ" data-label="4.1 ใจความหลัก + แหล่งที่มา" style="min-height:110px;" placeholder="1. ... (จากแหล่งตั้งต้น)&#10;2. ... (จากแหล่งที่ 2)&#10;3. ... (จากแหล่งที่ 3)"></textarea>
+  <span class="ws-label">📸 แนบภาพชิ้นงานของคุณ (Infographic หรือสไลด์)</span>
+  <input class="save ws-field" id="q_img_info" data-group="กิจกรรมที่ 4 — สรุปเป็นภาพ" data-label="ภาพชิ้นงาน — Infographic / สไลด์" type="text" readonly placeholder="ยังไม่ได้แนบภาพ" style="font-size:.72em;">
+  <div id="q_img_info_tray" class="img-tray"></div>
+  <div class="card" style="border-left:5px solid var(--warn); background:#fffcf8; font-size:.64em; line-height:1.55; margin-top:.6em;">
+    ✅ <b class="warn">เช็คก่อนส่ง:</b> หลังแนบแล้ว ต้องเห็น <b>รูปย่อขึ้นจริง</b> ในกรอบด้านล่าง —
+    ถ้าไม่ขึ้น แปลว่ายังแนบไม่สำเร็จ ให้แนบใหม่อีกครั้ง ก่อนกดบันทึก PDF
+  </div>
+</section>
+
+<!-- ===== 22 SUBMIT ===== -->
+<section>
+  <span class="kicker">ส่งงาน</span>
+  <h2>ตรวจความครบถ้วน แล้วบันทึกเป็น PDF</h2>
+  <div class="check-panel">
+    <div class="prog-meta"><span>ความคืบหน้าใบงาน</span><span id="prog-count">0 / 0 ช่อง</span></div>
+    <div class="prog-wrap"><div class="prog-bar" id="prog-bar"></div></div>
+    <div class="check-msg" id="check-msg">กรอกใบงานให้ครบ ระบบจะตรวจให้อัตโนมัติ</div>
+    <div class="check-grid" id="check-rows"></div>
+    <div style="text-align:center; margin-top:1em;">
+      <button class="dlbig" onclick="downloadPDF()" style="font-size:1.05em; padding:.6em 1.4em;">⬇ บันทึกใบงานเป็น PDF</button>
+      <p class="note" style="margin-top:.6em; line-height:1.6;">
+        กดปุ่ม → หน้าต่างพิมพ์จะเปิด → ที่ช่อง <b>"ปลายทาง / Destination"</b> เลือก <b>"บันทึกเป็น PDF" (Save as PDF)</b><br>
+        ตั้งชื่อไฟล์เป็น <b>ชั้น_เลขที่_ชื่อ.pdf</b> แล้วส่งตามที่ครูคุมสอบแจ้ง
+      </p>
+    </div>
+  </div>
+</section>
+
+</div></div>
+
+<!-- ===================== PDF PRINT AREA ===================== -->
+<div id="print-area"></div>
+
+<!-- ===================== REVEAL.JS INIT ===================== -->
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js" integrity="sha384-M/JtqCVlLcK9lwVnBnMXP0V577CBULkjodKsR/PITOe4MSKNbbwqCemEyluOw0+5" crossorigin="anonymous"></script>
+<script>
+Reveal.initialize({
+  hash: true, slideNumber: 'c/t', controlsTutorial: false,
+  width: 1150, height: 740, margin: 0.04,
+  transition: 'slide', backgroundTransition: 'slide'
+});
+</script>
+
+<!-- ===================== SHARED STORAGE HELPERS ===================== -->
+<script>
+window.W7 = (function(){
+  const SAVE_KEY = 'aied_w7_data';
+  function store(){
+    try { return JSON.parse(localStorage.getItem(SAVE_KEY) || '{}'); } catch(e){ return {}; }
+  }
+  // returns true on success, false when the browser storage quota is full
+  function persist(d){
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify(d));
+      return true;
+    } catch(e){
+      warnQuota();
+      return false;
+    }
+  }
+  function warnQuota(){
+    const el = document.getElementById('quotawarn');
+    if(!el) return;
+    el.textContent = 'พื้นที่เก็บเต็ม — ลบภาพที่แนบซ้ำออก แล้วลองใหม่ (คำตอบที่เป็นข้อความยังอยู่ครบ)';
+    el.style.display = 'block';
+    clearTimeout(warnQuota._t);
+    warnQuota._t = setTimeout(()=>{ el.style.display='none'; }, 8000);
+  }
+  return { KEY: SAVE_KEY, store: store, persist: persist, warnQuota: warnQuota };
+})();
+</script>
+
+<!-- ===================== LOCALSTORAGE AUTO-SAVE ===================== -->
+<script>
+(function(){
+  function flash(){
+    const h = document.getElementById('savehint');
+    h.style.opacity = '1';
+    setTimeout(()=>h.style.opacity='0', 1200);
+  }
+
+  window.saveField = function(el){
+    const d = W7.store();
+    d[el.id] = el.value;
+    if (W7.persist(d)) flash();
+  };
+
+  function loadAll(){
+    const d = W7.store();
+    document.querySelectorAll('.save').forEach(el=>{
+      if(d[el.id] !== undefined) el.value = d[el.id];
+    });
+    toggleDl();
+  }
+
+  function toggleDl(){
+    const d = W7.store();
+    const any = Object.values(d).some(v => v && v.length > 0);
+    const b = document.getElementById('dlbtn');
+    if(b) b.style.display = any ? 'block' : 'none';
+  }
+
+  document.addEventListener('input', e=>{
+    if(e.target.classList && e.target.classList.contains('save')){ saveField(e.target); toggleDl(); }
+  });
+  document.addEventListener('change', e=>{
+    if(e.target.classList && e.target.classList.contains('save')){ saveField(e.target); toggleDl(); }
+  });
+
+  if(document.readyState !== 'loading') loadAll();
+  else document.addEventListener('DOMContentLoaded', loadAll);
+})();
+</script>
+
+<!-- ===================== PROBLEM SETS (anti-copy) ===================== -->
+<script>
+(function(){
+  // index 1..4 -> ชุดที่ 1..4, index 0 -> ชุดที่ 5 (ธรรมเนียมเดียวกับสัปดาห์ 2–4)
+  const SETS = [
+    { // index 0 = ชุดที่ 5 (เลขที่ % 5 == 0)
+      topic: 'AI Bias — อคติในอัลกอริทึม',
+      hook: 'อคติใน AI เกิดจากอะไร · กระทบใครบ้าง · แก้ไขได้อย่างไร',
+      srcName: 'สถาบันข้อมูลขนาดใหญ่ (BDI) — "AI จริยธรรม สองสิ่งที่ทุกคนควรรู้ เพื่อไม่เป็นอันตรายต่อผู้ใช้งาน และประสิทธิภาพ"',
+      srcUrl: 'https://bdi.or.th/movements/things-you-must-know-about-ai-ethics/'
+    },
+    { // index 1 = ชุดที่ 1 (เลขที่ % 5 == 1)
+      topic: 'Deepfake — สื่อปลอมที่ AI สร้างขึ้น',
+      hook: 'Deepfake ตรวจจับได้อย่างไร · กฎหมายไทยครอบคลุมแค่ไหน',
+      srcName: 'ETDA (สพธอ.) — "รู้ทัน AI Deepfake เมื่อ…ภาพที่เห็น เสียงที่ได้ยิน อาจไม่ใช่เรื่องจริงเสมอไป!"',
+      srcUrl: 'https://www.etda.or.th/th/Useful-Resource/Knowledge-Sharing/Articles/aigc/AI-Deepfake.aspx'
+    },
+    { // index 2 = ชุดที่ 2 (เลขที่ % 5 == 2)
+      topic: 'PDPA — ข้อมูลส่วนบุคคลของเรา',
+      hook: 'ใครเก็บข้อมูลของเราบ้าง · เก็บอะไรไปบ้าง · เราขอลบได้ไหม',
+      srcName: 'คณะนิติศาสตร์ มหาวิทยาลัยหอการค้าไทย — "ทำความรู้จักกฎหมายคุ้มครองข้อมูลส่วนบุคคล (PDPA) ฉบับเข้าใจง่าย"',
+      srcUrl: 'https://law.utcc.ac.th/blogs/understanding-pdpa-thailand-easy-guide/'
+    },
+    { // index 3 = ชุดที่ 3 (เลขที่ % 5 == 3)
+      topic: 'AI กับอาชีพในอนาคต',
+      hook: 'งานไหนกำลังหายไป · งานไหนกำลังเกิดใหม่ · ม.6 ต้องเตรียมทักษะอะไร',
+      srcName: 'TDRI — "เมื่อ AI เขย่าตลาดงาน ใครอยู่ ใครไป" (10 ก.พ. 2569)',
+      srcUrl: 'https://tdri.or.th/2026/02/ai-job-market-disruption-and-impact/'
+    },
+    { // index 4 = ชุดที่ 4 (เลขที่ % 5 == 4)
+      topic: 'ระบบแนะนำ (Recommendation System)',
+      hook: 'ทำไม YouTube และ Shopee ถึงรู้ใจเรา · ระบบแบบนี้มีข้อเสียอะไรบ้าง',
+      srcName: 'สถาบันข้อมูลขนาดใหญ่ (BDI) — "YouTube recommendation system แนะนำวิดีโอที่น่าสนใจอย่างไร"',
+      srcUrl: 'https://bdi.or.th/movements/youtube-recommendation-system/'
+    }
+  ];
+
+  function setIndexOf(noStr){
+    const n = parseInt(String(noStr || '').replace(/[^0-9]/g, ''), 10);
+    if(!n || n < 1) return null;
+    return n % SETS.length;
+  }
+
+  function applySet(i){
+    const s = SETS[i];
+    ['topic','hook','srcName','srcUrl'].forEach(key=>{
+      document.querySelectorAll('[data-var="'+key+'"]').forEach(e => e.textContent = s[key]);
+    });
+    document.querySelectorAll('[data-var-href]').forEach(e=>{
+      const k = e.getAttribute('data-var-href');
+      if(s[k]) e.setAttribute('href', s[k]);
+    });
+  }
+
+  function clearSet(){
+    document.querySelectorAll('[data-var]').forEach(e=>{
+      e.textContent = '— (กรอก "เลขที่" ในสไลด์ที่ 2 ก่อน)';
+    });
+    document.querySelectorAll('[data-var-href]').forEach(e => e.setAttribute('href', '#'));
+  }
+
+  function refresh(){
+    const noEl = document.getElementById('ws-no');
+    const i = setIndexOf(noEl ? noEl.value : '');
+    if(i === null) clearSet(); else applySet(i);
+    if(window.refreshFeedback) window.refreshFeedback();
+  }
+
+  function guideSetNo(i){ return i === 0 ? SETS.length : i; }
+
+  window.getCurrentSet = function(){
+    const noEl = document.getElementById('ws-no');
+    const i = setIndexOf(noEl ? noEl.value : '');
+    if(i === null) return null;
+    return Object.assign({ index: i, setNo: guideSetNo(i) }, SETS[i]);
+  };
+
+  function init(){
+    const noEl = document.getElementById('ws-no');
+    if(noEl) noEl.addEventListener('input', refresh);
+    refresh();
+  }
+  if(document.readyState !== 'loading') init();
+  else document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+
+<!-- ===================== IMAGE ATTACH ===================== -->
+<script>
+(function(){
+  const IMG_TARGETS = ['q_img_sources','q_img_citation','q_img_guide','q_img_mindmap','q_img_quiz','q_img_info'];
+  const MAX_DIM = 1000;
+  const JPEG_Q  = 0.6;
+
+  function renderTray(id){
+    const tray = document.getElementById(id + '_tray'); if(!tray) return;
+    const d = W7.store();
+    const imgs = d['img:' + id] || [];
+    tray.innerHTML = '';
+    const inp = document.getElementById(id);
+    if(inp) inp.value = imgs.length ? imgs.length + ' ภาพ' : '';
+
+    imgs.forEach((src, i)=>{
+      const th = document.createElement('div'); th.className = 'img-thumb';
+      const im = document.createElement('img'); im.src = src;
+      const rm = document.createElement('button'); rm.className = 'rm'; rm.type = 'button'; rm.textContent = '×';
+      rm.title = 'ลบภาพนี้';
+      rm.addEventListener('click', ()=>{
+        const dd = W7.store();
+        if(dd['img:' + id]) dd['img:' + id].splice(i, 1);
+        W7.persist(dd);
+        renderTray(id);
+        if(window.refreshFeedback) window.refreshFeedback();
+      });
+      th.appendChild(im); th.appendChild(rm); tray.appendChild(th);
+    });
+  }
+
+  function addImg(id, dataURL){
+    const d = W7.store();
+    if(!d['img:' + id]) d['img:' + id] = [];
+    d['img:' + id].push(dataURL);
+    if(!W7.persist(d)){
+      d['img:' + id].pop();   // roll back so the tray matches what was actually stored
+      W7.persist(d);
+    }
+    renderTray(id);
+    if(window.refreshFeedback) window.refreshFeedback();
+  }
+
+  function shrink(dataURL, done){
+    const img = new Image();
+    img.onload = ()=>{
+      const canvas = document.createElement('canvas');
+      let w = img.width, h = img.height;
+      if(w > MAX_DIM){ h = h * (MAX_DIM / w); w = MAX_DIM; }
+      if(h > MAX_DIM){ w = w * (MAX_DIM / h); h = MAX_DIM; }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      done(canvas.toDataURL('image/jpeg', JPEG_Q));
+    };
+    img.src = dataURL;
+  }
+
+  function attach(id){
+    const inp = document.getElementById(id); if(!inp) return;
+    const btn = document.createElement('button'); btn.className = 'img-btn'; btn.type = 'button';
+    btn.textContent = '📎 แนบภาพหน้าจอ';
+    const hint = document.createElement('span'); hint.className = 'img-hint';
+    hint.textContent = 'วาง (Ctrl+V) หรือเลือกไฟล์';
+    const file = document.createElement('input'); file.type = 'file'; file.accept = 'image/*'; file.style.display = 'none';
+    btn.addEventListener('click', ()=>file.click());
+    file.addEventListener('change', ()=>{
+      if(file.files && file.files[0]){
+        const reader = new FileReader();
+        reader.onload = e => shrink(e.target.result, url => addImg(id, url));
+        reader.readAsDataURL(file.files[0]);
+      }
+      file.value = '';
+    });
+    inp.insertAdjacentElement('afterend', file);
+    inp.insertAdjacentElement('afterend', hint);
+    inp.insertAdjacentElement('afterend', btn);
+  }
+
+  // paste anywhere → goes to the image slot on the slide currently shown
+  document.addEventListener('paste', e=>{
+    const items = (e.clipboardData || {}).items;
+    if(!items) return;
+    for(const item of items){
+      if(item.type.indexOf('image') === 0){
+        e.preventDefault();
+        const blob = item.getAsFile();
+        const reader = new FileReader();
+        reader.onload = ev=>{
+          const active = Reveal.getCurrentSlide();
+          const onSlide = IMG_TARGETS.filter(id => active && active.querySelector('#' + id));
+          if(!onSlide.length){
+            const el = document.getElementById('quotawarn');
+            if(el){
+              el.textContent = 'เลื่อนไปที่สไลด์ที่มีช่องแนบภาพก่อน แล้วค่อยกด Ctrl+V';
+              el.style.display = 'block';
+              setTimeout(()=>{ el.style.display = 'none'; }, 5000);
+            }
+            return;
+          }
+          shrink(ev.target.result, url => addImg(onSlide[0], url));
+        };
+        reader.readAsDataURL(blob);
+        break;
+      }
+    }
+  });
+
+  function init(){
+    IMG_TARGETS.forEach(id=>{ attach(id); renderTray(id); });
+  }
+  if(document.readyState !== 'loading') init();
+  else document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+
+<!-- ===================== PDF DOWNLOAD ===================== -->
+<script>
+function downloadPDF(){
+  const fields = document.querySelectorAll('.save[data-group]');
+  const groups = {};
+  fields.forEach(f=>{
+    const g = f.getAttribute('data-group');
+    const l = f.getAttribute('data-label');
+    if(!groups[g]) groups[g] = [];
+    groups[g].push({ label: l, id: f.id, value: (f.value || '').trim() });
+  });
+
+  function esc(s){
+    return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  const name = (document.getElementById('ws-name1') || {}).value || '';
+  const cls  = (document.getElementById('ws-class') || {}).value || '';
+  const no   = (document.getElementById('ws-no')    || {}).value || '';
+  const set  = window.getCurrentSet ? window.getCurrentSet() : null;
+
+  let html = '<div class="pdf-doc">';
+  html += '<h1>AI for Ed — สัปดาห์ที่ 7: สร้างติวเตอร์ส่วนตัวด้วย NotebookLM</h1>';
+  html += '<div class="pdf-meta">';
+  html += '<span><b>ชื่อ:</b> ' + esc(name || '—') + '</span>';
+  html += '<span><b>ชั้น:</b> ' + esc(cls || '—') + '</span>';
+  html += '<span><b>เลขที่:</b> ' + esc(no || '—') + '</span>';
+  html += '</div>';
+  html += '<div class="pdf-item"><div class="pdf-label">หัวข้อประจำตัว</div><div class="pdf-answer">'
+        + (set ? esc(set.topic) : '<span class="empty">(ยังไม่ได้กรอกเลขที่)</span>') + '</div></div>';
+
+  const imgStore = W7.store();
+
+  for(const [gName, items] of Object.entries(groups)){
+    html += '<h2>' + esc(gName) + '</h2>';
+    items.forEach(it=>{
+      const imgs = imgStore['img:' + it.id];
+      const hasImgs = imgs && imgs.length;
+      html += '<div class="pdf-item">';
+      html += '<div class="pdf-label">' + esc(it.label) + '</div>';
+      if(!hasImgs){
+        html += '<div class="pdf-answer">' + (it.value ? esc(it.value) : '<span class="empty">(ยังไม่ได้ตอบ)</span>') + '</div>';
+      }
+      if(hasImgs){
+        html += '<div class="pdf-imgs">';
+        imgs.forEach(src=>{ html += '<img src="' + src + '">'; });
+        html += '</div>';
+      }
+      html += '</div>';
+    });
+  }
+  html += '</div>';
+
+  const area = document.getElementById('print-area');
+  area.innerHTML = html;
+  document.body.classList.add('printing');
+  setTimeout(()=>{
+    window.print();
+    setTimeout(()=>{ document.body.classList.remove('printing'); }, 500);
+  }, 300);
+}
+window.downloadPDF = downloadPDF;
+</script>
+
+<!-- ===================== SUBMISSION READINESS CHECK ===================== -->
+<script>
+(function(){
+  function txt(id){ const e = document.getElementById(id); return e ? (e.value || '').trim() : ''; }
+  function imgCount(id){ const d = W7.store(); return (d['img:' + id] || []).length; }
+
+  const ACTS = [
+    { name:'ข้อมูลผู้เรียน', slots:[['t','ws-name1'],['t','ws-class'],['t','ws-no']] },
+    { name:'กิจกรรมที่ 1 — คัดแหล่ง', slots:[
+        ['t','s1_name'],['t','s1_type'],['t','s1_url'],['t','s1_why'],
+        ['t','s2_name'],['t','s2_type'],['t','s2_url'],['t','s2_why'],
+        ['i','q_img_sources']] },
+    { name:'กิจกรรมที่ 2 — ถามไต่ระดับ', slots:[
+        ['t','q21_prompt'],['t','q21_ans'],['t','q21_cite'],
+        ['t','q22_prompt'],['t','q22_ans'],['t','q22_cite'],
+        ['t','q23_prompt'],['t','q23_ans'],['t','q23_cite'],
+        ['t','q24_prompt'],['t','q24_ans'],['t','q24_cite'],
+        ['i','q_img_citation']] },
+    { name:'กิจกรรมที่ 3 — ให้ AI ติวกลับ', slots:[
+        ['t','q31_topics'],['i','q_img_guide'],
+        ['t','q32_link'],['i','q_img_mindmap'],
+        ['t','q33_score'],['t','q33_wrong'],['i','q_img_quiz']] },
+    { name:'กิจกรรมที่ 4 — สรุปเป็นภาพ', slots:[
+        ['t','q41_kind'],['t','q41_tool'],['t','q41_points'],['i','q_img_info']] }
+  ];
+
+  function slotFilled(type, id){
+    if(type === 'i') return imgCount(id) >= 1;
+    return txt(id).length >= 2;
+  }
+  function esc(s){ return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function renderPanel(){
+    const rows = document.getElementById('check-rows'); if(!rows) return;
+    let done = 0, total = 0, html = '';
+    ACTS.forEach(a=>{
+      let f = 0;
+      a.slots.forEach(sl=>{ total++; if(slotFilled(sl[0], sl[1])){ f++; done++; } });
+      const all = f === a.slots.length;
+      const ic  = all ? '✓' : (f > 0 ? '◑' : '○');
+      html += '<div class="check-row' + (all ? ' done' : '') + '"><span class="ic">' + ic + '</span>'
+            + '<span class="body"><span class="ttl">' + esc(a.name) + '</span> '
+            + '<span class="sub">(' + f + '/' + a.slots.length + ')</span></span></div>';
+    });
+    rows.innerHTML = html;
+
+    const bar = document.getElementById('prog-bar');
+    const cnt = document.getElementById('prog-count');
+    const msg = document.getElementById('check-msg');
+    const pct = total ? Math.round(done / total * 100) : 0;
+    if(bar) bar.style.width = pct + '%';
+    if(cnt) cnt.textContent = done + ' / ' + total + ' ช่อง (' + pct + '%)';
+    if(msg){
+      const nm = txt('ws-name1');
+      if(done === total && nm) msg.textContent = 'เยี่ยมมาก! ใบงานครบทุกช่องแล้ว — บันทึกเป็น PDF ส่งได้เลย';
+      else if(done === total && !nm) msg.textContent = 'ตอบครบแล้ว เหลือกรอกชื่อ–นามสกุลในสไลด์ที่ 2 ก่อนบันทึก';
+      else if(pct >= 60) msg.textContent = 'เกือบครบแล้ว! เหลืออีก ' + (total - done) + ' ช่อง';
+      else if(done > 0) msg.textContent = 'ทำไปแล้ว ' + done + ' จาก ' + total + ' ช่อง — ทำต่อให้ครบนะ';
+      else msg.textContent = 'กรอกใบงานให้ครบ ระบบจะตรวจให้อัตโนมัติ';
+    }
+  }
+
+  window.refreshFeedback = renderPanel;
+  document.addEventListener('input',  e=>{ if(e.target.classList && e.target.classList.contains('save')) renderPanel(); });
+  document.addEventListener('change', e=>{ if(e.target.classList && e.target.classList.contains('save')) renderPanel(); });
+  if(window.Reveal) Reveal.on('slidechanged', renderPanel);
+  if(document.readyState !== 'loading') renderPanel();
+  else document.addEventListener('DOMContentLoaded', renderPanel);
+})();
+</script>
+
+</body>
+</html>

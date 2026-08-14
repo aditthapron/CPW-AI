@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 430" width="100%">
+  <!-- LEFT PANEL: Gemini เห็น -->
+  <g transform="translate(40, 20)">
+    <!-- Main Card Container -->
+    <rect x="0" y="0" width="480" height="300" rx="12" fill="#ffffff" stroke="#0f8a4f" stroke-width="2"/>
+    <!-- Panel Heading -->
+    <text x="240" y="45" text-anchor="middle" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="24" font-weight="bold" fill="#0f8a4f">Gemini เห็น</text>
+    
+    <!-- Chat Bubble (Visual Element) -->
+    <rect x="60" y="75" width="360" height="60" rx="12" fill="#eef3fb" stroke="#1a73e8" stroke-width="2"/>
+    <!-- Tail for Chat Bubble -->
+    <polygon points="220,135 240,135 230,147" fill="#eef3fb" stroke="#1a73e8" stroke-width="2"/>
+    <!-- Overwrite tail top stroke to connect cleanly -->
+    <line x1="221" y1="135" x2="239" y2="135" stroke="#eef3fb" stroke-width="3"/>
+    <text x="240" y="112" text-anchor="middle" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" font-weight="bold" fill="#1a2235">"ข้อความที่เราพิมพ์ให้มัน"</text>
+    
+    <!-- Bullet List -->
+    <!-- Item 1 -->
+    <circle cx="80" cy="180" r="5" fill="#0f8a4f"/>
+    <text x="100" y="185" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="15" fill="#1a2235">ตัวเลขที่เราบอกมันไป</text>
+
+    <!-- Item 2 -->
+    <circle cx="80" cy="218" r="5" fill="#0f8a4f"/>
+    <text x="100" y="223" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="15" fill="#1a2235">ชื่อคอลัมน์ที่เราอธิบาย</text>
+
+    <!-- Item 3 -->
+    <circle cx="80" cy="256" r="5" fill="#0f8a4f"/>
+    <text x="100" y="261" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="15" fill="#1a2235">คำถามที่เราถาม</text>
+  </g>
+
+  <!-- RIGHT PANEL: Gemini ไม่เห็น -->
+  <g transform="translate(560, 20)">
+    <!-- Main Card Container -->
+    <rect x="0" y="0" width="480" height="300" rx="12" fill="#fff6ed" stroke="#c2410c" stroke-width="2"/>
+    <!-- Panel Heading -->
+    <text x="240" y="45" text-anchor="middle" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="24" font-weight="bold" fill="#c2410c">Gemini ไม่เห็น</text>
+    
+    <!-- File Card (Visual Element with strike-through) -->
+    <g transform="translate(100, 75)">
+      <rect x="0" y="0" width="280" height="55" rx="8" fill="#ffffff" stroke="#5b6678" stroke-width="2"/>
+      <!-- File corner fold effect line -->
+      <text x="140" y="34" text-anchor="middle" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" font-weight="bold" fill="#1a2235">ไฟล์ .pbix ของเรา</text>
+      <!-- Blocked Line / Cross -->
+      <line x1="10" y1="5" x2="270" y2="50" stroke="#c2410c" stroke-width="4" stroke-linecap="round" stroke-opacity="0.42"/>
+    </g>
+    
+    <!-- Bullet List -->
+    <!-- Item 1 -->
+    <circle cx="80" cy="180" r="5" fill="#c2410c"/>
+    <text x="100" y="185" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="15" fill="#1a2235">ข้อมูล 843 แถวจริง</text>
+
+    <!-- Item 2 -->
+    <circle cx="80" cy="218" r="5" fill="#c2410c"/>
+    <text x="100" y="223" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="15" fill="#1a2235">กราฟที่เราสร้าง</text>
+
+    <!-- Item 3 -->
+    <circle cx="80" cy="256" r="5" fill="#c2410c"/>
+    <text x="100" y="261" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="15" fill="#1a2235">ตัวเลขบน Card ของเรา</text>
+  </g>
+
+  <!-- BOTTOM BAR: Conclusion -->
+  <g transform="translate(40, 345)">
+    <rect x="0" y="0" width="1000" height="60" rx="12" fill="#eef3fb" stroke="#dfe4ec" stroke-width="2"/>
+    <text x="500" y="36" text-anchor="middle" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="17" font-weight="bold" fill="#1a2235">มันจึงเดาได้ แต่ยืนยันไม่ได้ - เราต้องตรวจทุกคำตอบเอง</text>
+  </g>
+</svg>

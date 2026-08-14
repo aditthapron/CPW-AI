@@ -1,0 +1,99 @@
+<svg viewBox="0 0 1080 500" width="100%" xmlns="http://www.w3.org/2000/svg">
+  <!-- TOP LEFT: Drag & Drop -->
+  <g id="top-left-section">
+    <!-- Card Container -->
+    <rect x="30" y="30" width="495" height="340" rx="12" fill="#eef3fb" stroke="#1a73e8" stroke-width="2" />
+    
+    <!-- Title -->
+    <text x="60" y="75" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="19" font-weight="bold" fill="#1a73e8">มีอยู่แล้วในตาราง -&gt; ลากวางได้</text>
+    
+    <!-- 3-Column Table -->
+    <g transform="translate(60, 110)">
+      <!-- Table Header -->
+      <rect x="0" y="0" width="180" height="32" rx="4" fill="#1a73e8" />
+      <line x1="60" y1="0" x2="60" y2="32" stroke="#ffffff" stroke-width="1" />
+      <line x1="120" y1="0" x2="120" y2="32" stroke="#ffffff" stroke-width="1" />
+      <text x="30" y="21" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">ภาค</text>
+      <text x="90" y="21" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">เพศ</text>
+      <text x="150" y="21" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">อายุ</text>
+
+      <!-- Table Row 1 -->
+      <rect x="0" y="32" width="180" height="32" fill="#ffffff" stroke="#dfe4ec" stroke-width="1" />
+      <line x1="60" y1="32" x2="60" y2="64" stroke="#dfe4ec" stroke-width="1" />
+      <line x1="120" y1="32" x2="120" y2="64" stroke="#dfe4ec" stroke-width="1" />
+      <text x="30" y="53" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="14" fill="#1a2235" text-anchor="middle">เหนือ</text>
+      <text x="90" y="53" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="14" fill="#1a2235" text-anchor="middle">ชาย</text>
+      <text x="150" y="53" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="14" fill="#1a2235" text-anchor="middle">17</text>
+
+      <!-- Table Row 2 -->
+      <rect x="0" y="64" width="180" height="32" fill="#ffffff" stroke="#dfe4ec" stroke-width="1" />
+      <line x1="60" y1="64" x2="60" y2="96" stroke="#dfe4ec" stroke-width="1" />
+      <line x1="120" y1="64" x2="120" y2="96" stroke="#dfe4ec" stroke-width="1" />
+      <text x="30" y="85" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="14" fill="#1a2235" text-anchor="middle">ใต้</text>
+      <text x="90" y="85" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="14" fill="#1a2235" text-anchor="middle">หญิง</text>
+      <text x="150" y="85" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="14" fill="#1a2235" text-anchor="middle">18</text>
+    </g>
+    
+    <!-- Blue Arrow -->
+    <g transform="translate(265, 150)">
+      <line x1="0" y1="0" x2="50" y2="0" stroke="#1a73e8" stroke-width="3" />
+      <polygon points="50,-6 62,0 50,6" fill="#1a73e8" />
+    </g>
+
+    <!-- Bar Chart Icon -->
+    <g transform="translate(350, 115)">
+      <!-- Base Line -->
+      <line x1="0" y1="90" x2="120" y2="90" stroke="#5b6678" stroke-width="2" stroke-linecap="round" />
+      <!-- Bar 1 -->
+      <rect x="15" y="45" width="22" height="45" rx="3" fill="#1a73e8" />
+      <!-- Bar 2 -->
+      <rect x="49" y="15" width="22" height="75" rx="3" fill="#1a73e8" />
+      <!-- Bar 3 -->
+      <rect x="83" y="30" width="22" height="60" rx="3" fill="#1a73e8" opacity="0.85" />
+    </g>
+
+    <!-- Footer Note -->
+    <rect x="60" y="275" width="435" height="55" rx="8" fill="#ffffff" stroke="#dfe4ec" stroke-width="1" />
+    <text x="277" y="308" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="15" fill="#5b6678" text-anchor="middle">นับ / รวม / เฉลี่ย ของคอลัมน์ที่มีอยู่</text>
+  </g>
+
+  <!-- TOP RIGHT: Write DAX -->
+  <g id="top-right-section">
+    <!-- Card Container -->
+    <rect x="555" y="30" width="495" height="340" rx="12" fill="#eef3fb" stroke="#7b41d8" stroke-width="2" />
+    
+    <!-- Title -->
+    <text x="585" y="75" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="19" font-weight="bold" fill="#7b41d8">ไม่มีในตาราง -&gt; ต้องเขียน DAX</text>
+    
+    <!-- 3 Purple-outlined Chips -->
+    <g transform="translate(585, 110)">
+      <!-- Chip 1 -->
+      <rect x="0" y="0" width="135" height="40" rx="20" fill="#ffffff" stroke="#7b41d8" stroke-width="2" />
+      <text x="67" y="25" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="14" font-weight="bold" fill="#7b41d8" text-anchor="middle">% ของทั้งหมด</text>
+
+      <!-- Chip 2 -->
+      <rect x="150" y="0" width="135" height="40" rx="20" fill="#ffffff" stroke="#7b41d8" stroke-width="2" />
+      <text x="217" y="25" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="14" font-weight="bold" fill="#7b41d8" text-anchor="middle">เทียบกับกลุ่มอื่น</text>
+
+      <!-- Chip 3 -->
+      <rect x="300" y="0" width="135" height="40" rx="20" fill="#ffffff" stroke="#7b41d8" stroke-width="2" />
+      <text x="367" y="25" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="14" font-weight="bold" fill="#7b41d8" text-anchor="middle">นับเฉพาะที่...</text>
+    </g>
+
+    <!-- Code Block Box -->
+    <g transform="translate(585, 175)">
+      <rect x="0" y="0" width="435" height="75" rx="8" fill="#0f1b2e" />
+      <text x="217" y="44" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" font-weight="bold" fill="#e8eefc" text-anchor="middle">DIVIDE( ... , ALL(...) )</text>
+    </g>
+
+    <!-- Footer Note -->
+    <rect x="585" y="275" width="435" height="55" rx="8" fill="#ffffff" stroke="#dfe4ec" stroke-width="1" />
+    <text x="802" y="308" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="15" fill="#5b6678" text-anchor="middle">ไม่มีคอลัมน์ไหนเก็บค่าพวกนี้ไว้</text>
+  </g>
+
+  <!-- BOTTOM: Full-width Definition Banner -->
+  <g id="bottom-section">
+    <rect x="30" y="400" width="1020" height="70" rx="12" fill="#eef3fb" stroke="#dfe4ec" stroke-width="2" />
+    <text x="540" y="442" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="17" font-weight="bold" fill="#1a2235" text-anchor="middle">DAX = Data Analysis Expressions - ภาษาที่ใช้บอก Power BI ให้คำนวณสิ่งที่ยังไม่มี</text>
+  </g>
+</svg>

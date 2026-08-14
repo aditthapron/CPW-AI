@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 720" width="100%">
+  <defs>
+    <!-- Arrow Marker -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#5b6678" />
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#1a73e8" />
+    </marker>
+    <marker id="arrow-teal" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#0aa3a3" />
+    </marker>
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#7b41d8" />
+    </marker>
+  </defs>
+
+  <!-- TITLE -->
+  <text x="540" y="45" text-anchor="middle" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="26" font-weight="bold" fill="#1a2235">Filter Context — ทำไมสูตรเดียวให้คำตอบไม่เท่ากัน</text>
+
+  <!-- TOP BOX (FORMULA) -->
+  <g transform="translate(140, 75)">
+    <rect x="0" y="0" width="800" height="95" rx="12" fill="#0f1b2e" stroke="#1a2235" stroke-width="2" />
+    <rect x="360" y="12" width="80" height="24" rx="12" fill="#7b41d8" />
+    <text x="400" y="28" text-anchor="middle" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="14" font-weight="bold" fill="#ffffff">สูตรเดียว</text>
+    <text x="400" y="68" text-anchor="middle" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="20" font-weight="bold" fill="#e8eefc">จำนวนผู้ป่วย = COUNTROWS('Sheet1')</text>
+  </g>
+
+  <!-- FANNING ARROWS -->
+  <path d="M 280 170 L 220 230" fill="none" stroke="#1a73e8" stroke-width="2.5" stroke-dasharray="6,4" marker-end="url(#arrow-blue)" />
+  <path d="M 540 170 L 540 230" fill="none" stroke="#0aa3a3" stroke-width="2.5" stroke-dasharray="6,4" marker-end="url(#arrow-teal)" />
+  <path d="M 800 170 L 860 230" fill="none" stroke="#7b41d8" stroke-width="2.5" stroke-dasharray="6,4" marker-end="url(#arrow-purple)" />
+
+  <!-- MIDDLE PANELS -->
+  <!-- Panel 1: Blue -->
+  <g transform="translate(60, 240)">
+    <rect x="0" y="0" width="300" height="240" rx="12" fill="#ffffff" stroke="#dfe4ec" stroke-width="2" />
+    <path d="M 0 12 A 12 12 0 0 1 12 0 L 288 0 A 12 12 0 0 1 300 12 L 300 10 L 0 10 Z" fill="#1a73e8" />
+    <rect x="0" y="0" width="300" height="48" rx="12" fill="#eef3fb" />
+    <rect x="0" y="12" width="300" height="36" fill="#eef3fb" />
+    <text x="150" y="32" text-anchor="middle" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="20" font-weight="bold" fill="#1a73e8">ไม่มีตัวกรอง</text>
+    
+    <text x="150" y="130" text-anchor="middle" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="40" font-weight="bold" fill="#1a73e8">843</text>
+    
+    <line x1="40" y1="170" x2="260" y2="170" stroke="#dfe4ec" stroke-width="1" />
+    <text x="150" y="200" text-anchor="middle" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" fill="#5b6678">ทั้งไฟล์</text>
+  </g>
+
+  <!-- Panel 2: Teal -->
+  <g transform="translate(390, 240)">
+    <rect x="0" y="0" width="300" height="240" rx="12" fill="#ffffff" stroke="#dfe4ec" stroke-width="2" />
+    <path d="M 0 12 A 12 12 0 0 1 12 0 L 288 0 A 12 12 0 0 1 300 12 L 300 10 L 0 10 Z" fill="#0aa3a3" />
+    <rect x="0" y="0" width="300" height="48" rx="12" fill="#eef3fb" />
+    <rect x="0" y="12" width="300" height="36" fill="#eef3fb" />
+    <text x="150" y="32" text-anchor="middle" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="20" font-weight="bold" fill="#0aa3a3">Slicer: ภาค = อีสาน</text>
+    
+    <text x="150" y="130" text-anchor="middle" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="40" font-weight="bold" fill="#0aa3a3">222</text>
+    
+    <line x1="40" y1="170" x2="260" y2="170" stroke="#dfe4ec" stroke-width="1" />
+    <text x="150" y="200" text-anchor="middle" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" fill="#5b6678">เหลือเฉพาะอีสาน</text>
+  </g>
+
+  <!-- Panel 3: Purple -->
+  <g transform="translate(720, 240)">
+    <rect x="0" y="0" width="300" height="240" rx="12" fill="#ffffff" stroke="#dfe4ec" stroke-width="2" />
+    <path d="M 0 12 A 12 12 0 0 1 12 0 L 288 0 A 12 12 0 0 1 300 12 L 300 10 L 0 10 Z" fill="#7b41d8" />
+    <rect x="0" y="0" width="300" height="48" rx="12" fill="#eef3fb" />
+    <rect x="0" y="12" width="300" height="36" fill="#eef3fb" />
+    <text x="150" y="32" text-anchor="middle" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="20" font-weight="bold" fill="#7b41d8">+ เพศ = หญิง</text>
+    
+    <text x="150" y="130" text-anchor="middle" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="40" font-weight="bold" fill="#7b41d8">123</text>
+    
+    <line x1="40" y1="170" x2="260" y2="170" stroke="#dfe4ec" stroke-width="1" />
+    <text x="150" y="200" text-anchor="middle" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" fill="#5b6678">กรองซ้อนสองชั้น</text>
+  </g>
+
+  <!-- CONNECTING ARROWS TO BOTTOM BOX -->
+  <path d="M 210 480 L 210 535 Q 210 545 220 545 L 340 545" fill="none" stroke="#5b6678" stroke-width="1.5" stroke-dasharray="4,4" />
+  <path d="M 540 480 L 540 530" fill="none" stroke="#5b6678" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arrow)" />
+  <path d="M 870 480 L 870 535 Q 870 545 860 545 L 740 545" fill="none" stroke="#5b6678" stroke-width="1.5" stroke-dasharray="4,4" />
+
+  <!-- BOTTOM BOX (WARN / TAKEAWAY) -->
+  <g transform="translate(140, 550)">
+    <rect x="0" y="0" width="800" height="110" rx="12" fill="#fff6ed" stroke="#c2410c" stroke-width="2" />
+    <text x="400" y="42" text-anchor="middle" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="18" font-weight="bold" fill="#c2410c">ALL() = สั่งให้ลืมตัวกรองทั้งหมด</text>
+    <text x="400" y="78" text-anchor="middle" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" fill="#1a2235">จึงได้ 843 เสมอ ใช้เป็นตัวหารของ % ของทั้งหมด</text>
+  </g>
+</svg>

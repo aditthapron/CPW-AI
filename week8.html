@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI for Ed — สัปดาห์ที่ 8: DAX และการสร้าง Dashboard ด้วย Power BI</title>
+
+<!-- reveal.js core -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css" integrity="sha384-YgvgKeZJykuztG+iQPoZHNZENTFZvOcOJ/uRzmJTje6GHYN9zAw+y5rx/L8MQKA/" crossorigin="anonymous">
+<!-- Thai fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --ink: #1a2235; --muted: #5b6678; --line: #dfe4ec;
+  --blue: #1a73e8; --purple: #7b41d8; --teal: #0aa3a3;
+  --bg1: #f7f9fc; --card: #ffffff; --soft: #eef3fb;
+  --warn: #c2410c; --good: #0f8a4f;
+  --accent-grad: linear-gradient(90deg, var(--blue), var(--purple));
+}
+.reveal { font-family:'Sarabun','Noto Sans Thai','Outfit',sans-serif; color:var(--ink); font-size:28px; }
+.reveal .slides { text-align:left; }
+.reveal h1, .reveal h2, .reveal h3 { font-family:'Sarabun','Noto Sans Thai','Outfit',sans-serif; color:var(--ink); font-weight:700; text-transform:none; letter-spacing:0; line-height:1.35; }
+.reveal h1 { font-size:1.8em; margin-bottom: 0.5em; }
+.reveal h2 { font-size:1.35em; margin-bottom: 0.4em; }
+.reveal h3 { font-size:1.15em; color:var(--blue); margin-bottom: 0.4em; }
+.reveal p { line-height:1.75; margin-bottom: 0.7em; }
+.reveal ul { display:block; margin-bottom: 0.7em; }
+.reveal li { margin:.5em 0; line-height:1.65; }
+.reveal strong { color:var(--purple); }
+.reveal section { height:100%; overflow-y:auto; }
+.reveal section::-webkit-scrollbar { width:6px; }
+.reveal section::-webkit-scrollbar-track { background:transparent; }
+.reveal section::-webkit-scrollbar-thumb { background:var(--line); border-radius:99px; }
+.reveal section::-webkit-scrollbar-thumb:hover { background:var(--muted); }
+.reveal .slides section { padding:8px 20px; box-sizing:border-box; }
+
+.reveal .q { background:var(--soft); border-left:5px solid var(--blue);
+  padding:.6em .9em; border-radius:10px; font-size:.9em; line-height:1.5; margin:.5em 0 .7em; }
+.reveal .note { color:var(--muted); font-size:.65em; }
+.reveal .rule { background:#fff6ed; border:1px solid #ffd8b8; color:var(--warn);
+  border-radius:10px; padding:.4em .8em; font-size:.78em; font-weight:600; }
+.reveal .good { color:var(--good); font-weight:700; }
+.reveal .warn { color:var(--warn); font-weight:600; }
+.reveal code { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; font-size:.85em;
+  background:var(--soft); color:var(--blue); padding:.06em .42em; border-radius:6px; white-space:nowrap; }
+.reveal a.tool { color:var(--blue); font-weight:700; text-decoration:underline; }
+
+/* title slide */
+.title-wrap { text-align:center; height:100%; display:flex; flex-direction:column;
+  justify-content:center; align-items:center; }
+.title-wrap .badge { font-size:.68em; color:#fff; background:var(--accent-grad);
+  padding:.3em 1.2em; border-radius:999px; font-weight:700; }
+.title-wrap h1 { background:var(--accent-grad);
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; margin:.2em 0; }
+.title-wrap .sub { font-size:1.0em; color:var(--ink); font-weight:600; }
+.title-wrap .meta { color:var(--muted); font-size:.75em; margin-top:.5em; }
+
+/* two-column helper */
+.cols { display:flex; gap:1.2em; align-items:flex-start; }
+.cols > div { flex:1; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:14px;
+  padding:.8em 1.0em; box-shadow:0 2px 8px rgba(20,30,60,.04); line-height:1.5; }
+.card h3 { margin-top:0; }
+.pill { display:inline-block; background:var(--soft); color:var(--blue);
+  border-radius:8px; padding:.08em .5em; font-size:.78em; font-weight:600; margin:.1em; }
+
+/* table styling inside reveal */
+.reveal table { width:100%; border-collapse:collapse; margin:.5em 0; font-size:.7em; }
+.reveal th { background:var(--soft); font-weight:700; border:1px solid var(--line); padding:6px 12px; }
+.reveal td { border:1px solid var(--line); padding:6px 12px; }
+
+/* worksheet fields */
+.ws-label { display:block; font-size:.7em; font-weight:700; color:var(--muted);
+  margin:.4em 0 .15em; line-height:1.6; }
+textarea.ws-field, input.save, select.save {
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:.7em; color:var(--ink);
+  width:100%; border:1.5px solid var(--line); border-radius:10px; padding:.5em .7em;
+  background:#fcfdff; box-sizing:border-box; resize:vertical !important; overflow:auto !important; }
+textarea.ws-field { min-height:120px; line-height:1.5; }
+textarea.ws-field:focus, input.save:focus, select.save:focus { outline:none; border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(26,115,232,.12); }
+input.save { height:auto; }
+select.save { height:auto; padding:.4em .6em; }
+
+textarea::-webkit-scrollbar { width: 5px; }
+textarea::-webkit-scrollbar-track { background: transparent; }
+textarea::-webkit-scrollbar-thumb { background: var(--line); border-radius: 99px; }
+textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+.info-grid { display:grid; grid-template-columns:1fr; gap:.3em; max-width:680px; }
+.info-row { display:flex; gap:.8em; }
+.info-row > div { flex:1; }
+
+/* download button (floating) */
+#dlbtn { position:fixed; top:14px; right:16px; z-index:60;
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:15px; font-weight:700;
+  color:#fff; background:var(--accent-grad);
+  border:none; border-radius:999px; padding:10px 18px; cursor:pointer;
+  box-shadow:0 4px 14px rgba(76,40,160,.3); display:none; }
+#dlbtn:hover { filter:brightness(1.05); }
+#dlbtn:active { transform:translateY(1px); }
+#savehint { position:fixed; top:54px; right:18px; z-index:60; font-size:11px;
+  color:var(--good); font-family:'Sarabun',sans-serif; opacity:0; transition:opacity .3s; }
+.dlbig { font-size:.9em; font-weight:700; color:#fff;
+  background:var(--accent-grad); border:none;
+  border-radius:12px; padding:.5em 1.1em; cursor:pointer; box-shadow:0 4px 14px rgba(76,40,160,.25);
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; }
+
+/* assignment print area */
+#print-area { display:none; }
+.pdf-doc { font-family:'Sarabun','Noto Sans Thai',sans-serif; color:#11131a; padding:6px 4px; }
+.pdf-doc h1 { font-size:22px; margin:0 0 4px; color:#1a73e8; }
+.pdf-doc .pdf-meta { display:flex; gap:18px; font-size:13px; border-bottom:2px solid #1a73e8;
+  padding-bottom:8px; margin-bottom:12px; flex-wrap:wrap; }
+.pdf-doc h2 { font-size:15px; margin:16px 0 6px; color:#7b41d8; border-left:4px solid #7b41d8; padding-left:8px; }
+.pdf-item { margin:8px 0; page-break-inside:avoid; }
+.pdf-label { font-size:12.5px; font-weight:700; color:#333; margin-bottom:3px; }
+.pdf-answer { font-size:12.5px; line-height:1.5; border:1px solid #c9d2e0; border-radius:6px;
+  padding:7px 9px; white-space:pre-wrap; min-height:18px; background:#fbfcfe; }
+.pdf-answer .empty { color:#aab2c0; }
+@page { size:A4; margin:14mm; }
+@media print {
+  body.printing > *:not(#print-area) { display:none !important; }
+  body.printing #print-area { display:block !important; }
+  body.printing { background:#fff !important; }
+}
+.pdf-imgs img { display:block; max-width:100%; max-height:420px; margin-top:6px;
+  border:1px solid #c9d2e0; border-radius:6px; page-break-inside:avoid; }
+
+/* image attach / paste helper */
+.img-btn { display:inline-flex; align-items:center; gap:.3em; margin-top:.35em;
+  font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:.6em; font-weight:700;
+  color:var(--blue); background:var(--soft); border:1.5px solid #cfe0fb;
+  border-radius:999px; padding:.4em .9em; cursor:pointer; }
+.img-btn:hover { filter:brightness(.98); }
+.img-hint { font-size:.55em; color:var(--muted); margin-left:.55em; }
+.img-tray { display:flex; flex-wrap:wrap; gap:.5em; margin-top:.4em; }
+.img-thumb { position:relative; width:96px; height:96px; border:1px solid var(--line);
+  border-radius:8px; overflow:hidden; background:#fafbff; }
+.img-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+.img-thumb .rm { position:absolute; top:2px; right:2px; width:20px; height:20px;
+  border:none; border-radius:50%; background:rgba(20,30,60,.7); color:#fff;
+  font-size:13px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.img-thumb .rm:hover { background:var(--warn); }
+
+/* submission readiness panel */
+.check-panel { max-width:820px; margin:0.3em auto 0; }
+.prog-meta { display:flex; justify-content:space-between; font-size:.64em; color:var(--muted);
+  font-weight:700; margin:.2em .2em .35em; }
+.prog-wrap { background:var(--soft); border-radius:999px; height:15px; overflow:hidden; border:1px solid var(--line); }
+.prog-bar  { height:100%; width:0%; border-radius:999px; background:var(--accent-grad); transition:width .35s ease; }
+.check-msg { text-align:center; font-size:.74em; font-weight:700; margin:.5em 0 .55em; color:var(--ink); }
+.check-grid { display:grid; grid-template-columns:1fr 1fr; gap:.4em; }
+.check-row { display:flex; align-items:flex-start; gap:.5em; font-size:.66em; line-height:1.4;
+  padding:.4em .65em; border:1px solid var(--line); border-radius:10px; background:#fff; }
+.check-row .ic { font-size:1.1em; line-height:1.3; flex:0 0 auto; }
+.check-row .body { flex:1; min-width:0; }
+.check-row .ttl { font-weight:700; color:var(--ink); }
+.check-row .sub { color:var(--muted); font-size:.92em; }
+.check-row.done { background:#f4fbf7; border-color:#cdeadb; }
+
+/* step box for workshop */
+.step-box { background:var(--soft); border:1.5px solid var(--line); border-radius:12px;
+  padding:.5em .8em; margin:.3em 0; font-size:.7em; line-height:1.55; }
+.step-box b { color:var(--purple); }
+.step-num { display:inline-flex; align-items:center; justify-content:center;
+  width:24px; height:24px; border-radius:50%; background:var(--accent-grad);
+  color:#fff; font-weight:700; font-size:.68em; margin-right:.4em; flex-shrink:0; }
+
+/* topic banner (โจทย์ประจำคู่) */
+.topic-banner { background:linear-gradient(90deg,#eef3fb,#f7f0ff); border:1.5px solid #d9e2f5;
+  border-radius:14px; padding:.7em 1em; margin:.4em 0; }
+.topic-banner .tb-l { font-size:.62em; font-weight:700; color:var(--muted); letter-spacing:.04em; }
+.topic-banner .tb-t { font-size:.92em; font-weight:700; color:var(--purple); line-height:1.4; }
+.topic-banner .tb-h { font-size:.66em; color:var(--ink); margin-top:.25em; line-height:1.5; }
+
+/* DAX / formula block — multiline, unlike inline <code> */
+.daxbox { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; font-size:.6em;
+  background:#0f1b2e; color:#e8eefc; border-radius:10px; padding:.7em .9em; margin:.35em 0;
+  line-height:1.65; white-space:pre-wrap; word-break:break-word; }
+.daxbox .k { color:#7fb2ff; font-weight:700; }
+.daxbox .n { color:#ffd479; }
+.daxbox .c { color:#8b9bb4; }
+
+/* pair badge */
+.pairtag { display:inline-block; background:#fdf2ff; color:var(--purple);
+  border:1.5px solid #e9d4f7; border-radius:999px; padding:.15em .8em;
+  font-size:.6em; font-weight:700; margin-left:.4em; }
+
+/* recap grid for 8 weeks */
+.wk-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:.45em; font-size:.6em; }
+.wk-cell { border:1px solid var(--line); border-radius:10px; padding:.45em .6em; background:#fff; line-height:1.45; }
+.wk-cell > b:first-child { display:block; color:var(--blue); font-size:1.02em; }
+.wk-cell.now { background:linear-gradient(135deg,#eef3fb,#f7f0ff); border-color:#cbb6ef; }
+.wk-cell.now b { color:var(--purple); }
+
+/* Gemini rule cards */
+.gem-ok { border-left:5px solid var(--good); background:#f4fbf7; }
+.gem-no { border-left:5px solid var(--warn); background:#fff6ed; }
+
+/* inline SVG diagram wrapper */
+.figbox { margin:.2em 0; }
+.figbox img { display:block; margin:0 auto; max-width:100%; height:auto;
+  border:1px solid var(--line); border-radius:12px; }
+.figcap { font-size:.58em; color:var(--muted); text-align:right; margin-top:.1em; }
+</style>
+</head>
+<body>
+
+<button id="dlbtn" onclick="downloadPDF()">⬇ บันทึกใบงานเป็น PDF</button>
+<div id="savehint">บันทึกแล้ว ✓</div>
+
+<div class="reveal"><div class="slides">
+
+<!-- ===================== 1 TITLE ===================== -->
+<section>
+  <div class="title-wrap">
+    <span class="badge">AI for Ed · สัปดาห์ที่ 8</span>
+    <h1>DAX และการสร้าง Dashboard ด้วย Power BI</h1>
+    <div class="sub">ทำเป็นคู่ · ใช้ Gemini เป็นผู้ช่วย</div>
+    <div class="meta">ชุดข้อมูลเดิม: Covid_Round_4_cases.xlsx · ไฟล์ Power BI เดิมจากสัปดาห์ที่ 5–6</div>
+  </div>
+</section>
+
+<!-- ===================== 2 STUDENT INFO ===================== -->
+<section>
+  <h2>ระบุข้อมูลผู้เรียน <span class="pairtag">งานคู่ — 1 ใบงานต่อ 1 คู่</span></h2>
+  <div class="info-grid">
+    <div class="info-row">
+      <div>
+        <span class="ws-label">ชื่อ–นามสกุล คนที่ 1</span>
+        <input class="save" id="ws-name1" type="text" placeholder="เช่น นายสมชาย ตั้งใจเรียน">
+      </div>
+      <div>
+        <span class="ws-label">ชื่อ–นามสกุล คนที่ 2</span>
+        <input class="save" id="ws-name2" type="text" placeholder="เช่น นางสาวสมศรี รักเรียน">
+      </div>
+    </div>
+    <div class="info-row">
+      <div><span class="ws-label">ชั้น</span><input class="save" id="ws-class" type="text" placeholder="ม.6/2"></div>
+      <div><span class="ws-label">เลขที่ คนที่ 1</span><input class="save" id="ws-no" type="text" placeholder="เช่น 15"></div>
+      <div><span class="ws-label">เลขที่ คนที่ 2</span><input class="save" id="ws-no2" type="text" placeholder="เช่น 16"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 3 RECAP 8 WEEKS ===================== -->
+<section>
+  <h2>8 สัปดาห์ที่ผ่านมา เราเก็บอะไรมาบ้าง</h2>
+  <div class="wk-grid">
+    <div class="wk-cell"><b>สัปดาห์ 1</b>Generative AI ทำงานด้วยการทายคำถัดไป · prompt = บทบาท + งาน + รูปแบบ</div>
+    <div class="wk-cell"><b>สัปดาห์ 2</b>Google AI Studio · NotebookLM — ถาม–ตอบจากเอกสารของเราเอง</div>
+    <div class="wk-cell"><b>สัปดาห์ 3</b>สร้างภาพและวิดีโอ · Subject + Style + Details + Lighting + Camera</div>
+    <div class="wk-cell"><b>สัปดาห์ 4</b>เทียบโมเดลเร็ว/เก่ง · RFC prompt · Napkin &amp; Gamma</div>
+    <div class="wk-cell"><b>สัปดาห์ 5</b>Power BI — ชนิดข้อมูล · 4 ระดับการวิเคราะห์ · สร้างกราฟ</div>
+    <div class="wk-cell"><b>สัปดาห์ 6</b>Filter · Slicer · Power Query — ทำความสะอาดข้อมูล</div>
+    <div class="wk-cell"><b>สัปดาห์ 7</b>NotebookLM เป็นติวเตอร์ · RAG · ตรวจ citation</div>
+    <div class="wk-cell now"><b>สัปดาห์ 8 — วันนี้</b>เรียน <b>DAX</b> (Data Analysis Expressions) แล้วรวมทุกอย่างเป็น Dashboard 1 หน้า ที่ตอบคำถามได้ 1 ข้อ</div>
+  </div>
+  <div class="card" style="border-left:5px solid var(--purple); background:#fdf9ff; font-size:.7em; line-height:1.6; margin-top:.5em;">
+    <b style="color:var(--purple)">เส้นเรื่องเดียวที่ร้อยทั้ง 8 สัปดาห์:</b>
+    AI ผลิตของได้เร็วมาก — แต่ <b>คำถามที่ถูกต้อง</b> และ <b>การตรวจสอบ</b> ยังเป็นงานของเรา
+    วันนี้เราจะพิสูจน์ข้อนี้เป็นครั้งสุดท้าย
+  </div>
+</section>
+
+<!-- ===================== 4 RULES OF THE DAY ===================== -->
+<section>
+  <h2>Gemini ช่วยได้ 2 อย่าง — และห้าม 1 อย่าง</h2>
+  <div class="cols" style="font-size:.94em;">
+    <div class="card gem-ok" style="font-size:.66em; line-height:1.55; flex:1;">
+      <b class="good">ใช้ได้ 2 อย่าง:</b> <b>เขียนสูตร DAX</b> (แล้วเราเอาไปทดสอบเอง) ·
+      <b>ร่างข้อความสรุป</b> จากตัวเลขที่ <u>เราบอกมันไป</u>
+    </div>
+    <div class="card gem-no" style="font-size:.66em; line-height:1.55; flex:1;">
+      <b class="warn">ห้าม 1 อย่าง:</b> <b>ห้ามลอกข้อความของ Gemini ไปใส่ข้อสรุปของเรา</b> —
+      กิจกรรมที่ 3 จะให้เรา <b>จับผิด</b> ว่ามันเติมอะไรที่ข้อมูลไม่ได้บอก
+    </div>
+  </div>
+<div class="figbox"><img src="images/gemini_sees.png" alt="Gemini เห็นเฉพาะข้อความที่เราพิมพ์ ไม่เห็นไฟล์ .pbix ข้อมูล 843 แถว หรือกราฟของเรา" style="max-height:395px;"></div>
+  <div class="rule" style="margin-top:.5em; font-size:.68em;">
+    ⏱ วันนี้ 3 ชั่วโมง — <b>เรียน DAX 15 นาที · ทำ Workshop 3 กิจกรรม</b> · ส่งงานเป็น <b>PDF 1 ไฟล์ต่อ 1 คู่</b> (ปุ่มมุมขวาบน) · ใบงานบันทึกอัตโนมัติตลอดเวลา
+  </div>
+</section>
+
+<!-- ===================== 5 PREPARE FILE ===================== -->
+<section>
+  <h2>เปิดไฟล์ Power BI เดิม</h2>
+  <div class="cols">
+    <div class="card" style="border-top:4px solid var(--good); font-size:.66em; line-height:1.6;">
+      <b class="good">กรณีที่ 1 — มีไฟล์ .pbix เดิม</b>
+      <ol style="margin:.25em 0 0; padding-left:1.2em;">
+        <li>เปิดไฟล์ที่ Save ไว้จากสัปดาห์ที่ 6</li>
+        <li>ตรวจว่ามีหน้า 1–5 อยู่ครบ</li>
+        <li>ที่มุมล่างซ้าย กด <b>+</b> เพื่อสร้าง <b>หน้า 6</b> — งานวันนี้อยู่ในหน้านี้หน้าเดียว</li>
+      </ol>
+    </div>
+    <div class="card" style="border-top:4px solid var(--warn); font-size:.66em; line-height:1.6;">
+      <b class="warn">กรณีที่ 2 — ไฟล์หาย เริ่มใหม่ (5 นาที)</b>
+      <ol style="margin:.25em 0 0; padding-left:1.2em;">
+        <li>ดาวน์โหลด → <a class="tool" href="images/Covid_Round_4_cases.xlsx" download="Covid_Round_4_cases.xlsx">Covid_Round_4_cases.xlsx</a></li>
+        <li><b>Get Data → Excel Workbook</b> → เลือกชีต → <b>Transform Data</b></li>
+        <li><b>Remove Rows → Remove Duplicates</b> (ควรเหลือ <b>843</b> แถว)</li>
+        <li>คลิกขวาคอลัมน์ <code>data.province</code> → <b>Replace Values</b>: กทม. → กรุงเทพมหานคร</li>
+        <li><b>Close &amp; Apply</b> → สร้างหน้าใหม่ได้เลย (ไม่ต้องทำกราฟย้อนหลัง)</li>
+      </ol>
+    </div>
+  </div>
+  <div class="card" style="border-left:5px solid var(--teal); background:#f2fdfb; font-size:.62em; line-height:1.6; margin-top:.5em;">
+    <b style="color:var(--teal)">ชื่อคอลัมน์ในไฟล์เป็นภาษาอังกฤษ — นี่คือตารางเทียบ:</b>
+    <span class="pill">data.gender = เพศ</span>
+    <span class="pill">data.age_number = อายุ (ตัวเลข)</span>
+    <span class="pill">data.age_range = ช่วงอายุ</span>
+    <span class="pill">data.risk = ความเสี่ยง</span>
+    <span class="pill">data.patient_type = ประเภทผู้ป่วย</span>
+    <span class="pill">data.province = จังหวัด</span>
+    <span class="pill">data.reporting_group = กลุ่มสำรวจ</span>
+    <span class="pill">data.region = ภาค</span>
+  </div>
+</section>
+
+<!-- ===================== 6 DASHBOARD != PILE OF CHARTS ===================== -->
+<section>
+  <h2>Dashboard ไม่ใช่การเอากราฟมาวาง ๆ</h2>
+  <div class="q" style="font-size:.72em;">
+    หน้า 1–5 ของเรา คือ <b>การเอากราฟมาวาง ๆ</b> — แต่ละกราฟตอบคำถามคนละข้อ วางเรียงกันไปเรื่อย ๆ<br>
+    <b>Dashboard</b> คือหน้าเดียวที่ทุกชิ้นบนหน้าช่วยกันตอบ <b>คำถามเดียว</b> — ถ้าชิ้นไหนไม่ช่วยตอบ ให้เอาออก
+  </div>
+  <img src="images/dashboard_layout.png" alt="โครงหน้า Dashboard: หัวเรื่อง, KPI Cards, กราฟ, Slicer" style="width:100%; border:1px solid var(--line); border-radius:12px; margin-top:.2em;">
+</section>
+
+<!-- ===================== 7 LECTURE 1/4 — WHAT IS DAX ===================== -->
+<section>
+  <h2>DAX คืออะไร และทำไมต้องเรียน</h2>
+  <div class="q" style="font-size:.72em;">
+    สัปดาห์ 5–6 เราสร้างกราฟด้วยการ <b>ลากคอลัมน์</b> ไปวาง — แปลว่าเราทำได้เฉพาะสิ่งที่ <b>มีอยู่แล้ว</b> ในตาราง<br>
+    แต่ตารางของเรามีแค่ "แถวผู้ป่วย" — <b>ไม่มีคอลัมน์ไหนบอกว่าเปอร์เซ็นต์เท่าไร</b>
+  </div>
+<div class="figbox"><img src="images/dax_why.png" alt="สิ่งที่มีอยู่แล้วในตารางลากวางได้ ส่วน % และการเทียบกลุ่มต้องเขียน DAX เอง" style="max-height:395px;"></div>
+  <div class="card" style="border-left:5px solid var(--teal); background:#f2fdfb; font-size:.62em; line-height:1.55; margin-top:.35em;">
+    <b style="color:var(--teal)">ต่างจากสูตร Excel อย่างไร</b> — Excel: <code>=B2/C2</code> คิด <b>ทีละเซลล์</b> ·
+    DAX: <code>DIVIDE([ก],[ข])</code> คิด <b>ทั้งกลุ่มที่กำลังแสดงอยู่</b>
+  </div>
+</section>
+
+<!-- ===================== 8 LECTURE 2/4 — COLUMN VS MEASURE ===================== -->
+<section>
+  <h2>เขียนได้ 2 แบบ — วันนี้เราใช้แบบเดียว</h2>
+  <div class="figbox"><img src="images/d1.png" alt="เปรียบเทียบ Calculated Column กับ Measure" style="max-height:520px;"></div>
+  <div class="rule" style="font-size:.62em; margin-top:.3em;">
+    จำสั้น ๆ: <b>Column = ค่าติดอยู่กับแถว</b> · <b>Measure = ค่าติดอยู่กับ "สิ่งที่กำลังดูอยู่"</b>
+    — วันนี้ใช้ปุ่ม <b>New measure</b> เท่านั้น อย่ากด New column
+  </div>
+</section>
+
+<!-- ===================== 9 LECTURE 3/4 — FILTER CONTEXT ===================== -->
+<section>
+  <h2>Filter Context — หัวใจของ DAX</h2>
+  <div class="figbox"><img src="images/d2.png" alt="Filter Context — สูตรเดียวให้ค่า 843 / 222 / 123 ตามตัวกรอง" style="max-height:565px;"></div>
+</section>
+
+<!-- ===================== 10 LECTURE 4/4 — THE THREE FORMULAS ===================== -->
+<section>
+  <h2>3 สูตรที่ต้องใช้วันนี้</h2>
+  <div class="step-box" style="margin-bottom:.25em;">
+    <span class="step-num">1</span> แท็บ <b>Home</b> → ปุ่ม <b>New measure</b> → พิมพ์สูตรในแถบสูตรด้านบน → กด <b>Enter</b>
+  </div>
+  <div class="daxbox"><span class="c">// 1) นับจำนวนแถว = จำนวนผู้ป่วย</span>
+<span class="n">จำนวนผู้ป่วย</span> = <span class="k">COUNTROWS</span>('Sheet1')
+
+<span class="c">// 2) ค่าเฉลี่ยอายุ (ข้ามแถวที่อายุว่างให้อัตโนมัติ)</span>
+<span class="n">อายุเฉลี่ย</span> = <span class="k">AVERAGE</span>('Sheet1'[data.age_number])
+
+<span class="c">// 3) สัดส่วนของกลุ่มนี้ เทียบกับข้อมูลทั้งหมด</span>
+<span class="n">% ของทั้งหมด</span> = <span class="k">DIVIDE</span>( [จำนวนผู้ป่วย], <span class="k">CALCULATE</span>([จำนวนผู้ป่วย], <span class="k">ALL</span>('Sheet1')) )</div>
+  <div class="card" style="border-left:5px solid var(--warn); background:#fffcf8; font-size:.6em; line-height:1.55;">
+    <b class="warn">3 จุดที่พลาดกันบ่อย:</b>
+    <b>(ก)</b> ชื่อตารางอาจไม่ใช่ <code>'Sheet1'</code> — ดูชื่อจริงที่แถบ <b>Data</b> ด้านขวา แล้วพิมพ์ตามนั้น (พิมพ์ <code>'</code> แล้ว Power BI จะขึ้นรายการให้เลือก) ·
+    <b>(ข)</b> สูตรที่ 3 ต้องไป Format ให้เป็น <b>Percentage</b> (แท็บ <b>Measure tools</b> → <b>%</b>) ไม่งั้นจะเห็นเป็น 0.263 ·
+    <b>(ค)</b> ใช้ <b>New measure</b> ไม่ใช่ New column
+  </div>
+</section>
+
+<!-- ===================== 11 TOOL 1/3 — CARD ===================== -->
+<section>
+  <h2>Card — ตัวเลขพาดหัวของ Dashboard</h2>
+  <div class="cols" style="gap:.7em; font-size:.92em;">
+    <div>
+      <div class="step-box"><span class="step-num">1</span> ในหน้า 6 คลิกพื้นที่ว่าง → แถบ <b>Visualizations</b> เลือกไอคอน <b>Card</b> (รูป <code>123</code>)</div>
+      <div class="step-box"><span class="step-num">2</span> ลาก <b>measure</b> ที่เราเพิ่งสร้าง ไปวางในช่อง <b>Fields</b></div>
+    </div>
+    <div>
+      <div class="step-box"><span class="step-num">3</span> ถ้าลากคอลัมน์ธรรมดา ให้คลิกลูกศรลง → เลือก <b>Count</b> หรือ <b>Average</b></div>
+      <div class="step-box"><span class="step-num">4</span> แท็บ <b>Format</b> (แปรงทาสี) → <b>Callout value</b> ปรับขนาด/ทศนิยม · <b>Category label</b> เปิด-ปิดคำอธิบาย</div>
+    </div>
+  </div>
+  <div class="figbox"><img src="images/card_good_bad.png" alt="Card ที่อ่านยากมีทศนิยมเกินและไม่มีคำอธิบาย ส่วน Card ที่อ่านง่ายมีตัวเลขเดียวพร้อมคำอธิบาย" style="max-height:330px;"></div>
+  <div class="rule" style="font-size:.6em; margin-top:.3em;">
+    อายุเฉลี่ยขึ้นเป็น 33.3529411 → Format → <b>Value decimal places = 1</b>
+  </div>
+</section>
+
+<!-- ===================== 12 TOOL 2/3 — EDIT INTERACTIONS ===================== -->
+<section>
+  <h2>Edit interactions — คุมว่ากราฟไหนสั่งกราฟไหนได้</h2>
+  <div class="cols">
+    <div>
+      <div class="step-box"><span class="step-num">1</span> คลิกเลือกกราฟ/Slicer ที่จะเป็น <b>ตัวสั่ง</b></div>
+      <div class="step-box"><span class="step-num">2</span> แท็บ <b>Format</b> (ริบบิ้นบนสุด) → <b>Edit interactions</b></div>
+      <div class="step-box"><span class="step-num">3</span> ไอคอนเล็ก ๆ โผล่มุมบนขวาของกราฟอื่น — เลือก <b>Filter</b> · <b>Highlight</b> · <b>None</b></div>
+    </div>
+    <div>
+      <div class="card" style="border-left:5px solid var(--teal); background:#f2fdfb; font-size:.62em; line-height:1.55;">
+        <b style="color:var(--teal)">ค่าเริ่มต้นคือ Filter ทุกตัว</b> — และการเลือก Filter / Highlight / None คือการตัดสินใจว่า
+        <b>คนอ่านจะเปรียบเทียบอะไรกับอะไรได้</b> <span class="warn">นี่คือวิธีทำ Dashboard ให้คนเข้าใจผิดโดยไม่ได้โกหกสักคำ</span>
+      </div>
+    </div>
+  </div>
+  <div class="figbox"><img src="images/interactions.png" alt="เปรียบเทียบ Filter Highlight และ None เมื่อกด Slicer" style="max-height:330px;"></div>
+</section>
+
+<!-- ===================== 13 TOOL 3/3 — LAYOUT ===================== -->
+<section>
+  <h2>จัดหน้าให้ดูเป็น Dashboard จริง ๆ</h2>
+  <div class="cols">
+    <div>
+      <div class="step-box"><span class="step-num">1</span> <b>หัวเรื่อง:</b> แท็บ <b>Insert</b> → <b>Text box</b> → พิมพ์ <u>คำถามที่หน้านี้ตอบ</u> ไม่ใช่คำว่า "Dashboard"</div>
+      <div class="step-box"><span class="step-num">2</span> <b>ธีมสี:</b> แท็บ <b>View</b> → <b>Themes</b> → เลือก 1 ธีม ให้ทุกกราฟใช้ชุดสีเดียวกัน</div>
+      <div class="step-box"><span class="step-num">3</span> <b>จัดตำแหน่ง:</b> เลือกหลายกราฟด้วย <code>Ctrl</code>+คลิก → <b>Format</b> → <b>Align</b></div>
+      <div class="step-box"><span class="step-num">4</span> <b>ชื่อกราฟ:</b> คลิกกราฟ → Format → <b>Title</b> → แก้ให้เป็นภาษาคน (ไม่ใช่ <code>Count of data.region</code>)</div>
+    </div>
+    <div>
+      <div class="figbox"><img src="images/layout_before_after.png" alt="หน้าเดียวกันก่อนจัดและหลังจัด: หลังจัดมีหัวเรื่อง แถว KPI และกราฟที่จัดตำแหน่งตรงกัน" style="max-height:300px;"></div>
+      <div class="card" style="border-left:5px solid var(--purple); background:#fdf9ff; font-size:.56em; line-height:1.45; margin-top:.3em;">
+        <b style="color:var(--purple)">เช็ก 30 วินาทีก่อนถือว่าเสร็จ</b>
+        <ul style="margin:.25em 0 0; padding-left:1.1em;">
+          <li>คนที่ไม่เคยเห็นข้อมูลนี้ อ่านหัวเรื่องแล้วรู้ไหมว่าหน้านี้จะบอกอะไร</li>
+          <li>ทุกกราฟมีชื่อที่เป็นภาษาคน</li>
+          <li>ไม่มีกราฟไหนที่ลบทิ้งแล้วคำตอบไม่เปลี่ยน (ถ้ามี = ลบทิ้ง)</li>
+          <li>ตัวเลขบน Card ไม่มีทศนิยมเกินจำเป็น</li>
+        </ul>
+      </div>
+      <div class="rule" style="margin-top:.4em; font-size:.58em;">
+        อย่าเพิ่งตกแต่งตอนนี้ — ทำ Card + กราฟให้ครบก่อน แล้วค่อยกลับมาตกแต่งตอนท้าย
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 14 WORKSHOP OVERVIEW ===================== -->
+<section>
+  <h2>ที่เหลือของวันนี้ — 3 กิจกรรม</h2>
+  <div class="figbox"><img src="images/d3.png" alt="ภาพรวม Workshop 3 กิจกรรม: สร้าง Dashboard 48 นาที · ให้ Gemini ร่าง 20 นาที · เขียนเอง+จับผิด 25 นาที" style="max-height:600px;"></div>
+</section>
+
+<!-- ===================== 15 MISSION BRIEF ===================== -->
+<section>
+  <h2>โจทย์ของคู่เรา</h2>
+  <div class="topic-banner">
+    <div class="tb-l">คำถามที่ Dashboard หน้า 6 ของเราต้องตอบ</div>
+    <div class="tb-t">ภาคใดควรได้รับทีมควบคุมโรคเพิ่มก่อนเป็นอันดับแรก?</div>
+    <div class="tb-h">สังเกตให้ดี: ภาคที่ผู้ป่วยมากที่สุด กับภาคที่อายุเฉลี่ยสูงที่สุด เป็นภาคเดียวกันหรือไม่ — ถ้าไม่ใช่ แปลว่าสองภาคนี้มีภาระคนละแบบกัน</div>
+  </div>
+  <table>
+    <tr><th style="width:22%;">สิ่งที่ต้องมีในหน้า 6</th><th>รายละเอียด</th></tr>
+    <tr><td><b>Card ที่ 1</b></td><td>จำนวนผู้ป่วยทั้งหมดในไฟล์ (measure จำนวนผู้ป่วย)</td></tr>
+    <tr><td><b>Card ที่ 2</b></td><td>อายุเฉลี่ยของผู้ป่วยทั้งหมด (measure อายุเฉลี่ย)</td></tr>
+    <tr><td><b>Card ที่ 3</b></td><td>สัดส่วนของภาคที่มีผู้ป่วยมากที่สุด (measure % ของทั้งหมด + Filter ที่ภาคนั้น)</td></tr>
+    <tr><td><b>กราฟที่ 1</b></td><td>Bar Chart — data.region × Count เรียงจากมาก→น้อย</td></tr>
+    <tr><td><b>กราฟที่ 2</b></td><td>Bar Chart — data.region × Average ของ data.age_number</td></tr>
+    <tr><td><b>Slicer</b></td><td>Slicer จาก data.gender (เพศ)</td></tr>
+  </table>
+  <div class="note" style="font-size:.6em;">ทุกคู่ได้โจทย์เดียวกัน แต่สิ่งที่ต่างกันคือ <b>ข้อสรุปที่แต่ละคู่เขียนเอง</b> ในกิจกรรมที่ 3</div>
+</section>
+
+<!-- ===================== 16 ACTIVITY 1 — BUILD THE DASHBOARD ===================== -->
+<section>
+  <h2 style="margin-bottom:.2em;">สร้าง Dashboard หน้า 6</h2>
+  <div class="topic-banner" style="padding:.35em .8em; margin:.15em 0 .1em;">
+    <div class="tb-t" style="font-size:.76em;">ภาคใดควรได้รับทีมควบคุมโรคเพิ่มก่อนเป็นอันดับแรก?</div>
+  </div>
+  <div class="cols" style="font-size:.95em;">
+    <div>
+      <span class="ws-label">1.1 ตัวเลขบน Card ทั้ง 3 ใบ (เขียนต่อกันได้ในช่องเดียว)</span>
+      <textarea class="save ws-field" id="q1_kpi" data-group="กิจกรรมที่ 1 — สร้าง Dashboard" data-label="1.1 ตัวเลขบน Card 3 ใบ" style="min-height:74px;" placeholder="Card 1 = ... · Card 2 = ... · Card 3 = ..."></textarea>
+      <span class="ws-label">1.2 คัดลอกสูตร DAX ที่คู่เราเขียนขึ้นมา 1 สูตร (สูตรที่ยากที่สุด)</span>
+      <textarea class="save ws-field" id="q1_dax" data-group="กิจกรรมที่ 1 — สร้าง Dashboard" data-label="1.2 สูตร DAX ที่เขียนเอง" style="min-height:74px;" placeholder="% ของทั้งหมด = DIVIDE( ... )"></textarea>
+    </div>
+    <div>
+      <span class="ws-label">1.3 กราฟที่เลือกใช้ และ<u>ทำไม</u>ชนิดนี้จึงเหมาะกว่าชนิดอื่น</span>
+      <textarea class="save ws-field" id="q1_chart" data-group="กิจกรรมที่ 1 — สร้าง Dashboard" data-label="1.3 ชนิดกราฟที่เลือก และเหตุผล" style="min-height:74px;" placeholder="ใช้ ... เพราะต้องเปรียบเทียบ ... ซึ่ง Pie Chart ทำไม่ได้เพราะ ..."></textarea>
+      <span class="ws-label">1.4 ตั้ง Card ที่ 1 เป็น <b>None</b> ใน Edit interactions แล้วกด Slicer — อะไรเปลี่ยน อะไรไม่เปลี่ยน และแบบไหนช่วยให้คนอ่านเข้าใจถูกกว่า</span>
+      <textarea class="save ws-field" id="q1_interaction" data-group="กิจกรรมที่ 1 — สร้าง Dashboard" data-label="1.4 ผลของ Edit interactions" style="min-height:74px;" placeholder="กด Slicer แล้ว ... เปลี่ยนจาก ... เป็น ... ส่วน ... ไม่เปลี่ยน / แบบที่ดีกว่าคือ ... เพราะ ..."></textarea>
+    </div>
+  </div>
+  <span class="ws-label">1.5 แนบภาพหน้าจอ <b>หน้า 6 ทั้งหน้า</b> (Card 3 ใบ + กราฟ 2 ตัว + Slicer)</span>
+  <input class="save" id="q_img_dashboard" type="text" readonly placeholder="ยังไม่มีภาพ" style="font-size:.6em;">
+  <div class="img-tray" id="q_img_dashboard_tray"></div>
+</section>
+
+<!-- ===================== 17 ACTIVITY 2 — GEMINI ===================== -->
+<section>
+  <h2>ใช้ Gemini เป็นผู้ช่วย — แล้วตรวจงานมัน</h2>
+  <div class="rule" style="font-size:.62em; margin-bottom:.35em;">
+    เปิด <a class="tool" href="https://gemini.google.com" target="_blank" rel="noopener">gemini.google.com</a> · ตัวอย่าง prompt ทั้งหมดอยู่ในไฟล์ <code>week8_prompts.md</code> ที่ครูแจก
+  </div>
+  <div class="cols">
+    <div>
+      <span class="ws-label">2.1 ให้ Gemini เขียน DAX — วาง prompt ที่ใช้ + สูตรที่ได้ + ใช้ได้จริงหรือไม่ (ถ้าไม่ได้ แก้ตรงไหน)</span>
+      <textarea class="save ws-field" id="q2_dax" data-group="กิจกรรมที่ 2 — ใช้ Gemini เป็นผู้ช่วย" data-label="2.1 Gemini เขียน DAX — prompt / ผล / ใช้ได้จริงไหม" style="min-height:150px;" placeholder="prompt: ...&#10;สูตรที่ได้: ...&#10;ผลลัพธ์: ใช้ได้ / ใช้ไม่ได้ เพราะ ..."></textarea>
+    </div>
+    <div>
+      <span class="ws-label">2.2 บอกตัวเลขจริงจาก Dashboard ให้ Gemini แล้วให้ร่างข้อความสรุป — <b>วางสิ่งที่ Gemini ตอบมาทั้งหมด ห้ามแก้</b></span>
+      <textarea class="save ws-field" id="q2_draft" data-group="กิจกรรมที่ 2 — ใช้ Gemini เป็นผู้ช่วย" data-label="2.2 ข้อความที่ Gemini ร่างให้ (ฉบับดิบ)" style="min-height:150px;" placeholder="วางคำตอบของ Gemini ที่นี่ ห้ามแก้ไข — เดี๋ยวกิจกรรมที่ 3 จะให้จับผิด"></textarea>
+    </div>
+  </div>
+  <span class="ws-label">2.3 แนบภาพหน้าจอแชต Gemini</span>
+  <input class="save" id="q_img_gemini" type="text" readonly placeholder="ยังไม่มีภาพ" style="font-size:.6em;">
+  <div class="img-tray" id="q_img_gemini_tray"></div>
+</section>
+
+<!-- ===================== 18 INSIGHT FORMULA ===================== -->
+<section>
+  <h2>Insight ที่ดี = 4 ส่วน</h2>
+  <img src="images/insight_formula.png" alt="สูตร insight 4 ส่วน: บริบท / สิ่งที่เห็น / ทำไมสำคัญ / ควรทำอะไรต่อ" style="width:100%; border:1px solid var(--line); border-radius:12px;">
+  <div class="cols" style="margin-top:.3em;">
+    <div class="card gem-no" style="font-size:.6em; line-height:1.55;">
+      <b class="warn">ยังไม่ใช่ insight:</b><br>
+      "ภาคตะวันออกเฉียงเหนือมีผู้ป่วยมากที่สุด"<br>
+      <span class="note">— นี่คือการอ่านกราฟออกเสียง ใคร ๆ ก็เห็น</span>
+    </div>
+    <div class="card gem-ok" style="font-size:.6em; line-height:1.55;">
+      <b class="good">เป็น insight แล้ว:</b><br>
+      "จากข้อมูล 843 ราย ภาคอีสานมีผู้ป่วยมากที่สุด 222 ราย (26.3%) แต่กลับมีอายุเฉลี่ยต่ำที่สุด (29.4 ปี)
+      แปลว่าภาระของภาคนี้ไม่ใช่กลุ่มผู้สูงอายุอย่างที่คนมักคิด แต่เป็นวัยทำงานตอนต้น
+      ทีมควบคุมโรคจึงควรเน้นสื่อสารผ่านช่องทางของวัยทำงาน มากกว่าผ่านโรงพยาบาลอย่างเดียว"
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 19 ACTIVITY 3 — WRITE YOUR OWN ===================== -->
+<section>
+  <h2>เขียน Insight ด้วยคำของคู่เราเอง</h2>
+  <div class="rule" style="font-size:.62em; margin-bottom:.35em;">
+    ⛔ <b>ปิดแท็บ Gemini ก่อนทำข้อ 3.1</b> — เปิดได้แค่ Power BI กับใบงานนี้
+  </div>
+  <div class="cols">
+    <div>
+      <span class="ws-label">3.1 Insight ของคู่เรา ครบ 4 ส่วน (บริบท → สิ่งที่เห็น → ทำไมสำคัญ → ควรทำอะไรต่อ)</span>
+      <textarea class="save ws-field" id="q3_insight" data-group="กิจกรรมที่ 3 — Insight ของเราเอง" data-label="3.1 Insight ที่เขียนเอง (4 ส่วน)" style="min-height:170px;" placeholder="จากข้อมูล ... แถว พบว่า ... (ตัวเลขจริงจาก Dashboard) ซึ่งน่าสนใจเพราะ ... ดังนั้น ... ควร ..."></textarea>
+    </div>
+    <div>
+      <span class="ws-label">3.2 กลับไปอ่านข้อความที่ Gemini ร่างไว้ในข้อ 2.2 — ระบุ <b>อย่างน้อย 1 จุด</b> ที่ Gemini เติมสิ่งที่ข้อมูลชุดนี้<u>ไม่ได้บอก</u></span>
+      <textarea class="save ws-field" id="q3_ai_check" data-group="กิจกรรมที่ 3 — Insight ของเราเอง" data-label="3.2 จุดที่ Gemini เติมเกินจากข้อมูล" style="min-height:96px;" placeholder="Gemini เขียนว่า &quot;...&quot; แต่ข้อมูลของเราไม่มีคอลัมน์ / ไม่มีตัวเลขที่บอกเรื่องนี้เลย"></textarea>
+      <span class="ws-label">3.3 ข้อจำกัดของข้อมูลชุดนี้ 1 ข้อ ที่ทำให้ข้อสรุปของเรา "ยังเชื่อ 100% ไม่ได้"</span>
+      <textarea class="save ws-field" id="q3_limit" data-group="กิจกรรมที่ 3 — Insight ของเราเอง" data-label="3.3 ข้อจำกัดของข้อมูล" style="min-height:76px;" placeholder="เช่น ข้อมูลเป็นของสัปดาห์ที่ 52 ปี 2021 เพียงสัปดาห์เดียว / มีอายุที่ว่าง 29 แถว / ..."></textarea>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 20 CLOSING ===================== -->
+<section>
+  <h2>สิ่งที่อยากให้ติดตัวไปหลังจบวิชานี้</h2>
+  <div class="cols">
+    <div class="card" style="border-top:4px solid var(--blue); font-size:.66em; line-height:1.65;">
+      <b style="color:var(--blue)">AI ทำแทนได้</b>
+      <ul style="margin:.25em 0 0; padding-left:1.1em;">
+        <li>ร่างข้อความ · เขียนสูตร · สร้างภาพ · สรุปเอกสาร</li>
+        <li>ทำได้เร็วกว่าเรามาก และจะเร็วขึ้นอีกทุกปี</li>
+      </ul>
+    </div>
+    <div class="card" style="border-top:4px solid var(--purple); font-size:.66em; line-height:1.65;">
+      <b style="color:var(--purple)">AI ทำแทนไม่ได้</b>
+      <ul style="margin:.25em 0 0; padding-left:1.1em;">
+        <li>เลือกว่า <b>คำถามไหน</b> คุ้มค่าที่จะถาม</li>
+        <li>รู้ว่าคำตอบนั้น <b>มาจากไหน</b> และตรงไหนที่ต้องไม่เชื่อ</li>
+        <li>รับผิดชอบต่อการตัดสินใจที่เกิดจากตัวเลขนั้น</li>
+      </ul>
+    </div>
+  </div>
+  <span class="ws-label" style="margin-top:.5em;">4.1 หลังจบเทอมนี้ เครื่องมือ AI ตัวไหนที่เราจะใช้จริง และจะใช้ทำอะไร (ตอบเป็นเรื่องของตัวเอง ไม่ต้องตอบให้ถูกใจครู)</span>
+  <textarea class="save ws-field" id="q4_reflect" data-group="ปิดเทอม" data-label="4.1 เครื่องมือ AI ที่จะใช้จริงหลังจบเทอม" style="min-height:88px;" placeholder="เช่น จะใช้ NotebookLM ทบทวนบทเรียนก่อนสอบ เพราะ ..."></textarea>
+</section>
+
+<!-- ===================== 21 SUBMIT ===================== -->
+<section>
+  <h2>ตรวจความครบถ้วน แล้วบันทึกเป็น PDF</h2>
+  <div class="check-panel">
+    <div class="prog-meta"><span>ความคืบหน้าใบงาน</span><span id="prog-count">0 / 0 ช่อง</span></div>
+    <div class="prog-wrap"><div class="prog-bar" id="prog-bar"></div></div>
+    <div class="check-msg" id="check-msg">กรอกใบงานให้ครบ ระบบจะตรวจและแจ้งเตือนอัตโนมัติ</div>
+    <div class="check-grid" id="check-rows"></div>
+  </div>
+  <div class="rule" style="font-size:.62em; margin-top:.5em;">
+    อย่าลืม <b>Save ไฟล์ Power BI (.pbix)</b> ด้วย — ครูอาจขอดูไฟล์จริงเพื่อตรวจว่า measure ถูกสร้างเอง · ส่ง PDF <b>1 ไฟล์ต่อ 1 คู่</b>
+  </div>
+  <div style="text-align:center; margin-top:.7em;">
+    <button class="dlbig" onclick="downloadPDF()">⬇ บันทึกใบงานเป็น PDF</button>
+  </div>
+</section>
+
+</div></div>
+
+<!-- ===================== PDF PRINT AREA ===================== -->
+<div id="print-area"></div>
+
+<!-- ===================== REVEAL.JS INIT ===================== -->
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js" integrity="sha384-M/JtqCVlLcK9lwVnBnMXP0V577CBULkjodKsR/PITOe4MSKNbbwqCemEyluOw0+5" crossorigin="anonymous"></script>
+<script>
+Reveal.initialize({
+  hash: true, slideNumber: 'c/t', controlsTutorial: false,
+  width: 1100, height: 700, margin: 0.04,
+  transition: 'slide', backgroundTransition: 'slide'
+});
+</script>
+
+<!-- ===================== LOCALSTORAGE AUTO-SAVE ===================== -->
+<script>
+(function(){
+  const SAVE_KEY = 'aied_w8_data';
+
+  function setCookie(name, value, days) {
+    let expires = "";
+    if (days) {
+      const date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/; SameSite=Lax";
+  }
+
+  function getCookie(name) {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(';');
+    for(let i=0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+    }
+    return null;
+  }
+
+  function store(){
+    let data = {};
+    try {
+      const local = localStorage.getItem(SAVE_KEY);
+      if (local) data = JSON.parse(local);
+    } catch(e) {}
+    try {
+      const cook = getCookie(SAVE_KEY);
+      if (cook) {
+        const cookData = JSON.parse(cook);
+        for (const k in cookData) {
+          if (data[k] === undefined) data[k] = cookData[k];
+        }
+      }
+    } catch(e) {}
+    return data;
+  }
+
+  function persist(d){
+    try { localStorage.setItem(SAVE_KEY, JSON.stringify(d)); } catch(e) {}
+    try {
+      const textData = {};
+      for (const k in d) {
+        if (!k.startsWith('img:') && !k.startsWith('q_img') && typeof d[k] === 'string' && d[k].length < 1000) {
+          textData[k] = d[k];
+        }
+      }
+      setCookie(SAVE_KEY, JSON.stringify(textData), 30);
+    } catch(e) {}
+  }
+
+  function flash(){ const h=document.getElementById('savehint'); h.style.opacity='1'; setTimeout(()=>h.style.opacity='0',1200); }
+
+  window.saveField = function(el){
+    const d=store(); d[el.id]=el.value; persist(d); flash();
+  };
+
+  function loadAll(){
+    const d=store();
+    document.querySelectorAll('.save').forEach(el=>{
+      if(d[el.id]!==undefined) el.value=d[el.id];
+    });
+    if(window.refreshFeedback) window.refreshFeedback();
+  }
+
+  document.addEventListener('input', e=>{
+    if(e.target.classList && e.target.classList.contains('save')) saveField(e.target);
+  });
+  document.addEventListener('change', e=>{
+    if(e.target.classList && e.target.classList.contains('save')) saveField(e.target);
+  });
+
+  if(document.readyState!=='loading') loadAll();
+  else document.addEventListener('DOMContentLoaded', loadAll);
+
+  function toggleBtn(){
+    const d=store();
+    const any = Object.values(d).some(v=>v&&v.length>0);
+    const b = document.getElementById('dlbtn');
+    if(b) b.style.display = any ? 'block' : 'none';
+  }
+  document.addEventListener('input', toggleBtn);
+  setTimeout(toggleBtn, 500);
+})();
+</script>
+
+<!-- ===================== PDF DOWNLOAD ===================== -->
+<script>
+  function downloadPDF(){
+    const fields = document.querySelectorAll('.save[data-group]');
+    const groups = {};
+    fields.forEach(f=>{
+      const g = f.getAttribute('data-group');
+      const l = f.getAttribute('data-label');
+      if(!groups[g]) groups[g]=[];
+      groups[g].push({ label:l, value:(f.value||'').trim() });
+    });
+
+    function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    const name1 = (document.getElementById('ws-name1')||{}).value||'';
+    const name2 = (document.getElementById('ws-name2')||{}).value||'';
+    const cls   = (document.getElementById('ws-class')||{}).value||'';
+    const no1   = (document.getElementById('ws-no')||{}).value||'';
+    const no2   = (document.getElementById('ws-no2')||{}).value||'';
+
+    let html = '<div class="pdf-doc">';
+    html += '<h1>AI for Ed — สัปดาห์ที่ 8: DAX และการสร้าง Dashboard ด้วย Power BI</h1>';
+    html += '<div class="pdf-meta">';
+    html += '<span><b>คู่:</b> '+esc(name1||'—')+(name2?' / '+esc(name2):'')+'</span>';
+    html += '<span><b>ชั้น:</b> '+esc(cls||'—')+'</span>';
+    html += '<span><b>เลขที่:</b> '+esc(no1||'—')+(no2?' , '+esc(no2):'')+'</span>';
+    html += '</div>';
+
+    html += '<div class="pdf-item"><div class="pdf-label">โจทย์</div><div class="pdf-answer">'
+          + 'ภาคใดควรได้รับทีมควบคุมโรคเพิ่มก่อนเป็นอันดับแรก?' + '</div></div>';
+
+    let imgStore = {};
+    try { imgStore = JSON.parse(localStorage.getItem('aied_w8_data')||'{}'); } catch(e){}
+
+    for(const [gName, items] of Object.entries(groups)){
+      html += '<h2>'+esc(gName)+'</h2>';
+      items.forEach(it=>{
+        html += '<div class="pdf-item">';
+        html += '<div class="pdf-label">'+esc(it.label)+'</div>';
+        html += '<div class="pdf-answer">'+(it.value ? esc(it.value) : '<span class="empty">(ยังไม่ได้ตอบ)</span>')+'</div>';
+        html += '</div>';
+      });
+    }
+
+    const IMG_LABELS = {
+      'q_img_dashboard': 'ภาพหน้าจอ — Dashboard หน้า 6 ทั้งหน้า (ข้อ 1.5)',
+      'q_img_gemini': 'ภาพหน้าจอ — แชต Gemini (ข้อ 2.3)'
+    };
+    html += '<h2>ภาพหน้าจอประกอบ</h2>';
+    Object.keys(IMG_LABELS).forEach(id=>{
+      const imgs = imgStore['img:'+id] || [];
+      html += '<div class="pdf-item"><div class="pdf-label">'+esc(IMG_LABELS[id])+'</div>';
+      if(imgs.length){
+        html += '<div class="pdf-imgs">';
+        imgs.forEach(src=>{ html += '<img src="'+src+'">'; });
+        html += '</div>';
+      } else {
+        html += '<div class="pdf-answer"><span class="empty">(ยังไม่ได้แนบภาพ)</span></div>';
+      }
+      html += '</div>';
+    });
+
+    html += '</div>';
+
+    const area = document.getElementById('print-area');
+    area.innerHTML = html;
+    document.body.classList.add('printing');
+    setTimeout(()=>{
+      window.print();
+      setTimeout(()=>{ document.body.classList.remove('printing'); },500);
+    },300);
+  }
+  window.downloadPDF = downloadPDF;
+</script>
+
+<!-- ===================== IMAGE ATTACH ===================== -->
+<script>
+(function(){
+  const SAVE_KEY = 'aied_w8_data';
+  const IMG_TARGETS = ['q_img_dashboard', 'q_img_gemini'];
+
+  function store(){ try{ return JSON.parse(localStorage.getItem(SAVE_KEY)||'{}'); }catch(e){ return {}; } }
+  function persist(d){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(d)); }catch(e){} }
+
+  function renderTray(id){
+    const tray = document.getElementById(id+'_tray'); if(!tray) return;
+    const d = store();
+    const imgs = d['img:'+id] || [];
+    tray.innerHTML='';
+    const inp = document.getElementById(id);
+    if(inp) inp.value = imgs.length ? imgs.length+' ภาพ' : '';
+
+    imgs.forEach((src, i)=>{
+      const th = document.createElement('div'); th.className='img-thumb';
+      const im = document.createElement('img'); im.src=src;
+      const rm = document.createElement('button'); rm.className='rm'; rm.type='button'; rm.textContent='×';
+      rm.addEventListener('click', ()=>{
+        const dd=store(); dd['img:'+id].splice(i,1); persist(dd); renderTray(id);
+        if(window.refreshFeedback) window.refreshFeedback();
+      });
+      th.appendChild(im); th.appendChild(rm); tray.appendChild(th);
+    });
+  }
+
+  function addImg(id, dataURL){
+    const d=store();
+    if(!d['img:'+id]) d['img:'+id]=[];
+    d['img:'+id].push(dataURL);
+    persist(d);
+    renderTray(id);
+    if(window.refreshFeedback) window.refreshFeedback();
+  }
+
+  function shrink(dataURL, cb){
+    const img = new Image();
+    img.onload = ()=>{
+      const canvas = document.createElement('canvas');
+      let w=img.width, h=img.height;
+      const maxDim = 1200;
+      if(w>maxDim){ h=h*(maxDim/w); w=maxDim; }
+      if(h>maxDim){ w=w*(maxDim/h); h=maxDim; }
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      cb(canvas.toDataURL('image/jpeg',0.7));
+    };
+    img.src = dataURL;
+  }
+
+  function attach(id){
+    const inp = document.getElementById(id); if(!inp) return;
+    const btn = document.createElement('button'); btn.className='img-btn'; btn.type='button';
+    btn.textContent='📎 แนบภาพหน้าจอ';
+    const hint = document.createElement('span'); hint.className='img-hint';
+    hint.textContent='วาง (Ctrl+V) หรือเลือกไฟล์';
+    const file = document.createElement('input'); file.type='file'; file.accept='image/*'; file.style.display='none';
+    btn.addEventListener('click', ()=>file.click());
+    file.addEventListener('change', ()=>{
+      if(file.files && file.files[0]){
+        const reader = new FileReader();
+        reader.onload = e=> shrink(e.target.result, d=>addImg(id, d));
+        reader.readAsDataURL(file.files[0]);
+      }
+      file.value='';
+    });
+    inp.insertAdjacentElement('afterend', file);
+    inp.insertAdjacentElement('afterend', hint);
+    inp.insertAdjacentElement('afterend', btn);
+  }
+
+  document.addEventListener('paste', e=>{
+    const items = (e.clipboardData||{}).items;
+    if(!items) return;
+    for(const item of items){
+      if(item.type.indexOf('image')===0){
+        e.preventDefault();
+        const blob = item.getAsFile();
+        const reader = new FileReader();
+        reader.onload = ev=>{
+          const active = window.Reveal ? Reveal.getCurrentSlide() : document;
+          const found = IMG_TARGETS.filter(id=> active.querySelector('#'+id+'_tray'));
+          const tid = found[0] || IMG_TARGETS[0];
+          shrink(ev.target.result, d=>addImg(tid, d));
+        };
+        reader.readAsDataURL(blob);
+        break;
+      }
+    }
+  });
+
+  function init(){ IMG_TARGETS.forEach(id=>{ attach(id); renderTray(id); }); }
+  if(document.readyState!=='loading') init();
+  else document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+
+<!-- ===================== LIVE FEEDBACK & SUBMISSION CHECK ===================== -->
+<script>
+(function(){
+  function txt(id){ const e=document.getElementById(id); return e ? (e.value||'').trim() : ''; }
+  function imgCount(id){ try{ const d=JSON.parse(localStorage.getItem('aied_w8_data')||'{}'); return (d['img:'+id]||[]).length; }catch(e){ return 0; } }
+
+  const ACTS=[
+    {name:'ข้อมูลคู่', slots:[['t','ws-name1'],['t','ws-name2'],['t','ws-class'],['t','ws-no']]},
+    {name:'กิจกรรมที่ 1 — สร้าง Dashboard', slots:[['t','q1_kpi'],['t','q1_dax'],['t','q1_chart'],['t','q1_interaction'],['i','q_img_dashboard']]},
+    {name:'กิจกรรมที่ 2 — ใช้ Gemini', slots:[['t','q2_dax'],['t','q2_draft'],['i','q_img_gemini']]},
+    {name:'กิจกรรมที่ 3 — Insight ของเราเอง', slots:[['t','q3_insight'],['t','q3_ai_check'],['t','q3_limit']]},
+    {name:'ปิดเทอม', slots:[['t','q4_reflect']]}
+  ];
+
+  function slotFilled(type,id){
+    if(type==='i') return imgCount(id)>=1;
+    return txt(id).length>=2;
+  }
+  function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function renderPanel(){
+    const rows=document.getElementById('check-rows'); if(!rows) return;
+    let done=0, total=0, html='';
+    ACTS.forEach(a=>{
+      let f=0; a.slots.forEach(sl=>{ total++; if(slotFilled(sl[0],sl[1])){ f++; done++; } });
+      const all=f===a.slots.length;
+      const ic = all ? '✅' : (f>0 ? '◑' : '○');
+      html += '<div class="check-row'+(all?' done':'')+'"><span class="ic">'+ic+'</span><span class="body"><span class="ttl">'+esc(a.name)+'</span> <span class="sub">('+f+'/'+a.slots.length+')</span></span></div>';
+    });
+    rows.innerHTML=html;
+    const bar=document.getElementById('prog-bar'), cnt=document.getElementById('prog-count'), msg=document.getElementById('check-msg');
+    const pct = total ? Math.round(done/total*100) : 0;
+    if(bar) bar.style.width = pct+'%';
+    if(cnt) cnt.textContent = done+' / '+total+' ช่อง ('+pct+'%)';
+    if(msg){
+      const n1 = txt('ws-name1'), n2 = txt('ws-name2');
+      if(done===total && n1 && n2) msg.textContent='เยี่ยมมาก! ใบงานครบทุกช่องแล้ว กดบันทึกเป็น PDF ส่งครูได้เลย 🎉';
+      else if(done===total) msg.textContent='ตอบครบแล้ว เหลือกรอกชื่อทั้งสองคนในสไลด์ที่ 2 ก่อนบันทึก';
+      else if(pct>=60) msg.textContent='เกือบครบแล้ว! เหลืออีก '+(total-done)+' ช่อง สู้ ๆ';
+      else if(done>0) msg.textContent='ทำไปแล้ว '+done+' จาก '+total+' ช่อง — ทำต่อให้ครบนะ';
+      else msg.textContent='กรอกใบงานให้ครบ ระบบจะตรวจและแจ้งเตือนอัตโนมัติ';
+    }
+  }
+
+  window.refreshFeedback = renderPanel;
+  document.addEventListener('input', e=>{ if(e.target.classList && e.target.classList.contains('save')) renderPanel(); });
+  document.addEventListener('change', e=>{ if(e.target.classList && e.target.classList.contains('save')) renderPanel(); });
+  if(window.Reveal) Reveal.on('slidechanged', renderPanel);
+  if(document.readyState!=='loading') renderPanel();
+  else document.addEventListener('DOMContentLoaded', renderPanel);
+})();
+</script>
+
+</body>
+</html>

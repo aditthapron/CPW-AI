@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 430" width="100%">
+  <!-- Left Panel: Filter -->
+  <g transform="translate(30, 20)">
+    <!-- Panel Container -->
+    <rect x="0" y="0" width="310" height="300" rx="12" fill="#eef3fb" stroke="#1a73e8" stroke-width="2"/>
+    
+    <!-- (a) Heading Chip -->
+    <rect x="105" y="20" width="100" height="32" rx="12" fill="#1a73e8"/>
+    <text x="155" y="42" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="19" font-weight="bold" fill="#ffffff" text-anchor="middle">Filter</text>
+    
+    <!-- (b) Mini Card -->
+    <rect x="55" y="70" width="200" height="60" rx="12" fill="#ffffff" stroke="#dfe4ec" stroke-width="2"/>
+    <text x="155" y="93" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="14" fill="#5b6678" text-anchor="middle">ผู้ป่วย</text>
+    <text x="155" y="118" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="22" font-weight="bold" fill="#1a2235" text-anchor="middle">222</text>
+    
+    <!-- (c) Mini Bar Chart (Only 2 bars shown) -->
+    <rect x="55" y="145" width="200" height="95" rx="12" fill="#ffffff" stroke="#dfe4ec" stroke-width="2"/>
+    <!-- Bars 1 & 2 empty -->
+    <rect x="159" y="175" width="20" height="50" rx="3" fill="#1a73e8"/>
+    <rect x="193" y="160" width="20" height="65" rx="3" fill="#1a73e8"/>
+    <!-- Bar 5 empty -->
+
+    <!-- Thai Description -->
+    <text x="155" y="270" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="14" fill="#5b6678" text-anchor="middle">ตัดข้อมูลอื่นทิ้งทั้งหมด</text>
+  </g>
+
+  <!-- Middle Panel: Highlight -->
+  <g transform="translate(385, 20)">
+    <!-- Panel Container -->
+    <rect x="0" y="0" width="310" height="300" rx="12" fill="#eef3fb" stroke="#0aa3a3" stroke-width="2"/>
+    
+    <!-- (a) Heading Chip -->
+    <rect x="95" y="20" width="120" height="32" rx="12" fill="#0aa3a3"/>
+    <text x="155" y="42" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="19" font-weight="bold" fill="#ffffff" text-anchor="middle">Highlight</text>
+    
+    <!-- (b) Mini Card -->
+    <rect x="55" y="70" width="200" height="60" rx="12" fill="#ffffff" stroke="#dfe4ec" stroke-width="2"/>
+    <text x="155" y="93" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="14" fill="#5b6678" text-anchor="middle">ผู้ป่วย</text>
+    <text x="155" y="118" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="22" font-weight="bold" fill="#1a2235" text-anchor="middle">222</text>
+    
+    <!-- (c) Mini Bar Chart (5 bars: 2 solid teal, 3 light grey) -->
+    <rect x="55" y="145" width="200" height="95" rx="12" fill="#ffffff" stroke="#dfe4ec" stroke-width="2"/>
+    <rect x="91" y="185" width="20" height="40" rx="3" fill="#dfe4ec"/>
+    <rect x="125" y="170" width="20" height="55" rx="3" fill="#dfe4ec"/>
+    <rect x="159" y="175" width="20" height="50" rx="3" fill="#0aa3a3"/>
+    <rect x="193" y="160" width="20" height="65" rx="3" fill="#0aa3a3"/>
+    <rect x="227" y="195" width="20" height="30" rx="3" fill="#dfe4ec"/>
+
+    <!-- Thai Description -->
+    <text x="155" y="270" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="14" fill="#5b6678" text-anchor="middle">ยังเห็นของเดิมจาง ๆ</text>
+  </g>
+
+  <!-- Right Panel: None -->
+  <g transform="translate(740, 20)">
+    <!-- Panel Container -->
+    <rect x="0" y="0" width="310" height="300" rx="12" fill="#eef3fb" stroke="#7b41d8" stroke-width="2"/>
+    
+    <!-- (a) Heading Chip -->
+    <rect x="105" y="20" width="100" height="32" rx="12" fill="#7b41d8"/>
+    <text x="155" y="42" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="19" font-weight="bold" fill="#ffffff" text-anchor="middle">None</text>
+    
+    <!-- (b) Mini Card -->
+    <rect x="55" y="70" width="200" height="60" rx="12" fill="#ffffff" stroke="#dfe4ec" stroke-width="2"/>
+    <text x="155" y="93" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="14" fill="#5b6678" text-anchor="middle">ผู้ป่วย</text>
+    <text x="155" y="118" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="22" font-weight="bold" fill="#1a2235" text-anchor="middle">843</text>
+    
+    <!-- (c) Mini Bar Chart (5 solid purple bars, unchanged) -->
+    <rect x="55" y="145" width="200" height="95" rx="12" fill="#ffffff" stroke="#dfe4ec" stroke-width="2"/>
+    <rect x="91" y="185" width="20" height="40" rx="3" fill="#7b41d8"/>
+    <rect x="125" y="170" width="20" height="55" rx="3" fill="#7b41d8"/>
+    <rect x="159" y="175" width="20" height="50" rx="3" fill="#7b41d8"/>
+    <rect x="193" y="160" width="20" height="65" rx="3" fill="#7b41d8"/>
+    <rect x="227" y="195" width="20" height="30" rx="3" fill="#7b41d8"/>
+
+    <!-- Thai Description -->
+    <text x="155" y="270" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="14" fill="#5b6678" text-anchor="middle">ไม่สนใจการคลิกเลย</text>
+  </g>
+
+  <!-- BOTTOM: Warn Box -->
+  <g transform="translate(30, 335)">
+    <rect x="0" y="0" width="1020" height="75" rx="12" fill="#fff6ed" stroke="#c2410c" stroke-width="2"/>
+    <text x="510" y="32" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="17" font-weight="bold" fill="#c2410c" text-anchor="middle">ตั้ง Card ยอดรวมเป็น None แล้วคนอ่านจะเห็นฐานเทียบเสมอ</text>
+    <text x="510" y="56" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="15" fill="#1a2235" text-anchor="middle">ถ้าตั้ง Filter หมด คนอ่านจะนึกว่ากลุ่มย่อยคือทั้งหมด</text>
+  </g>
+</svg>

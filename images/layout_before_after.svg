@@ -1,0 +1,108 @@
+<svg viewBox="0 0 1080 620" width="100%" xmlns="http://www.w3.org/2000/svg">
+  <!-- Title / Top Info Header if needed, but requirements focus on side-by-side wireframes -->
+
+  <!-- LEFT COLUMN: BEFORE (ก่อนจัด) -->
+  <g transform="translate(40, 20)">
+    <!-- Main Outer Container: Before -->
+    <rect x="0" y="35" width="480" height="470" rx="12" fill="#ffffff" stroke="#c2410c" stroke-width="2" />
+    
+    <!-- Small Heading Above -->
+    <text x="0" y="24" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="19" font-weight="bold" fill="#c2410c">ก่อนจัด (Unorganized)</text>
+    
+    <!-- Scattered/Misaligned Wireframe Cards -->
+    <!-- Card 1: Misaligned Top-Left KPI -->
+    <rect x="25" y="60" width="130" height="95" rx="8" fill="#eef3fb" stroke="#dfe4ec" stroke-width="1.5" />
+    <rect x="40" y="80" width="70" height="12" rx="4" fill="#5b6678" opacity="0.4" />
+    <text x="40" y="125" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="11" fill="#5b6678">Count of data.region</text>
+
+    <!-- Card 2: Misaligned Top-Right Chart (slanted height/y) -->
+    <rect x="175" y="50" width="280" height="170" rx="8" fill="#eef3fb" stroke="#dfe4ec" stroke-width="1.5" />
+    <text x="190" y="75" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="11" fill="#5b6678">Sum of age</text>
+    <!-- Mock Chart Content -->
+    <rect x="190" y="100" width="35" height="90" rx="3" fill="#5b6678" opacity="0.3" />
+    <rect x="235" y="120" width="35" height="70" rx="3" fill="#5b6678" opacity="0.3" />
+    <rect x="280" y="85" width="35" height="105" rx="3" fill="#5b6678" opacity="0.3" />
+    <rect x="325" y="140" width="35" height="50" rx="3" fill="#5b6678" opacity="0.3" />
+
+    <!-- Card 3: Misaligned Bottom-Left Wide Chart -->
+    <rect x="20" y="175" width="230" height="210" rx="8" fill="#eef3fb" stroke="#dfe4ec" stroke-width="1.5" />
+    <rect x="35" y="195" width="120" height="10" rx="4" fill="#5b6678" opacity="0.4" />
+    <!-- Mock Line / Donut -->
+    <circle cx="135" cy="290" r="45" fill="none" stroke="#5b6678" stroke-width="16" opacity="0.3" />
+
+    <!-- Card 4: Misaligned Bottom-Right Small Box -->
+    <rect x="265" y="240" width="190" height="235" rx="8" fill="#eef3fb" stroke="#dfe4ec" stroke-width="1.5" />
+    <rect x="280" y="260" width="90" height="10" rx="4" fill="#5b6678" opacity="0.4" />
+    <!-- Mock Bars Horizontal -->
+    <rect x="280" y="290" width="140" height="18" rx="3" fill="#5b6678" opacity="0.3" />
+    <rect x="280" y="320" width="90" height="18" rx="3" fill="#5b6678" opacity="0.3" />
+    <rect x="280" y="350" width="110" height="18" rx="3" fill="#5b6678" opacity="0.3" />
+    <rect x="280" y="380" width="60" height="18" rx="3" fill="#5b6678" opacity="0.3" />
+
+    <!-- Warning Thai Note Below -->
+    <text x="240" y="532" text-anchor="middle" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="14" font-weight="bold" fill="#c2410c">ไม่มีหัวเรื่อง ชื่อกราฟเป็นภาษาเครื่อง</text>
+  </g>
+
+  <!-- RIGHT COLUMN: AFTER (หลังจัด) -->
+  <g transform="translate(560, 20)">
+    <!-- Main Outer Container: After -->
+    <rect x="0" y="35" width="480" height="470" rx="12" fill="#ffffff" stroke="#0f8a4f" stroke-width="2" />
+    
+    <!-- Small Heading Above -->
+    <text x="0" y="24" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="19" font-weight="bold" fill="#0f8a4f">หลังจัด (Organized)</text>
+    
+    <!-- Full-width Title Bar at top of dashboard -->
+    <rect x="15" y="50" width="450" height="45" rx="8" fill="#1a73e8" />
+    <text x="30" y="78" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="14" font-weight="bold" fill="#ffffff">ภาคใดควรได้ทีมก่อน?</text>
+
+    <!-- Row of 3 Equal Small KPI Boxes (Aligned) -->
+    <g transform="translate(15, 110)">
+      <!-- KPI 1 -->
+      <rect x="0" y="0" width="140" height="75" rx="8" fill="#eef3fb" stroke="#dfe4ec" stroke-width="1.5" />
+      <rect x="12" y="15" width="60" height="8" rx="3" fill="#5b6678" opacity="0.5" />
+      <rect x="12" y="32" width="80" height="20" rx="4" fill="#1a73e8" opacity="0.8" />
+
+      <!-- KPI 2 -->
+      <rect x="155" y="0" width="140" height="75" rx="8" fill="#eef3fb" stroke="#dfe4ec" stroke-width="1.5" />
+      <rect x="167" y="15" width="60" height="8" rx="3" fill="#5b6678" opacity="0.5" />
+      <rect x="167" y="32" width="80" height="20" rx="4" fill="#7b41d8" opacity="0.8" />
+
+      <!-- KPI 3 -->
+      <rect x="310" y="0" width="140" height="75" rx="8" fill="#eef3fb" stroke="#dfe4ec" stroke-width="1.5" />
+      <rect x="322" y="15" width="60" height="8" rx="3" fill="#5b6678" opacity="0.5" />
+      <rect x="322" y="32" width="80" height="20" rx="4" fill="#0aa3a3" opacity="0.8" />
+    </g>
+
+    <!-- 2 Equal-Width Chart Boxes Side-by-Side (Aligned) -->
+    <g transform="translate(15, 200)">
+      <!-- Left Chart Box -->
+      <rect x="0" y="0" width="218" height="280" rx="8" fill="#eef3fb" stroke="#dfe4ec" stroke-width="1.5" />
+      <text x="15" y="28" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="11" font-weight="bold" fill="#1a2235">ผู้ป่วยรายภาค</text>
+      <!-- Clean Bar Chart -->
+      <rect x="25" y="60" width="28" height="180" rx="4" fill="#1a73e8" opacity="0.85" />
+      <rect x="68" y="110" width="28" height="130" rx="4" fill="#1a73e8" opacity="0.85" />
+      <rect x="111" y="90" width="28" height="150" rx="4" fill="#1a73e8" opacity="0.85" />
+      <rect x="154" y="150" width="28" height="90" rx="4" fill="#1a73e8" opacity="0.85" />
+      <line x1="15" y1="245" x2="203" y2="245" stroke="#5b6678" stroke-width="1" opacity="0.4" />
+
+      <!-- Right Chart Box -->
+      <rect x="232" y="0" width="218" height="280" rx="8" fill="#eef3fb" stroke="#dfe4ec" stroke-width="1.5" />
+      <text x="247" y="28" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="11" font-weight="bold" fill="#1a2235">อายุเฉลี่ยรายภาค</text>
+      <!-- Clean Horizontal Bar Chart -->
+      <rect x="247" y="65" width="150" height="24" rx="4" fill="#0aa3a3" opacity="0.85" />
+      <rect x="247" y="105" width="110" height="24" rx="4" fill="#0aa3a3" opacity="0.85" />
+      <rect x="247" y="145" width="130" height="24" rx="4" fill="#0aa3a3" opacity="0.85" />
+      <rect x="247" y="185" width="80" height="24" rx="4" fill="#0aa3a3" opacity="0.85" />
+      <line x1="247" y1="50" x2="247" y2="230" stroke="#5b6678" stroke-width="1" opacity="0.4" />
+    </g>
+
+    <!-- Good Thai Note Below -->
+    <text x="240" y="532" text-anchor="middle" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="14" font-weight="bold" fill="#0f8a4f">หัวเรื่องบอกคำถาม ชื่อกราฟเป็นภาษาคน</text>
+  </g>
+
+  <!-- BOTTOM: Full-width Soft Bar -->
+  <g transform="translate(40, 560)">
+    <rect x="0" y="0" width="1000" height="45" rx="12" fill="#eef3fb" stroke="#dfe4ec" stroke-width="1.5" />
+    <text x="500" y="28" text-anchor="middle" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="17" font-weight="bold" fill="#1a2235">จัดหน้าเป็นขั้นตอนสุดท้าย - ทำ Card กับกราฟให้ครบก่อน</text>
+  </g>
+</svg>

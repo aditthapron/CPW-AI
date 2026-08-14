@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 440" width="100%">
+  <!-- Main Title -->
+  <text x="540" y="42" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="24" font-weight="bold" fill="#1a2235" text-anchor="middle">Card ที่อ่านง่าย กับ Card ที่อ่านยาก</text>
+
+  <!-- LEFT COLUMN: อ่านยาก -->
+  <!-- Heading Above Card -->
+  <text x="60" y="95" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="19" font-weight="bold" fill="#c2410c">✕ อ่านยาก</text>
+  
+  <!-- Bad Card Visual -->
+  <rect x="60" y="115" width="450" height="150" fill="#ffffff" stroke="#c2410c" stroke-width="2" rx="12" />
+  <text x="285" y="202" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="34" font-weight="bold" fill="#1a2235" text-anchor="middle">843.0000</text>
+
+  <!-- Warn Notes below Card -->
+  <g fill="#c2410c" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="14">
+    <circle cx="75" cy="293" r="8" fill="#c2410c" />
+    <text x="75" y="297" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">✕</text>
+    <text x="92" y="298">ทศนิยมเกินจำเป็น</text>
+
+    <circle cx="75" cy="323" r="8" fill="#c2410c" />
+    <text x="75" y="327" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">✕</text>
+    <text x="92" y="328">ไม่บอกว่าตัวเลขนี้คืออะไร</text>
+  </g>
+
+  <!-- RIGHT COLUMN: อ่านง่าย -->
+  <!-- Heading Above Card -->
+  <text x="570" y="95" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="19" font-weight="bold" fill="#0f8a4f">✓ อ่านง่าย</text>
+  
+  <!-- Good Card Visual -->
+  <rect x="570" y="115" width="450" height="150" fill="#ffffff" stroke="#0f8a4f" stroke-width="2" rx="12" />
+  <text x="795" y="188" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="40" font-weight="bold" fill="#7b41d8" text-anchor="middle">843</text>
+  <text x="795" y="225" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" fill="#5b6678" text-anchor="middle">ผู้ป่วยทั้งหมด</text>
+
+  <!-- Good Notes below Card -->
+  <g fill="#0f8a4f" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="14">
+    <circle cx="585" cy="293" r="8" fill="#0f8a4f" />
+    <text x="585" y="297" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">✓</text>
+    <text x="602" y="298">ตัวเลขเดียวที่จำได้</text>
+
+    <circle cx="585" cy="323" r="8" fill="#0f8a4f" />
+    <text x="585" y="327" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">✓</text>
+    <text x="602" y="328">มีคำอธิบายสั้น ๆ</text>
+  </g>
+
+  <!-- BOTTOM BAR -->
+  <rect x="60" y="365" width="960" height="50" fill="#eef3fb" stroke="#dfe4ec" stroke-width="2" rx="12" />
+  <text x="540" y="396" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="17" font-weight="bold" fill="#1a2235" text-anchor="middle">3 ใบกำลังดี - เกิน 5 ใบ คนอ่านจะจำไม่ได้สักตัว</text>
+</svg>

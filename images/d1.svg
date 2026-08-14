@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 540" width="100%">
+  <!-- Left Panel: Calculated Column (Teal) -->
+  <rect x="20" y="20" width="510" height="420" rx="12" fill="#ffffff" stroke="#0aa3a3" stroke-width="2"/>
+  
+  <text x="40" y="60" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="26" font-weight="bold" fill="#0aa3a3">Calculated Column</text>
+  
+  <!-- Table Container -->
+  <!-- Header Background -->
+  <path d="M 40 90 L 510 90 A 0 0 0 0 1 510 90 L 510 125 A 0 0 0 0 1 510 125 L 40 125 A 0 0 0 0 1 40 125 Z" fill="#eef3fb"/>
+  
+  <!-- Highlight Third Column (NEW Stored Column) -->
+  <rect x="350" y="90" width="160" height="140" fill="#0aa3a3" fill-opacity="0.12"/>
+  
+  <!-- Table Outer Border & Grid Lines -->
+  <rect x="40" y="90" width="470" height="140" rx="6" fill="none" stroke="#dfe4ec" stroke-width="2"/>
+  <line x1="40" y1="125" x2="510" y2="125" stroke="#dfe4ec" stroke-width="1.5"/>
+  <line x1="40" y1="160" x2="510" y2="160" stroke="#dfe4ec" stroke-width="1.5"/>
+  <line x1="40" y1="195" x2="510" y2="195" stroke="#dfe4ec" stroke-width="1.5"/>
+  
+  <line x1="190" y1="90" x2="190" y2="230" stroke="#dfe4ec" stroke-width="1.5"/>
+  <line x1="350" y1="90" x2="350" y2="230" stroke="#0aa3a3" stroke-width="2"/>
+
+  <!-- Table Headers -->
+  <text x="115" y="113" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" font-weight="bold" fill="#1a2235" text-anchor="middle">ภาค</text>
+  <text x="270" y="113" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" font-weight="bold" fill="#1a2235" text-anchor="middle">อายุ</text>
+  <text x="430" y="113" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" font-weight="bold" fill="#0aa3a3" text-anchor="middle">กลุ่มอายุ</text>
+
+  <!-- Table Row 1 -->
+  <text x="115" y="148" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" fill="#1a2235" text-anchor="middle">อีสาน</text>
+  <text x="270" y="148" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" fill="#1a2235" text-anchor="middle">22</text>
+  <text x="430" y="148" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" font-weight="bold" fill="#1a2235" text-anchor="middle">วัยทำงาน</text>
+
+  <!-- Table Row 2 -->
+  <text x="115" y="183" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" fill="#1a2235" text-anchor="middle">ใต้</text>
+  <text x="270" y="183" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" fill="#1a2235" text-anchor="middle">67</text>
+  <text x="430" y="183" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" font-weight="bold" fill="#1a2235" text-anchor="middle">สูงอายุ</text>
+
+  <!-- Table Row 3 -->
+  <text x="115" y="218" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" fill="#1a2235" text-anchor="middle">กทม.</text>
+  <text x="270" y="218" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" fill="#1a2235" text-anchor="middle">31</text>
+  <text x="430" y="218" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" font-weight="bold" fill="#1a2235" text-anchor="middle">วัยทำงาน</text>
+
+  <!-- Bullet points -->
+  <circle cx="50" cy="275" r="4" fill="#0aa3a3"/>
+  <text x="65" y="280" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" fill="#5b6678">คำนวณทีละแถว ตอนโหลดข้อมูล</text>
+
+  <circle cx="50" cy="320" r="4" fill="#0aa3a3"/>
+  <text x="65" y="325" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" fill="#5b6678">เก็บลงไฟล์จริง — ไฟล์ใหญ่ขึ้น</text>
+
+  <circle cx="50" cy="365" r="4" fill="#0aa3a3"/>
+  <text x="65" y="370" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" fill="#5b6678">ค่าไม่เปลี่ยนตาม Slicer</text>
+
+
+  <!-- Right Panel: Measure (Purple) -->
+  <rect x="550" y="20" width="510" height="420" rx="12" fill="#ffffff" stroke="#7b41d8" stroke-width="2"/>
+  
+  <text x="570" y="60" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="26" font-weight="bold" fill="#7b41d8">Measure</text>
+
+  <!-- Formula Dark Box -->
+  <rect x="570" y="90" width="470" height="60" rx="8" fill="#0f1b2e"/>
+  <text x="590" y="126" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" fill="#e8eefc">จำนวนผู้ป่วย = COUNTROWS('Sheet1')</text>
+
+  <!-- Result Chips -->
+  <!-- Chip 1 -->
+  <rect x="570" y="165" width="146" height="75" rx="8" fill="#eef3fb" stroke="#dfe4ec" stroke-width="1.5"/>
+  <text x="643" y="192" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="14" fill="#5b6678" text-anchor="middle">ไม่กรอง</text>
+  <text x="643" y="224" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="22" font-weight="bold" fill="#7b41d8" text-anchor="middle">843</text>
+
+  <!-- Chip 2 -->
+  <rect x="732" y="165" width="146" height="75" rx="8" fill="#eef3fb" stroke="#dfe4ec" stroke-width="1.5"/>
+  <text x="805" y="192" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="14" fill="#5b6678" text-anchor="middle">กรองอีสาน</text>
+  <text x="805" y="224" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="22" font-weight="bold" fill="#7b41d8" text-anchor="middle">222</text>
+
+  <!-- Chip 3 -->
+  <rect x="894" y="165" width="146" height="75" rx="8" fill="#eef3fb" stroke="#dfe4ec" stroke-width="1.5"/>
+  <text x="967" y="192" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="14" fill="#5b6678" text-anchor="middle">+ เพศหญิง</text>
+  <text x="967" y="224" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="22" font-weight="bold" fill="#7b41d8" text-anchor="middle">123</text>
+
+  <!-- Bullet points -->
+  <circle cx="580" cy="275" r="4" fill="#7b41d8"/>
+  <text x="595" y="280" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" fill="#5b6678">คำนวณตอนแสดงผล ไม่เก็บลงไฟล์</text>
+
+  <circle cx="580" cy="320" r="4" fill="#7b41d8"/>
+  <text x="595" y="325" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" fill="#5b6678">สูตรเดียว ให้ค่าต่างกันตามที่กรอง</text>
+
+  <circle cx="580" cy="365" r="4" fill="#7b41d8"/>
+  <text x="595" y="370" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" fill="#5b6678">เปลี่ยนทันทีเมื่อกด Slicer</text>
+
+
+  <!-- Bottom Summary Bar -->
+  <rect x="20" y="460" width="1040" height="60" rx="12" fill="#eef3fb"/>
+  <text x="540" y="496" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="18" font-weight="bold" fill="#1a2235" text-anchor="middle">วันนี้เราใช้ Measure ทั้งหมด — เพราะ Card ต้องเปลี่ยนตาม Slicer</text>
+</svg>

@@ -1,0 +1,133 @@
+<svg viewBox="0 0 1080 462" width="100%" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Card drop shadow for depth -->
+    <filter id="card-shadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#1a2235" flood-opacity="0.06"/>
+    </filter>
+  </defs>
+
+  <!-- Title / Header section -->
+  <text x="40" y="52" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="26" font-weight="bold" fill="#1a2235">Workshop วันนี้ — 3 กิจกรรม</text>
+  <line x1="40" y1="72" x2="1040" y2="72" stroke="#dfe4ec" stroke-width="2"/>
+
+  <!-- ================= STAGE 1 (BLUE) ================= -->
+  <g transform="translate(40, 95)">
+    <!-- Main Card Box -->
+    <rect x="0" y="0" width="300" height="270" rx="12" fill="#ffffff" stroke="#1a73e8" stroke-width="2" filter="url(#card-shadow)"/>
+    <!-- Top Accent Bar -->
+    <path d="M 0,12 A 12,12 0 0,1 12,0 L 288,0 A 12,12 0 0,1 300,12 L 300,8 L 0,8 Z" fill="#1a73e8"/>
+    
+    <!-- Header Row: Badge, Heading, Time Chip -->
+    <circle cx="32" cy="42" r="16" fill="#1a73e8"/>
+    <text x="32" y="48" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" font-weight="bold" fill="#ffffff" text-anchor="middle">1</text>
+    
+    <text x="58" y="49" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="20" font-weight="bold" fill="#1a2235">สร้าง Dashboard</text>
+
+    <rect x="204" y="27" width="80" height="28" rx="14" fill="#eef3fb"/>
+    <text x="244" y="46" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="14" font-weight="bold" fill="#1a73e8" text-anchor="middle">48 นาที</text>
+
+    <!-- Divider -->
+    <line x1="20" y1="78" x2="280" y2="78" stroke="#dfe4ec" stroke-width="1.5"/>
+
+    <!-- Bullets -->
+    <g transform="translate(24, 115)">
+      <!-- Bullet 1 -->
+      <circle cx="6" cy="-5" r="4" fill="#1a73e8"/>
+      <text x="20" y="0" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="15" fill="#1a2235">Card 3 ใบ + Measure</text>
+
+      <!-- Bullet 2 -->
+      <circle cx="6" cy="35" r="4" fill="#1a73e8"/>
+      <text x="20" y="40" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="15" fill="#1a2235">กราฟ 2 ตัว</text>
+
+      <!-- Bullet 3 -->
+      <circle cx="6" cy="75" r="4" fill="#1a73e8"/>
+      <text x="20" y="80" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="15" fill="#1a2235">Slicer 1 ตัว</text>
+
+      <!-- Bullet 4 -->
+      <circle cx="6" cy="115" r="4" fill="#1a73e8"/>
+      <text x="20" y="120" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="15" fill="#1a2235">Edit interactions</text>
+    </g>
+  </g>
+
+  <!-- ARROW 1 -> 2 -->
+  <polygon points="354,220 354,240 370,230" fill="#dfe4ec"/>
+
+  <!-- ================= STAGE 2 (TEAL) ================= -->
+  <g transform="translate(390, 95)">
+    <!-- Main Card Box -->
+    <rect x="0" y="0" width="300" height="270" rx="12" fill="#ffffff" stroke="#0aa3a3" stroke-width="2" filter="url(#card-shadow)"/>
+    <!-- Top Accent Bar -->
+    <path d="M 0,12 A 12,12 0 0,1 12,0 L 288,0 A 12,12 0 0,1 300,12 L 300,8 L 0,8 Z" fill="#0aa3a3"/>
+    
+    <!-- Header Row: Badge, Heading, Time Chip -->
+    <circle cx="32" cy="42" r="16" fill="#0aa3a3"/>
+    <text x="32" y="48" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" font-weight="bold" fill="#ffffff" text-anchor="middle">2</text>
+    
+    <text x="58" y="49" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="20" font-weight="bold" fill="#1a2235">ให้ Gemini ร่าง</text>
+
+    <rect x="204" y="27" width="80" height="28" rx="14" fill="#eef3fb"/>
+    <text x="244" y="46" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="14" font-weight="bold" fill="#0aa3a3" text-anchor="middle">20 นาที</text>
+
+    <!-- Divider -->
+    <line x1="20" y1="78" x2="280" y2="78" stroke="#dfe4ec" stroke-width="1.5"/>
+
+    <!-- Bullets -->
+    <g transform="translate(24, 115)">
+      <!-- Bullet 1 -->
+      <circle cx="6" cy="-5" r="4" fill="#0aa3a3"/>
+      <text x="20" y="0" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="15" fill="#1a2235">ขอสูตร DAX</text>
+
+      <!-- Bullet 2 -->
+      <circle cx="6" cy="35" r="4" fill="#0aa3a3"/>
+      <text x="20" y="40" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="15" fill="#1a2235">ให้ร่างข้อความสรุป</text>
+
+      <!-- Bullet 3 -->
+      <circle cx="6" cy="75" r="4" fill="#0aa3a3"/>
+      <text x="20" y="80" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="15" fill="#1a2235">วางไว้ดิบ ๆ ห้ามแก้</text>
+    </g>
+  </g>
+
+  <!-- ARROW 2 -> 3 -->
+  <polygon points="704,220 704,240 720,230" fill="#dfe4ec"/>
+
+  <!-- ================= STAGE 3 (PURPLE) ================= -->
+  <g transform="translate(740, 95)">
+    <!-- Main Card Box -->
+    <rect x="0" y="0" width="300" height="270" rx="12" fill="#ffffff" stroke="#7b41d8" stroke-width="2" filter="url(#card-shadow)"/>
+    <!-- Top Accent Bar -->
+    <path d="M 0,12 A 12,12 0 0,1 12,0 L 288,0 A 12,12 0 0,1 300,12 L 300,8 L 0,8 Z" fill="#7b41d8"/>
+    
+    <!-- Header Row: Badge, Heading, Time Chip -->
+    <circle cx="32" cy="42" r="16" fill="#7b41d8"/>
+    <text x="32" y="48" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="16" font-weight="bold" fill="#ffffff" text-anchor="middle">3</text>
+    
+    <text x="58" y="49" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="20" font-weight="bold" fill="#1a2235">เขียนเอง + จับผิด</text>
+
+    <rect x="204" y="27" width="80" height="28" rx="14" fill="#eef3fb"/>
+    <text x="244" y="46" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="14" font-weight="bold" fill="#7b41d8" text-anchor="middle">25 นาที</text>
+
+    <!-- Divider -->
+    <line x1="20" y1="78" x2="280" y2="78" stroke="#dfe4ec" stroke-width="1.5"/>
+
+    <!-- Bullets -->
+    <g transform="translate(24, 115)">
+      <!-- Bullet 1 -->
+      <circle cx="6" cy="-5" r="4" fill="#7b41d8"/>
+      <text x="20" y="0" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="15" fill="#1a2235">ปิด Gemini แล้วเขียนเอง</text>
+
+      <!-- Bullet 2 -->
+      <circle cx="6" cy="35" r="4" fill="#7b41d8"/>
+      <text x="20" y="40" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="15" fill="#1a2235">หาจุดที่ AI เติมเกิน</text>
+
+      <!-- Bullet 3 -->
+      <circle cx="6" cy="75" r="4" fill="#7b41d8"/>
+      <text x="20" y="80" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="15" fill="#1a2235">ระบุข้อจำกัดของข้อมูล</text>
+    </g>
+  </g>
+
+  <!-- ================= BOTTOM BAR ================= -->
+  <g transform="translate(40, 390)">
+    <rect x="0" y="0" width="1000" height="48" rx="12" fill="#eef3fb" stroke="#dfe4ec" stroke-width="1.5"/>
+    <text x="500" y="30" font-family="Sarabun, 'Noto Sans Thai', sans-serif" font-size="18" font-weight="bold" fill="#1a2235" text-anchor="middle">ทุกอย่างอยู่ในหน้า 6 หน้าเดียว — ตอบคำถามเดียวของคู่คุณ</text>
+  </g>
+</svg>

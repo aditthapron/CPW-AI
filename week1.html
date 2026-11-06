@@ -3,197 +3,244 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI for Ed — สัปดาห์ที่ 1: รู้จัก Generative AI · Gemini · Prompt</title>
+<title>AI for Ed 2 — สัปดาห์ที่ 1: รู้จัก Machine Learning และ Orange</title>
 
 <!-- reveal.js core -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css" integrity="sha384-YgvgKeZJykuztG+iQPoZHNZENTFZvOcOJ/uRzmJTje6GHYN9zAw+y5rx/L8MQKA/" crossorigin="anonymous">
 <!-- Thai fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
-:root{
-  --ink:#1a2235; --muted:#5b6678; --line:#dfe4ec;
-  --blue:#1a73e8; --purple:#7b41d8; --teal:#0aa3a3;
-  --bg1:#f7f9fc; --card:#ffffff; --soft:#eef3fb;
-  --warn:#c2410c; --good:#0f8a4f;
+:root {
+  --ink: #1a2235; --muted: #5b6678; --line: #dfe4ec;
+  --blue: #1a73e8; --purple: #7b41d8; --teal: #0aa3a3;
+  --bg1: #f7f9fc; --card: #ffffff; --soft: #eef3fb;
+  --warn: #c2410c; --good: #0f8a4f;
+  --accent-grad: linear-gradient(90deg, var(--blue), var(--purple));
 }
-.reveal{ font-family:'Sarabun','Noto Sans Thai',sans-serif; color:var(--ink); font-size:30px; }
-.reveal .slides{ text-align:left; }
-.reveal h1,.reveal h2,.reveal h3{ font-family:'Sarabun','Noto Sans Thai',sans-serif; color:var(--ink); font-weight:700; text-transform:none; letter-spacing:0; line-height:1.2; }
-.reveal h1{ font-size:1.9em; }
-.reveal h2{ font-size:1.35em; }
-.reveal h3{ font-size:1.15em; color:var(--blue); }
-.reveal p{ line-height:1.6; }
-.reveal ul{ display:block; }
-.reveal li{ margin:.5em 0; line-height:1.55; }
-.reveal strong{ color:var(--purple); }
-.reveal section{ height:100%; overflow-y:auto; }
+.reveal { font-family:'Sarabun','Noto Sans Thai','Outfit',sans-serif; color:var(--ink); font-size:28px; }
+.reveal .slides { text-align:left; }
+.reveal h1, .reveal h2, .reveal h3 { font-family:'Sarabun','Noto Sans Thai','Outfit',sans-serif; color:var(--ink); font-weight:700; text-transform:none; letter-spacing:0; line-height:1.35; }
+.reveal h1 { font-size:1.8em; margin-bottom: 0.5em; }
+.reveal h2 { font-size:1.35em; margin-bottom: 0.4em; }
+.reveal h3 { font-size:1.15em; color:var(--blue); margin-bottom: 0.4em; }
+.reveal p { line-height:1.75; margin-bottom: 0.7em; }
+.reveal ul { display:block; margin-bottom: 0.7em; }
+.reveal li { margin:.5em 0; line-height:1.65; }
+.reveal strong { color:var(--purple); }
+.reveal section { height:100%; overflow-y:auto; }
 .reveal section::-webkit-scrollbar { width:6px; }
 .reveal section::-webkit-scrollbar-track { background:transparent; }
 .reveal section::-webkit-scrollbar-thumb { background:var(--line); border-radius:99px; }
 .reveal section::-webkit-scrollbar-thumb:hover { background:var(--muted); }
-.reveal .slides section{ padding:6px 18px; box-sizing:border-box; }
-.reveal h2{ margin-bottom:.5em; }
+.reveal .slides section { padding:8px 20px; box-sizing:border-box; }
 
-/* accent header bar on each slide */
-.reveal .slides section > .kicker{
-  display:inline-block; font-size:.62em; font-weight:700; letter-spacing:.06em;
-  color:#fff; background:linear-gradient(90deg,var(--blue),var(--purple));
-  padding:.18em .8em; border-radius:999px; margin-bottom:.5em;
-}
-.reveal .q{ background:var(--soft); border-left:5px solid var(--blue);
-  padding:.7em 1em; border-radius:10px; font-size:.92em; line-height:1.55; margin:.55em 0 .75em; }
-.reveal .note{ color:var(--muted); font-size:.7em; }
-.reveal .rule{ background:#fff6ed; border:1px solid #ffd8b8; color:var(--warn);
-  border-radius:10px; padding:.45em .8em; font-size:.8em; font-weight:600; }
-.reveal .good{ color:var(--good); font-weight:700; }
-.reveal .warn{ color:var(--warn); font-weight:600; }
+.reveal .q { background:var(--soft); border-left:5px solid var(--blue);
+  padding:.6em .9em; border-radius:10px; font-size:.9em; line-height:1.5; margin:.5em 0 .7em; }
+.reveal .note { color:var(--muted); font-size:.65em; }
+.reveal .rule { background:#fff6ed; border:1px solid #ffd8b8; color:var(--warn);
+  border-radius:10px; padding:.4em .8em; font-size:.78em; font-weight:600; }
+.reveal .good { color:var(--good); font-weight:700; }
+.reveal .warn { color:var(--warn); font-weight:600; }
+.reveal code { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; font-size:.85em;
+  background:var(--soft); color:var(--blue); padding:.06em .42em; border-radius:6px; white-space:nowrap; }
+.reveal a.tool { color:var(--blue); font-weight:700; text-decoration:underline; }
 
 /* title slide */
-.title-wrap{ text-align:center; height:100%; display:flex; flex-direction:column;
+.title-wrap { text-align:center; height:100%; display:flex; flex-direction:column;
   justify-content:center; align-items:center; }
-.title-wrap .badge{ font-size:.7em; color:#fff; background:linear-gradient(90deg,var(--blue),var(--purple));
-  padding:.3em 1.1em; border-radius:999px; font-weight:700; }
-.title-wrap h1{ background:linear-gradient(90deg,var(--blue),var(--purple));
-  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; margin:.25em 0; }
-.title-wrap .sub{ font-size:1.05em; color:var(--ink); font-weight:600; }
-.title-wrap .meta{ color:var(--muted); font-size:.8em; margin-top:.6em; }
+.title-wrap .badge { font-size:.68em; color:#fff; background:var(--accent-grad);
+  padding:.3em 1.2em; border-radius:999px; font-weight:700; }
+.title-wrap h1 { background:var(--accent-grad);
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; margin:.2em 0; }
+.title-wrap .sub { font-size:1.0em; color:var(--ink); font-weight:600; }
+.title-wrap .meta { color:var(--muted); font-size:.75em; margin-top:.5em; }
 
 /* two-column helper */
-.cols{ display:flex; gap:1.3em; align-items:flex-start; }
-.cols > div{ flex:1; }
-.card{ background:var(--card); border:1px solid var(--line); border-radius:14px;
-  padding:.85em 1.05em; box-shadow:0 2px 10px rgba(20,30,60,.05); line-height:1.55; }
-.card h3{ margin-top:0; }
-.pill{ display:inline-block; background:var(--soft); color:var(--blue);
-  border-radius:8px; padding:.08em .5em; font-size:.8em; font-weight:600; margin:.1em; }
+.cols { display:flex; gap:1.2em; align-items:flex-start; }
+.cols > div { flex:1; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:14px;
+  padding:.8em 1.0em; box-shadow:0 2px 8px rgba(20,30,60,.04); line-height:1.5; }
+.card h3 { margin-top:0; }
+.pill { display:inline-block; background:var(--soft); color:var(--blue);
+  border-radius:8px; padding:.08em .5em; font-size:.78em; font-weight:600; margin:.1em; }
 
-.term{ display:flex; gap:.6em; margin:.5em 0; align-items:baseline; }
-.term > b:first-child{ color:var(--purple); min-width:230px; display:inline-block; }
+/* table styling inside reveal */
+.reveal table { width:100%; border-collapse:collapse; margin:.5em 0; font-size:.7em; }
+.reveal th { background:var(--soft); font-weight:700; border:1px solid var(--line); padding:6px 12px; }
+.reveal td { border:1px solid var(--line); padding:6px 12px; }
 
 /* worksheet fields */
-.ws-label{ display:block; font-size:.72em; font-weight:700; color:var(--muted);
-  margin:.45em 0 .15em; }
-.ws-label.gem{ color:var(--teal); }
-textarea.ws-field, input.save{
+.ws-label { display:block; font-size:.7em; font-weight:700; color:var(--muted);
+  margin:.4em 0 .15em; line-height:1.6; }
+textarea.ws-field, input.save, select.save {
   font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:.7em; color:var(--ink);
   width:100%; border:1.5px solid var(--line); border-radius:10px; padding:.5em .7em;
-  background:#fcfdff; box-sizing:border-box; resize:vertical; }
-textarea.ws-field{ height:90px; line-height:1.35; }
-textarea.ws-field:focus, input.save:focus{ outline:none; border-color:var(--blue);
+  background:#fcfdff; box-sizing:border-box; resize:vertical !important; overflow:auto !important; }
+textarea.ws-field { min-height:120px; line-height:1.5; }
+textarea.ws-field:focus, input.save:focus, select.save:focus { outline:none; border-color:var(--blue);
   box-shadow:0 0 0 3px rgba(26,115,232,.12); }
-input.save{ height:auto; }
+input.save { height:auto; }
+select.save { height:auto; padding:.4em .6em; }
 
-/* prompt split subfields */
-.prompt-subfield {
-  font-family: 'Sarabun', 'Noto Sans Thai', sans-serif;
-  font-size: .7em;
-  width: 100%;
-  height: 65px;
-  border: 1.5px solid var(--line);
-  border-radius: 10px;
-  padding: .4em .6em;
-  box-sizing: border-box;
-  resize: none;
-  overflow-y: auto;
-  line-height: 1.35;
-  background: #fcfdff;
-  color: var(--ink);
-}
-.prompt-subfield:focus {
-  outline: none;
-  border-color: var(--blue);
-  box-shadow: 0 0 0 3px rgba(26,115,232,.12);
-}
-
-/* thin scrollbar for all textareas */
-textarea::-webkit-scrollbar {
-  width: 5px;
-}
-textarea::-webkit-scrollbar-track {
-  background: transparent;
-}
-textarea::-webkit-scrollbar-thumb {
-  background: var(--line);
-  border-radius: 99px;
-}
-textarea::-webkit-scrollbar-thumb:hover {
-  background: var(--muted);
-}
-.info-grid{ display:grid; grid-template-columns:1fr; gap:.3em; max-width:620px; }
-.info-row{ display:flex; gap:.8em; }
-.info-row > div{ flex:1; }
+textarea::-webkit-scrollbar { width: 5px; }
+textarea::-webkit-scrollbar-track { background: transparent; }
+textarea::-webkit-scrollbar-thumb { background: var(--line); border-radius: 99px; }
+textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+.info-grid { display:grid; grid-template-columns:1fr; gap:.3em; max-width:680px; }
+.info-row { display:flex; gap:.8em; }
+.info-row > div { flex:1; }
 
 /* download button (floating) */
-#dlbtn{ position:fixed; top:14px; right:16px; z-index:60;
+#dlbtn { position:fixed; top:14px; right:16px; z-index:60;
   font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:15px; font-weight:700;
-  color:#fff; background:linear-gradient(90deg,var(--blue),var(--purple));
+  color:#fff; background:var(--accent-grad);
   border:none; border-radius:999px; padding:10px 18px; cursor:pointer;
-  box-shadow:0 4px 14px rgba(76,40,160,.35); display:none; }
-#dlbtn:hover{ filter:brightness(1.05); }
-#dlbtn:active{ transform:translateY(1px); }
-#savehint{ position:fixed; top:54px; right:18px; z-index:60; font-size:11px;
+  box-shadow:0 4px 14px rgba(76,40,160,.3); display:none; }
+#dlbtn:hover { filter:brightness(1.05); }
+#dlbtn:active { transform:translateY(1px); }
+#savehint { position:fixed; top:54px; right:18px; z-index:60; font-size:11px;
   color:var(--good); font-family:'Sarabun',sans-serif; opacity:0; transition:opacity .3s; }
-.dlbig{ font-size:.9em; font-weight:700; color:#fff;
-  background:linear-gradient(90deg,var(--blue),var(--purple)); border:none;
-  border-radius:12px; padding:.5em 1.1em; cursor:pointer; box-shadow:0 4px 14px rgba(76,40,160,.3);
+.dlbig { font-size:.9em; font-weight:700; color:#fff;
+  background:var(--accent-grad); border:none;
+  border-radius:12px; padding:.5em 1.1em; cursor:pointer; box-shadow:0 4px 14px rgba(76,40,160,.25);
   font-family:'Sarabun','Noto Sans Thai',sans-serif; }
 
-/* assignment print area — hidden on screen, shown only when printing */
-#print-area{ display:none; }
-.pdf-doc{ font-family:'Sarabun','Noto Sans Thai',sans-serif; color:#11131a; padding:6px 4px; }
-.pdf-doc h1{ font-size:22px; margin:0 0 4px; color:#1a73e8; }
-.pdf-doc .pdf-meta{ display:flex; gap:18px; font-size:13px; border-bottom:2px solid #1a73e8;
+/* assignment print area */
+#print-area { display:none; }
+.pdf-doc { font-family:'Sarabun','Noto Sans Thai',sans-serif; color:#11131a; padding:6px 4px; }
+.pdf-doc h1 { font-size:22px; margin:0 0 4px; color:#1a73e8; }
+.pdf-doc .pdf-meta { display:flex; gap:18px; font-size:13px; border-bottom:2px solid #1a73e8;
   padding-bottom:8px; margin-bottom:12px; flex-wrap:wrap; }
-.pdf-doc h2{ font-size:15px; margin:16px 0 6px; color:#7b41d8; border-left:4px solid #7b41d8; padding-left:8px; }
-.pdf-item{ margin:8px 0; page-break-inside:avoid; }
-.pdf-label{ font-size:12.5px; font-weight:700; color:#333; margin-bottom:3px; }
-.pdf-answer{ font-size:12.5px; line-height:1.5; border:1px solid #c9d2e0; border-radius:6px;
+.pdf-doc h2 { font-size:15px; margin:16px 0 6px; color:#7b41d8; border-left:4px solid #7b41d8; padding-left:8px; }
+.pdf-item { margin:8px 0; page-break-inside:avoid; }
+.pdf-label { font-size:12.5px; font-weight:700; color:#333; margin-bottom:3px; }
+.pdf-answer { font-size:12.5px; line-height:1.5; border:1px solid #c9d2e0; border-radius:6px;
   padding:7px 9px; white-space:pre-wrap; min-height:18px; background:#fbfcfe; }
-.pdf-answer .empty{ color:#aab2c0; }
-@page{ size:A4; margin:14mm; }
-@media print{
-  body.printing > *:not(#print-area){ display:none !important; }
-  body.printing #print-area{ display:block !important; }
-  body.printing{ background:#fff !important; }
+.pdf-answer .empty { color:#aab2c0; }
+@page { size:A4; margin:14mm; }
+@media print {
+  body.printing > *:not(#print-area) { display:none !important; }
+  body.printing #print-area { display:block !important; }
+  body.printing { background:#fff !important; }
 }
-.pdf-imgs img{ display:block; max-width:100%; max-height:420px; margin-top:6px;
+.pdf-imgs img { display:block; max-width:100%; max-height:420px; margin-top:6px;
   border:1px solid #c9d2e0; border-radius:6px; page-break-inside:avoid; }
 
-/* ---- AI prompt coach ---- */
-.coach-btn{ display:inline-flex; align-items:center; gap:.3em; margin-top:.35em;
-  font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:.62em; font-weight:700;
-  color:#fff; background:linear-gradient(90deg,var(--teal),var(--blue));
-  border:none; border-radius:999px; padding:.42em .95em; cursor:pointer;
-  box-shadow:0 2px 8px rgba(10,163,163,.25); }
-.coach-btn:hover{ filter:brightness(1.06); }
-.coach-btn:active{ transform:translateY(1px); }
-.coach-btn:disabled{ opacity:.6; cursor:wait; }
-.coach-box{ display:none; margin-top:.45em; background:#f0fbfb; border:1px solid #b9e6e6;
-  border-left:5px solid var(--teal); border-radius:10px; padding:.55em .8em;
-  font-size:.62em; line-height:1.55; color:var(--ink); white-space:pre-wrap;
-  max-height:240px; overflow:auto; }
-.coach-box.err{ background:#fff6ed; border-color:#ffd8b8; border-left-color:var(--warn); color:var(--warn); }
-.coach-head{ display:block; font-weight:700; color:var(--teal); margin-bottom:.25em; }
-.coach-foot{ display:block; margin-top:.4em; font-size:.85em; color:var(--muted); }
-
-/* ---- image attach / paste ---- */
-.img-btn{ display:inline-flex; align-items:center; gap:.3em; margin-top:.35em;
+/* image attach / paste helper */
+.img-btn { display:inline-flex; align-items:center; gap:.3em; margin-top:.35em;
   font-family:'Sarabun','Noto Sans Thai',sans-serif; font-size:.6em; font-weight:700;
   color:var(--blue); background:var(--soft); border:1.5px solid #cfe0fb;
   border-radius:999px; padding:.4em .9em; cursor:pointer; }
-.img-btn:hover{ filter:brightness(.98); }
-.img-hint{ font-size:.55em; color:var(--muted); margin-left:.5em; }
-.img-tray{ display:flex; flex-wrap:wrap; gap:.5em; margin-top:.4em; }
-.img-thumb{ position:relative; width:96px; height:96px; border:1px solid var(--line);
+.img-btn:hover { filter:brightness(.98); }
+.img-hint { font-size:.55em; color:var(--muted); margin-left:.55em; }
+.img-tray { display:flex; flex-wrap:wrap; gap:.5em; margin-top:.4em; }
+.img-thumb { position:relative; width:96px; height:96px; border:1px solid var(--line);
   border-radius:8px; overflow:hidden; background:#fafbff; }
-.img-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
-.img-thumb .rm{ position:absolute; top:2px; right:2px; width:20px; height:20px;
+.img-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+.img-thumb .rm { position:absolute; top:2px; right:2px; width:20px; height:20px;
   border:none; border-radius:50%; background:rgba(20,30,60,.7); color:#fff;
   font-size:13px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; }
-.img-thumb .rm:hover{ background:var(--warn); }
+.img-thumb .rm:hover { background:var(--warn); }
+
+/* submission readiness panel */
+.check-panel { max-width:820px; margin:0.3em auto 0; }
+.prog-meta { display:flex; justify-content:space-between; font-size:.64em; color:var(--muted);
+  font-weight:700; margin:.2em .2em .35em; }
+.prog-wrap { background:var(--soft); border-radius:999px; height:15px; overflow:hidden; border:1px solid var(--line); }
+.prog-bar  { height:100%; width:0%; border-radius:999px; background:var(--accent-grad); transition:width .35s ease; }
+.check-msg { text-align:center; font-size:.74em; font-weight:700; margin:.5em 0 .55em; color:var(--ink); }
+.check-grid { display:grid; grid-template-columns:1fr 1fr; gap:.4em; }
+.check-row { display:flex; align-items:flex-start; gap:.5em; font-size:.66em; line-height:1.4;
+  padding:.4em .65em; border:1px solid var(--line); border-radius:10px; background:#fff; }
+.check-row .ic { font-size:1.1em; line-height:1.3; flex:0 0 auto; }
+.check-row .body { flex:1; min-width:0; }
+.check-row .ttl { font-weight:700; color:var(--ink); }
+.check-row .sub { color:var(--muted); font-size:.92em; }
+.check-row.done { background:#f4fbf7; border-color:#cdeadb; }
+
+/* step box for workshop */
+.step-box { background:var(--soft); border:1.5px solid var(--line); border-radius:12px;
+  padding:.5em .8em; margin:.3em 0; font-size:.7em; line-height:1.55; }
+.step-box b { color:var(--purple); }
+.step-num { display:inline-flex; align-items:center; justify-content:center;
+  width:24px; height:24px; border-radius:50%; background:var(--accent-grad);
+  color:#fff; font-weight:700; font-size:.68em; margin-right:.4em; flex-shrink:0; }
+
+/* topic banner (โจทย์ประจำคู่) */
+.topic-banner { background:linear-gradient(90deg,#eef3fb,#f7f0ff); border:1.5px solid #d9e2f5;
+  border-radius:14px; padding:.7em 1em; margin:.4em 0; }
+.topic-banner .tb-l { font-size:.62em; font-weight:700; color:var(--muted); letter-spacing:.04em; }
+.topic-banner .tb-t { font-size:.92em; font-weight:700; color:var(--purple); line-height:1.4; }
+.topic-banner .tb-h { font-size:.66em; color:var(--ink); margin-top:.25em; line-height:1.5; }
+
+/* DAX / formula block — multiline, unlike inline <code> */
+.daxbox { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; font-size:.6em;
+  background:#0f1b2e; color:#e8eefc; border-radius:10px; padding:.7em .9em; margin:.35em 0;
+  line-height:1.65; white-space:pre-wrap; word-break:break-word; }
+.daxbox .k { color:#7fb2ff; font-weight:700; }
+.daxbox .n { color:#ffd479; }
+.daxbox .c { color:#8b9bb4; }
+
+/* pair badge */
+.pairtag { display:inline-block; background:#fdf2ff; color:var(--purple);
+  border:1.5px solid #e9d4f7; border-radius:999px; padding:.15em .8em;
+  font-size:.6em; font-weight:700; margin-left:.4em; }
+
+/* recap grid for 8 weeks */
+.wk-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:.45em; font-size:.6em; }
+.wk-cell { border:1px solid var(--line); border-radius:10px; padding:.45em .6em; background:#fff; line-height:1.45; }
+.wk-cell > b:first-child { display:block; color:var(--blue); font-size:1.02em; }
+.wk-cell.now { background:linear-gradient(135deg,#eef3fb,#f7f0ff); border-color:#cbb6ef; }
+.wk-cell.now b { color:var(--purple); }
+
+/* Gemini rule cards */
+.gem-ok { border-left:5px solid var(--good); background:#f4fbf7; }
+.gem-no { border-left:5px solid var(--warn); background:#fff6ed; }
+
+/* inline SVG diagram wrapper */
+.figbox { margin:.2em 0; }
+.figbox img { display:block; margin:0 auto; max-width:100%; height:auto;
+  border:1px solid var(--line); border-radius:12px; }
+.shot img { display:block; margin:0 auto; max-width:100%; height:auto; border:1px solid var(--line); border-radius:10px; box-shadow:0 2px 10px rgba(20,30,60,.08); }
+.shot .figcap { margin-top:.15em; }
+.figcap { font-size:.58em; color:var(--muted); text-align:right; margin-top:.1em; }
+
+
+/* ---- week 1 additions ---- */
+.svgfig { display:block; margin:.2em auto 0; max-width:100%; height:auto; }
+.part-tag { display:inline-block; font-size:.5em; font-weight:700; color:#fff; border-radius:999px;
+  padding:.18em .8em; margin-right:.5em; vertical-align:middle; }
+.part-lec { background:var(--blue); }
+.part-demo { background:var(--teal); }
+.part-lab { background:var(--purple); }
+.time-strip { display:flex; border-radius:12px; overflow:hidden; font-size:.62em; font-weight:700; color:#fff; margin:.4em 0 .6em; }
+.time-strip > div { padding:.6em .8em; line-height:1.4; }
+.time-strip .t-lec { background:var(--blue); flex:30; }
+.time-strip .t-demo { background:var(--teal); flex:30; }
+.time-strip .t-lab { background:var(--purple); flex:55; }
+.time-strip .t-sub { background:#9aa5b8; flex:8; }
+.ex-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.5em; }
+.ex-card { border:1px solid var(--line); border-radius:12px; padding:.55em .7em; background:#fff; font-size:.6em; line-height:1.5; }
+.ex-card .em { font-size:1.6em; display:block; }
+.ex-card b { color:var(--ink); }
+.gloss { display:grid; grid-template-columns:repeat(4,1fr); gap:.25em .6em; font-size:.56em; line-height:1.45; }
+.gloss div { border-bottom:1px dashed var(--line); padding:.15em 0; }
+.gloss code { font-size:.95em; }
+.zoo-tbl td, .zoo-tbl th { text-align:center; padding:4px 8px !important; }
+.zoo-tbl .feat { background:#eef3fb; }
+.zoo-tbl .targ { background:#f7f0ff; color:var(--purple); font-weight:700; }
+.zoo-tbl .meta { background:#f5f6f8; color:var(--muted); }
+.scen td { vertical-align:top; }
+.scen textarea.ws-field { min-height:52px; font-size:.95em; }
+.scen select.save { font-size:.95em; }
+.mystery td, .mystery th { text-align:center; padding:4px 6px !important; }
+.mystery td:first-child { text-align:left; font-weight:700; }
+.demo-check { background:#effaf8; border:1.5px solid #bfe7e2; border-radius:12px; padding:.45em .8em;
+  font-size:.62em; line-height:1.55; margin-top:.4em; }
+.demo-check b { color:var(--teal); }
 </style>
 </head>
 <body>
@@ -203,637 +250,622 @@ textarea::-webkit-scrollbar-thumb:hover {
 
 <div class="reveal"><div class="slides">
 
-<!-- 1 TITLE -->
+<!-- ===================== 1 TITLE ===================== -->
 <section>
   <div class="title-wrap">
-    <span class="badge">AI for Ed · สัปดาห์ที่ 1</span>
-    <h1>รู้จัก Generative AI<br>Gemini · การเขียน Prompt</h1>
+    <span class="badge">AI for Ed 2 · สัปดาห์ที่ 1</span>
+    <h1>รู้จัก Machine Learning และ Orange</h1>
+    <div class="sub">ความสามารถของ AI เกิดจากการเรียนรู้ข้อมูลตัวอย่าง</div>
+    <div class="meta">ม.5 · งานคู่ · ชุดข้อมูล: Zoo (สัตว์ 101 ชนิด) · โปรแกรม Orange Data Mining</div>
   </div>
 </section>
 
-<!-- 2 STUDENT INFO -->
+<!-- ===================== 2 STUDENT INFO ===================== -->
 <section>
-  <span class="kicker">เริ่มต้น</span>
-  <h2>กรอกข้อมูลของคุณก่อนเริ่ม</h2>
+  <h2>ระบุข้อมูลผู้เรียน <span class="pairtag">งานคู่ — 1 ใบงานต่อ 1 คู่</span></h2>
   <div class="info-grid">
-    <div>
-      <span class="ws-label">ชื่อ–นามสกุล</span>
-      <input class="save" id="ws-name" type="text" placeholder="เช่น สมชาย ใจดี">
+    <div class="info-row">
+      <div>
+        <span class="ws-label">ชื่อ–นามสกุล คนที่ 1</span>
+        <input class="save" id="ws-name1" type="text" placeholder="เช่น นายสมชาย ตั้งใจเรียน">
+      </div>
+      <div>
+        <span class="ws-label">ชื่อ–นามสกุล คนที่ 2</span>
+        <input class="save" id="ws-name2" type="text" placeholder="เช่น นางสาวสมศรี รักเรียน">
+      </div>
     </div>
     <div class="info-row">
-      <div><span class="ws-label">ชั้น</span><input class="save" id="ws-class" type="text" placeholder="ม.4/1"></div>
-      <div><span class="ws-label">เลขที่</span><input class="save" id="ws-no" type="text" placeholder="12"></div>
+      <div><span class="ws-label">ชั้น</span><input class="save" id="ws-class" type="text" placeholder="ม.5/2"></div>
+      <div><span class="ws-label">เลขที่ คนที่ 1</span><input class="save" id="ws-no" type="text" placeholder="เช่น 15"></div>
+      <div><span class="ws-label">เลขที่ คนที่ 2</span><input class="save" id="ws-no2" type="text" placeholder="เช่น 16"></div>
     </div>
   </div>
-  <div id="setbox" class="rule" style="margin-top:.8em">📋 ชุดโจทย์ของคุณ: <b id="setlabel">— (กรอก “เลขที่” ก่อน เพื่อรับชุดโจทย์ของคุณ)</b></div>
-  <p class="note" style="margin-top:1em">💾 คำตอบทั้งหมดจะถูก <b>บันทึกอัตโนมัติในเครื่องของคุณ</b> (เปิด–ปิดไฟล์ใหม่ก็ไม่หาย) และไม่ถูกส่งออกไปที่ใด<br>
-  ✏️ ขณะพิมพ์ในช่อง ปุ่มลูกศรจะใช้เลื่อนสไลด์ไม่ได้ — คลิกนอกช่องก่อน หรือใช้ปุ่มลูกศรบนหน้าจอ</p>
-</section>
-
-<!-- 3 AGENDA -->
-<section>
-  <span class="kicker">วันนี้เราจะทำอะไร</span>
-  <h2>แผนการเรียน 3 ชั่วโมง</h2>
-  <div class="cols">
-    <div style="flex: 1.6; display: flex; gap: 1.1em;">
-      <div style="flex: 1;">
-        <ul>
-          <li><b>1.</b> Generative AI คืออะไร ทำงานยังไง</li>
-          <li><b>2.</b> รู้จักเครื่องมือ <b>Gemini</b></li>
-          <li><b>3.</b> หลักการเขียน <b>Prompt</b> ที่ดี</li>
-        </ul>
-      </div>
-      <div style="flex: 1;">
-        <ul>
-          <li><b>4.</b> กิจกรรมที่ 1 — ฝึกเขียน Prompt</li>
-          <li><b>5.</b> กิจกรรมที่ 2 — เรียนรู้และตรวจสอบกับ AI</li>
-          <li><b>6.</b> กิจกรรมที่ 3 — AI ผู้ช่วยทำการบ้าน</li>
-          <li><b>7.</b> กิจกรรมที่ 4 — สร้างผู้ช่วย AI ของตัวเอง</li>
-          <li><b>8.</b> ส่งใบงาน (PDF)</li>
-        </ul>
-      </div>
-    </div>
-    <div style="flex: 1; text-align: center;">
-      <img src="images/agenda_learning.png" alt="Agenda Learning Roadmap" style="width: 100%; max-height: 290px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid var(--line); background: #ffffff;">
-    </div>
+  <div class="rule" style="margin-top:.8em; font-size:.66em;">
+    ใบงานบันทึกอัตโนมัติในเบราว์เซอร์ จึงควรใช้เครื่องเดิมตลอดคาบ · เมื่อจบคาบ กดปุ่ม <b>บันทึกใบงานเป็น PDF</b> (มุมขวาบน) แล้วส่งไฟล์ PDF พร้อมไฟล์ <code>.ows</code>
   </div>
 </section>
 
-<!-- 4 HOOK -->
+<!-- ===================== 3 BRIDGE: SEM 1 → SEM 2 ===================== -->
 <section>
-  <span class="kicker">วอร์มอัป</span>
-  <h2>จริง หรือ AI? 🤔</h2>
-  <p class="note">แคปชันโปรโมตชานมไข่มุก 2 อัน — อันไหนคนเขียน อันไหน AI เขียน?</p>
+  <h2>จากผู้ใช้ AI สู่ผู้สร้างโมเดล AI</h2>
   <div class="cols">
-    <div style="flex: 1.5; display: flex; flex-direction: column; gap: 0.8em;">
-      <div class="card"><b>A</b><br>“ชานมหอมกรุณา ไข่มุกหนึบทุกคำ ความสุขแก้วละ 39 บาท วันนี้ซื้อ 1 แถม 1 เฉพาะหลังเลิกเรียน!”</div>
-      <div class="card"><b>B</b><br>“จิบความฟินส่งตรงถึงใจ 🧋 ชานมเข้มข้น ไข่มุกเด้งดึ๋ง พร้อมเติมพลังหลังเลิกเรียน — แวะมาเป็นเพื่อนกันนะ ✨”</div>
-    </div>
-    <div style="flex: 1.2; text-align: center;">
-      <img src="images/bubble_tea.png" alt="ชานมไข่มุก" style="width: 100%; max-height: 290px; object-fit: cover; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); border: 1px solid var(--line);">
-    </div>
-  </div>
-</section>
-
-<!-- ===================== PART 1: CONCEPT ===================== -->
-
-<!-- 5 -->
-<section>
-  <span class="kicker">แนวคิด 1/4</span>
-  <h2>Generative AI คืออะไร</h2>
-  <div class="cols">
-    <div style="flex: 1.5; display: flex; flex-direction: column; gap: 0.8em;">
-      <div class="cols" style="gap: 0.8em;">
-        <div class="card"><h3>AI แบบเดิม</h3>“จำแนก / ทำนาย” จากตัวเลือกที่มี<br><span class="note">เช่น คัดกรองอีเมลสแปม, แนะนำคลิปถัดไป</span></div>
-        <div class="card"><h3>Generative AI</h3>“<b>สร้างของใหม่</b>” ขึ้นมาเอง<br><span class="note">ข้อความ · รูปภาพ · เสียง · วิดีโอ · โค้ด</span></div>
-      </div>
-      <p style="margin-top:.3em">👉 <b>Gen</b>erative = สร้าง (generate) — เราพิมพ์สิ่งที่อยากได้ แล้วมันสร้างให้</p>
-    </div>
-    <div style="flex: 1; text-align: center;">
-      <img src="images/generative_ai_concept.png" alt="Generative AI Concept" style="width: 100%; max-height: 290px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid var(--line); background: #ffffff;">
-    </div>
-  </div>
-</section>
-
-<!-- 6 -->
-<section>
-  <span class="kicker">แนวคิด 2/4</span>
-  <h2>มันทำงานยังไง (ฉบับเข้าใจง่าย)</h2>
-  <div class="cols">
-    <div style="flex: 1.5;">
-      <ul>
-        <li>หัวใจคือการ <b>“ทายคำถัดไป”</b> (predict the next token) ทีละคำ</li>
-        <li>เหมือน <b>autocomplete</b> ในมือถือ — แต่เก่งกว่ามหาศาล</li>
-        <li>เรียนรู้รูปแบบภาษาจาก <b>ข้อความจำนวนมหาศาล</b> บนอินเทอร์เน็ต</li>
-        <li>มันไม่ได้ “เข้าใจ” แบบคน แต่ <b>คำนวณความน่าจะเป็น</b> ของคำ</li>
-      </ul>
-      <p class="q" style="margin-top: 0.5em;">ลองนึก: พิมพ์ว่า “วันนี้อากาศ…” คุณเดาคำถัดไปว่าอะไร? AI ก็ทำแบบนั้น</p>
-    </div>
-    <div style="flex: 1.1; text-align: center;">
-      <img src="images/autocomplete_concept.png" alt="Autocomplete Predictive Text" style="width: 100%; max-height: 290px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid var(--line); background: #ffffff;">
-    </div>
-  </div>
-</section>
-
-<!-- 7 -->
-<section>
-  <span class="kicker">แนวคิด 3/4</span>
-  <h2>ศัพท์ที่ต้องรู้</h2>
-  <div class="cols">
-    <div style="flex: 1.4;">
-      <div class="term" style="font-size: 0.88em; margin: 0.28em 0;"><b>Model (โมเดล)</b> “สมอง” ของ AI เช่น Gemini 3 Flash</div>
-      <div class="term" style="font-size: 0.88em; margin: 0.28em 0;"><b>Prompt (พรอมป์)</b> คำสั่ง/คำถามที่เราพิมพ์ให้ AI</div>
-      <div class="term" style="font-size: 0.88em; margin: 0.28em 0;"><b>Token (โทเคน)</b> หน่วยย่อยของข้อความที่ AI ประมวลผล</div>
-      <div class="term" style="font-size: 0.88em; margin: 0.28em 0;"><b>Context (บริบท)</b> ข้อมูลแวดล้อมที่เราป้อนให้ AI เข้าใจสถานการณ์</div>
-      <div class="term" style="font-size: 0.88em; margin: 0.28em 0;"><b>Hallucination (อาการมั่ว)</b> AI ตอบมั่นใจ แต่ <b>ผิดหรือแต่งขึ้นเอง</b></div>
-    </div>
-    <div style="flex: 1.1; text-align: center;">
-      <img src="images/glossary_terms.png" alt="AI Technical Terms Glossary" style="width: 100%; max-height: 290px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid var(--line); background: #ffffff;">
-    </div>
-  </div>
-</section>
-
-<!-- 8 -->
-<section>
-  <span class="kicker">แนวคิด 4/4</span>
-  <h2>ทำไม AI ตอบผิดได้?</h2>
-  <div class="cols">
-    <div style="flex: 1.5;">
-      <ul>
-        <li><b>ทายความน่าจะเป็น</b> ไม่ได้ “รู้จริง”</li>
-        <li>ข้อมูลที่เรียนมาอาจ <b>เก่าหรือผิด</b></li>
-        <li>คำถาม <b>กำกวม</b> → ตอบมั่ว</li>
-      </ul>
-      <p class="rule" style="margin-top:.5em; font-size: 0.76em; line-height: 1.35;">🚨 กฎเหล็กข้อ 1: <b>ตรวจสอบทุกครั้ง อย่าเชื่อ AI 100%</b> — เราจะพิสูจน์ในกิจกรรม</p>
-    </div>
-    <div style="flex: 1.1; text-align: center;">
-      <img src="images/ai_warning.png" alt="AI Error Warning Hallucination" style="width: 100%; max-height: 290px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid var(--line); background: #ffffff;">
-    </div>
-  </div>
-</section>
-
-<!-- ===================== PART 2: GEMINI ===================== -->
-
-<!-- 9 -->
-<section>
-  <span class="kicker">เครื่องมือ 1/4</span>
-  <h2>รู้จัก Gemini</h2>
-  <div class="cols">
-    <div style="flex: 1.5;">
-      <ul>
-        <li>Generative AI ของ <b>Google</b> ใช้ฟรีที่ <b>gemini.google.com</b> (หรือแอป)</li>
-        <li>ป้อนได้หลายแบบ: <b>พิมพ์ · พูด · อัปโหลดรูปและไฟล์</b></li>
-        <li>ตอบได้หลายแบบ: ข้อความ · ตาราง · รูปภาพ · โค้ด</li>
-      </ul>
-      <p class="note" style="margin-top: 0.8em;">วันนี้ทุกกิจกรรมใช้ที่ <b>gemini.google.com</b></p>
-    </div>
-    <div style="flex: 1.2; text-align: center;">
-      <img src="images/ai_assistant.png" alt="AI Chatbot Assistant" style="width: 100%; max-height: 290px; object-fit: cover; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); border: 1px solid var(--line);">
-    </div>
-  </div>
-</section>
-
-<!-- 10 -->
-<section>
-  <span class="kicker">เครื่องมือ 2/4</span>
-  <h2>เลือกโมเดลให้ถูกงาน (ปี 2026)</h2>
-  <div class="cols">
-    <div class="card"><h3>Gemini 3 Flash</h3>เร็ว · เป็นค่าเริ่มต้น<br><span class="note">เหมาะงานทั่วไป ถาม–ตอบเร็ว</span></div>
-    <div class="card"><h3>Gemini 3.5 Flash</h3>เร็วและฉลาดขึ้น<br><span class="note">งานสร้างสรรค์/ซับซ้อนปานกลาง</span></div>
-    <div class="card"><h3>Gemini 3 Pro</h3>คิดลึก ละเอียด<br><span class="note">โจทย์ยาก คณิต วิเคราะห์</span></div>
-  </div>
-  <p style="margin-top:.6em">💡 เคล็ดลับ: งานง่ายใช้ <b>Flash</b> (เร็ว) · งานยากใช้ <b>Pro</b> (แม่นกว่า)</p>
-</section>
-
-<!-- 11 -->
-<section>
-  <span class="kicker">เครื่องมือ 3/4</span>
-  <h2>ฟีเจอร์เด็ดใน Gemini</h2>
-  <div class="cols">
-    <div style="flex: 1.4;">
-      <div class="term" style="font-size: 0.88em; margin: 0.28em 0;"><b>Canvas</b> เปลี่ยนคำตอบเป็นภาพ/เอกสาร/แบบทดสอบโต้ตอบได้</div>
-      <div class="term" style="font-size: 0.88em; margin: 0.28em 0;"><b>Gems</b> สร้าง “ผู้ช่วยส่วนตัว” เช่น ติวเตอร์คณิตของฉัน</div>
-      <div class="term" style="font-size: 0.88em; margin: 0.28em 0;"><b>Deep Research</b> ค้นคว้าลึก + อัปโหลดไฟล์ของเราเป็นแหล่งอ้างอิงได้</div>
-      <div class="term" style="font-size: 0.88em; margin: 0.28em 0;"><b>สร้างรูปภาพ</b> วาดภาพจากคำบรรยายของเรา</div>
-    </div>
-    <div style="flex: 1.2; text-align: center;">
-      <img src="images/gemini_features.png" alt="Gemini Features Powerful Digital Tools" style="width: 100%; max-height: 290px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid var(--line); background: #ffffff;">
-    </div>
-  </div>
-</section>
-
-<!-- 12 -->
-<section>
-  <span class="kicker">เครื่องมือ 4/4</span>
-  <h2>ใช้ AI อย่างมีความรับผิดชอบ</h2>
-  <div class="cols">
-    <div style="flex: 1.5;">
-      <ul>
-        <li>✅ <b>ตรวจสอบ</b>ข้อมูลที่ได้เสมอ</li>
-        <li>✅ ใช้ช่วย <b>คิด / อธิบาย / ตรวจ</b> — <span class="warn">ไม่ลอกงานทั้งดุ้น</span></li>
-        <li>✅ <b>ไม่ใส่</b>ข้อมูลส่วนตัวหรือความลับลงไป</li>
-        <li>✅ <b>บอกอ้างอิง</b>ว่าใช้ AI ช่วยตรงไหน</li>
+    <div class="card" style="border-top:4px solid var(--blue); font-size:.62em; line-height:1.6;">
+      <b style="color:var(--blue)">ภาคเรียนที่ 1 — ผู้ใช้ AI</b>
+      <ul style="margin:.25em 0 0; padding-left:1.1em;">
+        <li>เขียน prompt สั่งงาน Gemini · สร้างภาพและวิดีโอ · NotebookLM</li>
+        <li>ชนิดข้อมูล · Filter · ทำความสะอาดข้อมูล · Dashboard ใน Power BI</li>
       </ul>
     </div>
-    <div style="flex: 1.1; text-align: center;">
-      <img src="images/responsible_ai.png" alt="Responsible AI Ethics" style="width: 100%; max-height: 290px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid var(--line); background: #ffffff;">
-    </div>
-  </div>
-</section>
-
-<!-- ===================== PART 3: PROMPTING ===================== -->
-
-<!-- 13 -->
-<section>
-  <span class="kicker">การเขียน Prompt 1/5</span>
-  <h2>Prompt คืออะไร</h2>
-  <div class="cols">
-    <div style="flex: 1.4;">
-      <p style="margin-top: 1em; font-size: 1.1em;">Prompt = สิ่งที่เรา <b>สั่งหรือถาม</b> AI</p>
-      <p class="rule" style="margin-top: 1.2em; font-size: 0.82em; line-height: 1.4;">⚙️ Prompt ดี → คำตอบดี · Prompt ห่วย → คำตอบห่วย <span class="note">(Garbage in, garbage out)</span></p>
-    </div>
-    <div style="flex: 1.2; text-align: center;">
-      <img src="images/prompt_concept.png" alt="Prompt Concept Typing" style="width: 100%; max-height: 290px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid var(--line); background: #ffffff;">
-    </div>
-  </div>
-</section>
-
-<!-- 14 -->
-<section>
-  <span class="kicker">การเขียน Prompt 2/5</span>
-  <h2>สูตร Prompt 3 องค์ประกอบ</h2>
-  <div class="cols">
-    <div style="flex: 1.5;">
-      <div class="term" style="font-size: 0.85em; margin: 0.2em 0;"><b>① บทบาท (Role)</b> ให้ AI สวมบทเป็นใคร</div>
-      <div class="term" style="font-size: 0.85em; margin: 0.2em 0;"><b>② งาน (Task)</b> อยากให้ทำอะไร</div>
-      <div class="term" style="font-size: 0.85em; margin: 0.2em 0;"><b>③ รูปแบบ (Format)</b> อยากได้ผลลัพธ์แบบไหน</div>
-      <p style="margin-top:.3em; font-size: 0.8em; font-weight: bold; margin-bottom: 0.2em;">ตัวอย่างครบ 3 องค์ประกอบ:</p>
-      <p class="q" style="font-size: 0.72em; padding: 0.4em 0.8em; margin: 0.2em 0 0.4em;"><b>① การศึกษา —</b> “<b>คุณเป็นติวเตอร์คณิต</b> (บทบาท) <b>ช่วยสรุปวิธีแก้สมการกำลังสอง</b> (งาน) <b>เป็นขั้นตอน 1-2-3 พร้อมตัวอย่าง 1 ข้อ</b> (รูปแบบ)”</p>
-      <p class="q" style="font-size: 0.72em; padding: 0.4em 0.8em; margin: 0.2em 0;"><b>② โปรโมต —</b> “<b>คุณเป็นนักเขียนคำโฆษณา</b> (บทบาท) <b>ช่วยคิดแคปชันโปรโมตชมรมถ่ายภาพของโรงเรียน</b> (งาน) <b>สั้น ๆ 2 ประโยค โทนสนุก มีอีโมจิ</b> (รูปแบบ)”</p>
-    </div>
-    <div style="flex: 1.1; text-align: center;">
-      <img src="images/prompt_formula.png" alt="Prompt Three Components Formula" style="width: 100%; max-height: 320px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid var(--line); background: #ffffff;">
-    </div>
-  </div>
-</section>
-
-<!-- 15 -->
-<section>
-  <span class="kicker">การเขียน Prompt 3/5</span>
-  <h2>ทำให้ Prompt ดีขึ้น</h2>
-  <div class="cols">
-    <div style="flex: 1.4;">
-      <ul>
-        <li>ให้ <b>บริบท/ตัวอย่าง</b> เช่น “เขียนให้เพื่อน ม.4 อ่านเข้าใจ”</li>
-        <li>ระบุ <b>ความยาว ภาษา โทน กลุ่มผู้อ่าน</b></li>
-        <li>ไม่พอใจ? <b>แก้แล้วถามใหม่</b> (iterate) จนกว่าจะได้</li>
+    <div class="card" style="border-top:4px solid var(--purple); font-size:.62em; line-height:1.6;">
+      <b style="color:var(--purple)">ภาคเรียนที่ 2 — ผู้สร้างโมเดล</b>
+      <ul style="margin:.25em 0 0; padding-left:1.1em;">
+        <li>ป้อนข้อมูลให้คอมพิวเตอร์ เพื่อให้คอมพิวเตอร์ <b>หากฎด้วยตนเอง</b></li>
+        <li>วัดความแม่นยำของโมเดล · วิเคราะห์ว่าโมเดลผิดพลาดที่ใด</li>
       </ul>
     </div>
-    <div style="flex: 1.2; text-align: center;">
-      <img src="images/prompt_iteration.png" alt="Prompt Refinement Feedback Loop" style="width: 100%; max-height: 290px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid var(--line); background: #ffffff;">
-    </div>
+  </div>
+  <div class="wk-grid" style="margin-top:.6em;">
+    <div class="wk-cell now"><b>สัปดาห์ 1 — วันนี้</b>ML คืออะไร · รู้จัก Orange</div>
+    <div class="wk-cell"><b>สัปดาห์ 2</b>สำรวจและทำความสะอาดข้อมูล</div>
+    <div class="wk-cell"><b>สัปดาห์ 3</b>Decision Tree — ต้นไม้ตัดสินใจ</div>
+    <div class="wk-cell"><b>สัปดาห์ 4</b>การวัดประสิทธิภาพของโมเดล</div>
+    <div class="wk-cell"><b>สัปดาห์ 5</b>Clustering — การจัดกลุ่มข้อมูล</div>
+    <div class="wk-cell"><b>สัปดาห์ 6</b>Regression — การทำนายค่าตัวเลข</div>
+    <div class="wk-cell"><b>สัปดาห์ 7</b>AI กับรูปภาพ + จริยธรรม</div>
+    <div class="wk-cell"><b>สัปดาห์ 8</b>โครงงานย่อยและการนำเสนอ</div>
   </div>
 </section>
 
-<!-- 15.5 Few-Shot -->
+<!-- ===================== 4 HOW CLASS WORKS ===================== -->
 <section>
-  <span class="kicker">การเขียน Prompt 4/5</span>
-  <h2>การเรียนรู้แบบมีคำแนะนำ (Few-Shot)</h2>
-  <div class="cols" style="align-items: center;">
-    <div style="flex: 1.2;">
-      <p style="font-size: 0.8em; margin-bottom: 0.6em; line-height: 1.4;">นอกจากการบอกความต้องการแล้ว เรายังสามารถคุมผลลัพธ์ให้เป็นระเบียบได้โดยการให้ <b>ตัวอย่างคำตอบ</b>:</p>
-      <ul style="font-size: 0.72em; line-height: 1.55; padding-left: 1.2em;">
-        <li><b>Zero-Shot:</b> สั่งงานทันทีโดยไม่มีตัวอย่าง เช่น <i>"แปลคำสแลง..."</i> AI อาจเดารูปแบบไม่ถูกใจ</li>
-        <li><b>Few-Shot:</b> ใส่ <b>ตัวอย่างคำตอบที่ถูกต้อง</b> ไปด้วยอย่างน้อย 1-2 ข้อ เพื่อนำทาง AI</li>
-        <li><b>ช่วยอะไร?</b> ควบคุมสไตล์ ภาษา โครงสร้าง และความถูกต้องได้แม่นยำที่สุด!</li>
-      </ul>
-    </div>
-    <div style="flex: 1.4; text-align: center;">
-      <img src="images/few_shot_concept.png" alt="Few-shot vs Zero-shot Prompting Comparison" style="width: 100%; max-height: 290px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid var(--line); background: #ffffff;">
-    </div>
+  <h2>รูปแบบคาบเรียนในภาคเรียนนี้ (2 ชั่วโมง)</h2>
+  <div class="time-strip">
+    <div class="t-lec">0–30 นาที<br>บรรยาย</div>
+    <div class="t-demo">30–60 นาที<br>สาธิตและปฏิบัติตาม</div>
+    <div class="t-lab">60–115 นาที<br>ปฏิบัติด้วยตนเอง (งานคู่)</div>
+    <div class="t-sub">ส่งงาน</div>
   </div>
-</section>
-
-<!-- 16 -->
-<section>
-  <span class="kicker">การเขียน Prompt 5/5</span>
-  <h2>ข้อควรระวังในการเขียน Prompt</h2>
   <div class="cols">
-    <div style="flex: 1.4;">
-      <ul>
-        <li>Prompt <b>กว้างเกินไป</b> → ได้คำตอบกลาง ๆ ไม่ตรงใจ</li>
-        <li>ภาษา <b>กำกวมหรือพิมพ์ผิด</b> → AI งง (เดี๋ยวลองในข้อ 2.5)</li>
-        <li><b>เชื่อทันที</b>โดยไม่ตรวจ → อันตราย</li>
+    <div class="card" style="font-size:.62em; line-height:1.6;">
+      <b>ข้อตกลงในชั้นเรียน</b>
+      <ul style="margin:.25em 0 0; padding-left:1.1em;">
+        <li>ทำงานเป็นคู่ และ<b>สลับผู้ควบคุมเครื่อง</b>เมื่อผ่านครึ่งเวลาของช่วงปฏิบัติ</li>
+        <li>ใบงานสัปดาห์ละ 20 คะแนน · <b>คะแนนส่วนใหญ่มาจากการอธิบายเหตุผล</b> ไม่ใช่ความสวยงามของงาน</li>
+        <li>ส่งไฟล์ PDF ใบงาน และไฟล์ workflow <code>.ows</code></li>
       </ul>
-      <p class="good" style="margin-top:.4em; font-size: 0.9em;">พร้อมแล้ว — ไปลงมือทำกัน! 🚀</p>
     </div>
-    <div style="flex: 1.2; text-align: center;">
-      <img src="images/common_pitfalls.png" alt="Prompt Common Pitfalls Caution" style="width: 100%; max-height: 290px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid var(--line); background: #ffffff;">
+    <div class="card" style="font-size:.62em; line-height:1.6;">
+      <b>การใช้ Gemini</b>
+      <ul style="margin:.25em 0 0; padding-left:1.1em;">
+        <li class="good" style="font-weight:600;">ใช้ได้: แปลคำศัพท์ · สอบถามการทำงานของเมนูหรือปุ่ม</li>
+        <li class="warn">ไม่อนุญาต: ให้ Gemini ตอบคำถามในใบงานแทน — คำตอบต้องอ้างอิง<u>ผลที่ปรากฏใน Orange ของนักเรียนเอง</u></li>
+      </ul>
     </div>
   </div>
 </section>
 
-<!-- ===================== PART 4: ACTIVITIES (WORKSHEET) ===================== -->
-
-<!-- 17 ACT1 intro -->
+<!-- ===================== 5 WARM-UP ===================== -->
 <section>
-  <span class="kicker">กิจกรรมที่ 1</span>
-  <h2>ฝึกเขียน Prompt 3 องค์ประกอบ 🧩</h2>
-  <p>ใช้ <b>gemini.google.com</b> · คัดลอก <b>prompt ที่ใช้</b> และ <b>คำตอบที่ Gemini ให้</b> มาวางในช่องของแต่ละข้อ</p>
-  <p class="note">ทุกช่องบันทึกอัตโนมัติ ทำต่อข้ามวันได้</p>
-  <p class="rule" style="margin-top:.5em">💡 ใต้ช่อง “Prompt ของฉัน” ทุกข้อ มีปุ่ม <b>ขอคำแนะนำปรับปรุง prompt</b> — ลองเขียนเองก่อน แล้วกดให้ <b>AI โค้ช</b> ช่วยติชม (โค้ชจะ <b>ไม่เขียน prompt ให้ทั้งหมด</b> แต่ช่วยให้คุณแก้เอง)</p>
+  <h2><span class="part-tag part-lec">บรรยาย</span>AI ที่เรียนรู้จากข้อมูลในชีวิตประจำวัน</h2>
+  <div class="ex-grid">
+    <div class="ex-card"><span class="em">▶️</span><b>YouTube / TikTok แนะนำคลิป</b><br>เรียนรู้จากคลิปที่ผู้ใช้ดูจนจบ กดถูกใจ หรือเลื่อนผ่าน</div>
+    <div class="ex-card"><span class="em">📧</span><b>กล่องสแปมในอีเมล</b><br>เรียนรู้จากอีเมลจำนวนมากที่ผู้ใช้รายงานว่าเป็นสแปม</div>
+    <div class="ex-card"><span class="em">🙂</span><b>ปลดล็อกมือถือด้วยหน้า</b><br>เรียนรู้จากภาพใบหน้าหลายมุมที่บันทึกไว้ตอนตั้งค่า</div>
+    <div class="ex-card"><span class="em">⌨️</span><b>แป้นพิมพ์แนะนำคำถัดไป</b><br>เรียนรู้จากข้อความที่ผู้ใช้พิมพ์เป็นประจำ</div>
+    <div class="ex-card"><span class="em">🗺️</span><b>Google Maps แสดงสภาพการจราจร</b><br>เรียนรู้จากความเร็วในการเคลื่อนที่ของโทรศัพท์จำนวนมากบนถนน</div>
+    <div class="ex-card"><span class="em">🛒</span><b>Shopee "สินค้าที่คุณอาจชอบ"</b><br>เรียนรู้จากสินค้าที่ผู้ใช้ซึ่งมีพฤติกรรมคล้ายกันเลือกซื้อ</div>
+  </div>
+  <div class="q" style="margin-top:.6em;">คำถามชวนคิด: ระบบทั้งหมดนี้มีลักษณะร่วมกันอย่างไร <span class="note">(แนวคำตอบ: ไม่มีผู้ใดเขียนกฎให้ทีละข้อ ระบบเรียนรู้รูปแบบจาก<b>ตัวอย่างจำนวนมาก</b>ด้วยตนเอง)</span></div>
 </section>
 
-<!-- 18 Q1.1 -->
+<!-- ===================== 6 PROGRAMMING vs ML ===================== -->
 <section>
-  <h3>ข้อ 1.1</h3>
-  <p class="q">เขียน prompt เพื่อ <b>เชิญชวนเที่ยวจังหวัด <span data-var="province">เชียงใหม่</span></b> โดยต้องมีครบ <b>3 องค์ประกอบ</b> (บทบาท + งาน + รูปแบบ)</p>
-  <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 1.1em; align-items: start;">
-    <div style="display: flex; flex-direction: column; gap: 0.35em;">
-      <div>
-        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">① บทบาท (Role) <span id="q11p_role_feedback"></span></span>
-        <textarea class="save prompt-subfield" id="q11p_role" placeholder="คุณรับบทเป็นใคร เช่น: คุณเป็นไกด์มืออาชีพ"></textarea>
-      </div>
-      <div>
-        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">② งาน (Task) <span id="q11p_task_feedback"></span></span>
-        <textarea class="save prompt-subfield" id="q11p_task" placeholder="สั่งให้ AI ทำอะไร เช่น: ช่วยเขียนแนะนำสถานที่เที่ยวจังหวัดเชียงใหม่"></textarea>
-      </div>
-      <div>
-        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">③ รูปแบบ (Format) <span id="q11p_format_feedback"></span></span>
-        <textarea class="save prompt-subfield" id="q11p_format" placeholder="รูปแบบคำตอบ เช่น: ความยาว 2 ย่อหน้า โทนสนุกสนาน มีอีโมจิ"></textarea>
-      </div>
+  <h2>โปรแกรมทั่วไป vs Machine Learning</h2>
+  <svg class="svgfig" viewBox="0 0 1000 360" width="1000" role="img" aria-label="โปรแกรมทั่วไป: คนเขียนกฎ ใส่ข้อมูล ได้คำตอบ · Machine Learning: ใส่ข้อมูลพร้อมคำตอบ ได้กฎออกมา">
+    <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5b6678"/></marker></defs>
+    <text x="10" y="30" font-size="22" font-weight="700" fill="#1a73e8" font-family="Sarabun">โปรแกรมทั่วไป</text>
+    <rect x="10" y="45" width="190" height="56" rx="10" fill="#fff6ed" stroke="#ffd8b8" stroke-width="2"/>
+    <text x="105" y="80" font-size="20" text-anchor="middle" font-family="Sarabun" fill="#1a2235">กฎ (มนุษย์เขียน)</text>
+    <rect x="10" y="111" width="190" height="56" rx="10" fill="#eef3fb" stroke="#cfe0fb" stroke-width="2"/>
+    <text x="105" y="146" font-size="20" text-anchor="middle" font-family="Sarabun" fill="#1a2235">ข้อมูล</text>
+    <line x1="205" y1="106" x2="325" y2="106" stroke="#5b6678" stroke-width="3" marker-end="url(#ar)"/>
+    <rect x="335" y="70" width="200" height="72" rx="36" fill="#1a73e8"/>
+    <text x="435" y="114" font-size="21" text-anchor="middle" font-weight="700" font-family="Sarabun" fill="#fff">โปรแกรม</text>
+    <line x1="540" y1="106" x2="640" y2="106" stroke="#5b6678" stroke-width="3" marker-end="url(#ar)"/>
+    <rect x="650" y="78" width="160" height="56" rx="10" fill="#f4fbf7" stroke="#cdeadb" stroke-width="2"/>
+    <text x="730" y="113" font-size="20" text-anchor="middle" font-family="Sarabun" fill="#0f8a4f" font-weight="700">คำตอบ</text>
+    <text x="830" y="100" font-size="15" font-family="Sarabun" fill="#5b6678">ถ้ามีคำว่า "ถูกรางวัล"</text>
+    <text x="830" y="120" font-size="15" font-family="Sarabun" fill="#5b6678">→ จัดเป็นสแปม</text>
+
+    <line x1="10" y1="190" x2="990" y2="190" stroke="#dfe4ec" stroke-width="2" stroke-dasharray="6 6"/>
+
+    <text x="10" y="225" font-size="22" font-weight="700" fill="#7b41d8" font-family="Sarabun">Machine Learning</text>
+    <rect x="10" y="240" width="190" height="56" rx="10" fill="#eef3fb" stroke="#cfe0fb" stroke-width="2"/>
+    <text x="105" y="275" font-size="20" text-anchor="middle" font-family="Sarabun" fill="#1a2235">ข้อมูล</text>
+    <rect x="10" y="306" width="190" height="50" rx="10" fill="#f4fbf7" stroke="#cdeadb" stroke-width="2"/>
+    <text x="105" y="338" font-size="19" text-anchor="middle" font-family="Sarabun" fill="#0f8a4f" font-weight="700">คำตอบ (เฉลย)</text>
+    <line x1="205" y1="298" x2="325" y2="298" stroke="#5b6678" stroke-width="3" marker-end="url(#ar)"/>
+    <rect x="335" y="262" width="200" height="72" rx="36" fill="#7b41d8"/>
+    <text x="435" y="306" font-size="21" text-anchor="middle" font-weight="700" font-family="Sarabun" fill="#fff">เรียนรู้ (ML)</text>
+    <line x1="540" y1="298" x2="640" y2="298" stroke="#5b6678" stroke-width="3" marker-end="url(#ar)"/>
+    <rect x="650" y="270" width="160" height="56" rx="10" fill="#fff6ed" stroke="#ffd8b8" stroke-width="2"/>
+    <text x="730" y="305" font-size="20" text-anchor="middle" font-family="Sarabun" fill="#c2410c" font-weight="700">กฎ = โมเดล</text>
+    <text x="830" y="292" font-size="15" font-family="Sarabun" fill="#5b6678">อีเมล 10,000 ฉบับ</text>
+    <text x="830" y="312" font-size="15" font-family="Sarabun" fill="#5b6678">ที่ระบุแล้วว่าเป็นสแปมหรือไม่</text>
+  </svg>
+  <div class="card" style="font-size:.62em; line-height:1.6; margin-top:.3em; border-left:5px solid var(--purple);">
+    <b style="color:var(--purple)">โมเดล (Model)</b> = กฎที่คอมพิวเตอร์สร้างขึ้นจากตัวอย่าง · นำไปใช้ทำนาย<b>ข้อมูลใหม่ที่ไม่เคยพบมาก่อน</b>ได้
+  </div>
+</section>
+
+<!-- ===================== 7 FLIB GAME ===================== -->
+<section>
+  <h2>กิจกรรม: "ฟลิบ" คืออะไร? <span class="note">— หากฎจากตัวอย่างด้วยตนเอง</span></h2>
+  <svg class="svgfig" viewBox="0 0 1000 300" width="1000" role="img" aria-label="ตัวอย่างสิ่งมีชีวิต 6 ตัวพร้อมเฉลยว่าเป็นฟลิบหรือไม่ และข้อมูลใหม่ 2 ตัว">
+    <g font-family="Sarabun" text-anchor="middle">
+    <!-- 1 blue, 2 eyes, spots: FLIB -->
+    <g transform="translate(0,10)">
+      <ellipse cx="60" cy="70" rx="48" ry="42" fill="#5b9cf2"/>
+      <circle cx="44" cy="55" r="9" fill="#fff"/><circle cx="44" cy="56" r="4" fill="#1a2235"/>
+      <circle cx="76" cy="55" r="9" fill="#fff"/><circle cx="76" cy="56" r="4" fill="#1a2235"/>
+      <circle cx="40" cy="88" r="6" fill="#1a2235" opacity=".4"/><circle cx="62" cy="96" r="5" fill="#1a2235" opacity=".4"/><circle cx="82" cy="82" r="6" fill="#1a2235" opacity=".4"/>
+      <text x="60" y="140" font-size="18" fill="#5b6678">ตัวที่ 1</text>
+      <text x="60" y="165" font-size="20" font-weight="700" fill="#0f8a4f">ฟลิบ ✓</text>
+    </g>
+    <!-- 2 red, 1 eye, spots: FLIB -->
+    <g transform="translate(125,10)">
+      <ellipse cx="60" cy="70" rx="48" ry="42" fill="#f26b5b"/>
+      <circle cx="60" cy="54" r="10" fill="#fff"/><circle cx="60" cy="55" r="4.5" fill="#1a2235"/>
+      <circle cx="40" cy="88" r="6" fill="#1a2235" opacity=".4"/><circle cx="62" cy="96" r="5" fill="#1a2235" opacity=".4"/><circle cx="82" cy="82" r="6" fill="#1a2235" opacity=".4"/>
+      <text x="60" y="140" font-size="18" fill="#5b6678">ตัวที่ 2</text>
+      <text x="60" y="165" font-size="20" font-weight="700" fill="#0f8a4f">ฟลิบ ✓</text>
+    </g>
+    <!-- 3 blue, 2 eyes, no spots: NOT -->
+    <g transform="translate(250,10)">
+      <ellipse cx="60" cy="70" rx="48" ry="42" fill="#5b9cf2"/>
+      <circle cx="44" cy="55" r="9" fill="#fff"/><circle cx="44" cy="56" r="4" fill="#1a2235"/>
+      <circle cx="76" cy="55" r="9" fill="#fff"/><circle cx="76" cy="56" r="4" fill="#1a2235"/>
+      <text x="60" y="140" font-size="18" fill="#5b6678">ตัวที่ 3</text>
+      <text x="60" y="165" font-size="20" font-weight="700" fill="#c2410c">ไม่ใช่ ✗</text>
+    </g>
+    <!-- 4 green, 3 eyes, spots: FLIB -->
+    <g transform="translate(375,10)">
+      <ellipse cx="60" cy="70" rx="48" ry="42" fill="#4fbf86"/>
+      <circle cx="38" cy="57" r="8" fill="#fff"/><circle cx="38" cy="58" r="3.5" fill="#1a2235"/>
+      <circle cx="60" cy="48" r="8" fill="#fff"/><circle cx="60" cy="49" r="3.5" fill="#1a2235"/>
+      <circle cx="82" cy="57" r="8" fill="#fff"/><circle cx="82" cy="58" r="3.5" fill="#1a2235"/>
+      <circle cx="40" cy="88" r="6" fill="#1a2235" opacity=".4"/><circle cx="62" cy="96" r="5" fill="#1a2235" opacity=".4"/><circle cx="82" cy="82" r="6" fill="#1a2235" opacity=".4"/>
+      <text x="60" y="140" font-size="18" fill="#5b6678">ตัวที่ 4</text>
+      <text x="60" y="165" font-size="20" font-weight="700" fill="#0f8a4f">ฟลิบ ✓</text>
+    </g>
+    <!-- 5 red, 2 eyes, no spots: NOT -->
+    <g transform="translate(500,10)">
+      <ellipse cx="60" cy="70" rx="48" ry="42" fill="#f26b5b"/>
+      <circle cx="44" cy="55" r="9" fill="#fff"/><circle cx="44" cy="56" r="4" fill="#1a2235"/>
+      <circle cx="76" cy="55" r="9" fill="#fff"/><circle cx="76" cy="56" r="4" fill="#1a2235"/>
+      <text x="60" y="140" font-size="18" fill="#5b6678">ตัวที่ 5</text>
+      <text x="60" y="165" font-size="20" font-weight="700" fill="#c2410c">ไม่ใช่ ✗</text>
+    </g>
+    <!-- 6 green, 1 eye, no spots: NOT -->
+    <g transform="translate(625,10)">
+      <ellipse cx="60" cy="70" rx="48" ry="42" fill="#4fbf86"/>
+      <circle cx="60" cy="54" r="10" fill="#fff"/><circle cx="60" cy="55" r="4.5" fill="#1a2235"/>
+      <text x="60" y="140" font-size="18" fill="#5b6678">ตัวที่ 6</text>
+      <text x="60" y="165" font-size="20" font-weight="700" fill="#c2410c">ไม่ใช่ ✗</text>
+    </g>
+    <!-- divider -->
+    <line x1="762" y1="10" x2="762" y2="200" stroke="#dfe4ec" stroke-width="3" stroke-dasharray="6 6"/>
+    <text x="880" y="22" font-size="17" font-weight="700" fill="#7b41d8">ข้อมูลใหม่</text>
+    <!-- A blue, 3 eyes, spots -->
+    <g transform="translate(770,30)">
+      <ellipse cx="55" cy="62" rx="42" ry="37" fill="#5b9cf2"/>
+      <circle cx="35" cy="50" r="7" fill="#fff"/><circle cx="35" cy="51" r="3" fill="#1a2235"/>
+      <circle cx="55" cy="42" r="7" fill="#fff"/><circle cx="55" cy="43" r="3" fill="#1a2235"/>
+      <circle cx="75" cy="50" r="7" fill="#fff"/><circle cx="75" cy="51" r="3" fill="#1a2235"/>
+      <circle cx="38" cy="78" r="5" fill="#1a2235" opacity=".4"/><circle cx="57" cy="86" r="4.5" fill="#1a2235" opacity=".4"/><circle cx="74" cy="74" r="5" fill="#1a2235" opacity=".4"/>
+      <text x="55" y="125" font-size="18" font-weight="700" fill="#7b41d8">ก ?</text>
+    </g>
+    <!-- B red, 1 eye, no spots -->
+    <g transform="translate(880,30)">
+      <ellipse cx="55" cy="62" rx="42" ry="37" fill="#f26b5b"/>
+      <circle cx="55" cy="48" r="9" fill="#fff"/><circle cx="55" cy="49" r="4" fill="#1a2235"/>
+      <text x="55" y="125" font-size="18" font-weight="700" fill="#7b41d8">ข ?</text>
+    </g>
+    </g>
+    <text x="10" y="232" font-size="19" font-family="Sarabun" fill="#1a2235">พิจารณาตัวอย่าง 6 ตัวพร้อมเฉลย → หากฎว่าสิ่งใดคือ "ฟลิบ" → ใช้กฎนั้นทำนายตัว <tspan font-weight="700" fill="#7b41d8">ก</tspan> และ <tspan font-weight="700" fill="#7b41d8">ข</tspan></text>
+    <text x="10" y="262" font-size="16" font-family="Sarabun" fill="#5b6678">อภิปรายกับคู่ 1 นาที ก่อนดูเฉลยในสไลด์ถัดไป</text>
+  </svg>
+</section>
+
+<!-- ===================== 8 FLIB ANSWER ===================== -->
+<section>
+  <h2>เฉลย: ฟลิบ = <span style="color:var(--purple)">ตัวที่มีจุด</span> (สีและจำนวนตาไม่เกี่ยว)</h2>
+  <div class="cols">
+    <div class="card gem-ok" style="font-size:.62em; line-height:1.65;">
+      <b class="good">ตัว ก → ฟลิบ · ตัว ข → ไม่ใช่</b><br>
+      กิจกรรมนี้มีขั้นตอนเดียวกับการทำงานของ ML:
+      <ol style="margin:.25em 0 0; padding-left:1.2em;">
+        <li>พิจารณา<b>ตัวอย่าง</b>ที่มี<b>เฉลย</b></li>
+        <li>สังเกต<b>ลักษณะ</b> (สี · จำนวนตา · จุด)</li>
+        <li>หา<b>กฎ</b>ที่อธิบายเฉลยได้ทุกตัว</li>
+        <li>ใช้กฎนั้น<b>ทำนายตัวใหม่</b></li>
+      </ol>
+    </div>
+    <div class="card gem-no" style="font-size:.62em; line-height:1.65;">
+      <b class="warn">หากตัวอย่างมีความลำเอียง</b><br>
+      สมมติว่าได้เห็นเพียงตัวที่ 1 (ฟ้า มีจุด → ฟลิบ) และตัวที่ 5 (แดง ไม่มีจุด → ไม่ใช่)<br>
+      อาจสรุปกฎผิดว่า <b>"สีฟ้า = ฟลิบ"</b> และทำนายตัวที่ 3 ผิด<br>
+      <span class="note" style="font-size:.95em;">AI ก็เช่นเดียวกัน: <b>คุณภาพของสิ่งที่เรียนรู้ขึ้นอยู่กับตัวอย่างที่ได้รับ</b> (จะศึกษาเพิ่มเติมในสัปดาห์ที่ 7)</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 9 VOCABULARY ===================== -->
+<section>
+  <h2>คำศัพท์พื้นฐานของ ML: ตัวอย่าง · Feature · Target</h2>
+  <table class="zoo-tbl">
+    <tr><th class="meta">name</th><th class="feat">hair<br><span class="note">มีขน</span></th><th class="feat">feathers<br><span class="note">มีขนนก</span></th><th class="feat">eggs<br><span class="note">ออกไข่</span></th><th class="feat">milk<br><span class="note">ให้นม</span></th><th class="feat">aquatic<br><span class="note">อยู่ในน้ำ</span></th><th class="feat">fins<br><span class="note">มีครีบ</span></th><th class="feat">legs<br><span class="note">จำนวนขา</span></th><th class="targ">type<br><span class="note">ประเภท</span></th></tr>
+    <tr><td class="meta">lion</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>4</td><td class="targ">mammal</td></tr>
+    <tr><td class="meta">penguin</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td><td>2</td><td class="targ">bird</td></tr>
+    <tr><td class="meta">tuna</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td class="targ">fish</td></tr>
+    <tr><td class="meta">honeybee</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>6</td><td class="targ">insect</td></tr>
+  </table>
+  <div class="cols" style="margin-top:.2em;">
+    <div class="card" style="font-size:.58em; line-height:1.55;"><b>1 แถว = 1 ตัวอย่าง</b> (instance)<br>สัตว์ 1 ตัว · อีเมล 1 ฉบับ · นักเรียน 1 คน<br><span class="note">1 = ใช่ · 0 = ไม่ใช่</span></div>
+    <div class="card" style="font-size:.58em; line-height:1.55; background:#eef3fb;"><b style="color:var(--blue)">Feature</b> = ลักษณะที่ใช้ในการทำนาย<br>(ข้อมูลที่ทราบอยู่แล้ว)</div>
+    <div class="card" style="font-size:.58em; line-height:1.55; background:#f7f0ff;"><b style="color:var(--purple)">Target</b> = สิ่งที่ต้องการทำนาย<br>(คำตอบที่โมเดลต้องเรียนรู้)</div>
+    <div class="card" style="font-size:.58em; line-height:1.55; background:#f5f6f8;"><b style="color:var(--muted)">Meta</b> = ข้อมูลประกอบ<br>ไม่ใช้ในการทำนาย (เช่น ชื่อสัตว์)</div>
+  </div>
+  <div class="q" style="font-size:.66em;">เหตุใดจึงไม่ควรใช้ <code>name</code> เป็น Feature <span class="note">— หากโมเดลใช้ชื่อ จะเป็นการจดจำรายตัวแทนการเรียนรู้ลักษณะ และจะทำนายสัตว์ที่ไม่มีชื่ออยู่ในข้อมูลไม่ได้</span></div>
+</section>
+
+<!-- ===================== 10 DATA TYPES RECAP ===================== -->
+<section>
+  <h2>ทบทวนจากภาคเรียนที่ 1: ชนิดข้อมูลใน Orange</h2>
+  <table>
+    <tr><th style="width:24%;">ชื่อที่ใช้ในภาคเรียนที่ 1</th><th style="width:22%;">ชื่อใน Orange</th><th>ตัวอย่างในข้อมูล Zoo</th></tr>
+    <tr><td>ข้อมูลหมวดหมู่ (Nominal)</td><td><b>categorical</b></td><td><code>type</code> = mammal, bird, fish … · <code>feathers</code> = 0 / 1</td></tr>
+    <tr><td>ข้อมูลหมวดหมู่มีลำดับ (Ordinal)</td><td><b>categorical</b></td><td><span class="note">(ไม่มีใน Zoo) เช่น ระดับความพอใจ น้อย–กลาง–มาก</span></td></tr>
+    <tr><td>ข้อมูลตัวเลข (Numerical)</td><td><b>numeric</b></td><td><span class="note">ในไฟล์ Zoo ตั้ง <code>legs</code> เป็น categorical ไว้ (0, 2, 4, 5, 6, 8 ขา)</span></td></tr>
+    <tr><td>ข้อความ</td><td><b>text</b></td><td><code>name</code> = aardvark, antelope …</td></tr>
+  </table>
+  <div class="card" style="font-size:.62em; line-height:1.6; margin-top:.4em; border-left:5px solid var(--teal);">
+    <b style="color:var(--teal)">ใน Orange ทุกคอลัมน์มีคุณสมบัติ 2 ประการ:</b>
+    <b>Type</b> (ชนิดข้อมูล — categorical / numeric / text) และ
+    <b>Role</b> (หน้าที่ — <b>feature</b> / <b>target</b> / <b>meta</b> / skip)
+    ซึ่งจะเห็นได้ในหน้าต่าง File
+  </div>
+</section>
+
+<!-- ===================== 11 SUPERVISED vs UNSUPERVISED ===================== -->
+<section>
+  <h2>ML 2 ประเภทหลัก: มีเฉลย และไม่มีเฉลย</h2>
+  <svg class="svgfig" viewBox="0 0 1000 250" width="1000" role="img" aria-label="Supervised: จุดมีสีบอกเฉลย · Unsupervised: จุดสีเทา คอมพิวเตอร์จัดกลุ่มเอง">
+    <g font-family="Sarabun">
+      <rect x="5" y="5" width="480" height="240" rx="16" fill="#fff" stroke="#dfe4ec" stroke-width="2"/>
+      <text x="25" y="40" font-size="22" font-weight="700" fill="#1a73e8">Supervised — มีเฉลย</text>
+      <g>
+        <circle cx="80" cy="110" r="11" fill="#1a73e8"/><circle cx="110" cy="95" r="11" fill="#1a73e8"/><circle cx="95" cy="140" r="11" fill="#1a73e8"/><circle cx="130" cy="125" r="11" fill="#1a73e8"/>
+        <circle cx="250" cy="100" r="11" fill="#f26b5b"/><circle cx="280" cy="125" r="11" fill="#f26b5b"/><circle cx="240" cy="140" r="11" fill="#f26b5b"/><circle cx="300" cy="95" r="11" fill="#f26b5b"/>
+        <circle cx="390" cy="160" r="13" fill="#fff" stroke="#7b41d8" stroke-width="3" stroke-dasharray="4 3"/><text x="390" y="167" font-size="18" text-anchor="middle" font-weight="700" fill="#7b41d8">?</text>
+        <text x="390" y="200" font-size="15" text-anchor="middle" fill="#7b41d8">ข้อมูลใหม่</text>
+      </g>
+      <text x="25" y="200" font-size="16" fill="#5b6678">ทุกจุดมีสี (= เฉลย) → เรียนรู้แล้วทำนายจุดใหม่</text>
+      <text x="25" y="225" font-size="16" fill="#1a2235">เช่น จำแนกประเภทสัตว์ · คัดกรองอีเมลสแปม</text>
+
+      <rect x="515" y="5" width="480" height="240" rx="16" fill="#fff" stroke="#dfe4ec" stroke-width="2"/>
+      <text x="535" y="40" font-size="22" font-weight="700" fill="#0aa3a3">Unsupervised — ไม่มีเฉลย</text>
+      <ellipse cx="620" cy="115" rx="65" ry="45" fill="none" stroke="#0aa3a3" stroke-width="2.5" stroke-dasharray="7 5"/>
+      <ellipse cx="790" cy="100" rx="60" ry="42" fill="none" stroke="#0aa3a3" stroke-width="2.5" stroke-dasharray="7 5"/>
+      <ellipse cx="900" cy="165" rx="55" ry="35" fill="none" stroke="#0aa3a3" stroke-width="2.5" stroke-dasharray="7 5"/>
+      <circle cx="595" cy="105" r="10" fill="#9aa5b8"/><circle cx="630" cy="95" r="10" fill="#9aa5b8"/><circle cx="615" cy="135" r="10" fill="#9aa5b8"/><circle cx="650" cy="120" r="10" fill="#9aa5b8"/>
+      <circle cx="770" cy="90" r="10" fill="#9aa5b8"/><circle cx="805" cy="110" r="10" fill="#9aa5b8"/><circle cx="790" cy="80" r="10" fill="#9aa5b8"/>
+      <circle cx="885" cy="160" r="10" fill="#9aa5b8"/><circle cx="915" cy="172" r="10" fill="#9aa5b8"/><circle cx="905" cy="150" r="10" fill="#9aa5b8"/>
+      <text x="535" y="200" font-size="16" fill="#5b6678">จุดไม่มีสี → คอมพิวเตอร์จัดกลุ่มข้อมูลที่คล้ายกันเอง</text>
+      <text x="535" y="225" font-size="16" fill="#1a2235">เช่น แบ่งกลุ่มลูกค้า · จัดกลุ่มเพลงที่มีลักษณะคล้ายกัน</text>
+    </g>
+  </svg>
+  <div class="note" style="font-size:.6em; margin-top:.3em;">สัปดาห์ 3, 4, 6 = Supervised · สัปดาห์ 5 = Unsupervised · ข้อมูล Zoo ที่ใช้ในวันนี้มีเฉลย (<code>type</code>) จึงเป็นแบบ Supervised</div>
+</section>
+
+<!-- ===================== 12 ORANGE INTRO ===================== -->
+<section>
+  <h2>Orange: สร้างโมเดลด้วยการเชื่อมต่อ widget โดยไม่ต้องเขียนโค้ด</h2>
+  <div class="cols" style="align-items:center;">
+    <div class="shot" style="flex:1.1;"><img src="images/w1_canvas.png" alt="ผังงานใน Orange: widget File เชื่อมไปยัง Data Table, Distributions และ Scatter Plot" style="max-height:300px;"><div class="figcap">ภาพหน้าจอจริงจาก Orange 3.40</div></div>
+    <div class="card" style="flex:1; font-size:.6em; line-height:1.7;">
+      <b>File</b> อ่านไฟล์ข้อมูล แล้วส่งต่อผ่านเส้นเชื่อมที่มีป้าย <code>Data</code><br>
+      <b>Data Table</b> แสดงข้อมูลในรูปตาราง<br>
+      <b>Distributions</b> แสดงจำนวนข้อมูลของแต่ละค่า<br>
+      <b>Scatter Plot</b> แสดงข้อมูลเป็นจุดบนกราฟ 2 แกน
+    </div>
+  </div>
+  <div class="cols" style="margin-top:.3em;">
+    <div class="card" style="font-size:.58em; line-height:1.5;"><b>Widget</b> = เครื่องมือ 1 ชิ้น ทำหน้าที่ 1 อย่าง<br><span class="note">สีส้ม = Data · สีชมพู = Visualize (กราฟ)</span></div>
+    <div class="card" style="font-size:.58em; line-height:1.5;"><b>เส้นเชื่อม</b> = ส่งข้อมูลจาก widget ทางซ้ายไปยัง widget ทางขวา</div>
+    <div class="card" style="font-size:.58em; line-height:1.5;"><b>Workflow</b> = ผังงานทั้งหมด · บันทึกเป็นไฟล์ <code>.ows</code></div>
+  </div>
+  <div class="note" style="font-size:.55em; margin-top:.3em;">ดาวน์โหลดฟรี: orangedatamining.com/download (ติดตั้งไว้แล้วในห้องปฏิบัติการคอมพิวเตอร์)</div>
+</section>
+
+<!-- ===================== 13 DEMO 1: OPEN + FILE ===================== -->
+<section>
+  <h2><span class="part-tag part-demo">สาธิต</span>ขั้นที่ 1 — เปิด Orange และโหลดข้อมูล Zoo</h2>
+  <div class="cols">
+    <div style="flex:1.35;">
+      <div class="step-box"><span class="step-num">1</span>เปิดโปรแกรม <b>Orange</b> → ที่หน้าต่างต้อนรับ กด <b>New</b> เพื่อเปิดผังงานใหม่</div>
+      <div class="step-box"><span class="step-num">2</span>แถบซ้ายหมวด <b>Data</b> → ลาก widget <b>File</b> มาวางบนพื้นที่ทำงาน (หรือคลิกขวาที่พื้นที่ว่าง แล้วพิมพ์ <code>File</code>)</div>
+      <div class="step-box"><span class="step-num">3</span>ดับเบิลคลิก <b>File</b> → ที่ช่องเลือกไฟล์ด้านบน เลือก <code>zoo.tab</code> จากรายการ<br>
+    <span class="note">หากไม่มีในรายการ ให้กดปุ่ม <b>…</b> แล้วเปิดไฟล์ <code>Week1/data/zoo.tab</code> ที่ครูจัดเตรียมไว้</span></div>
+      <div class="step-box"><span class="step-num">4</span>อ่านกล่อง <b>Info</b> แล้วบันทึกจำนวนแถวและจำนวน feature ไว้สำหรับตอบข้อ 2.1</div>
+    </div>
+    <div class="shot" style="flex:1;"><img src="images/w1_file.png" alt="หน้าต่าง File ใน Orange หลังเลือก zoo.tab แสดงกล่อง Info และตาราง Columns" style="max-height:390px;"></div>
+  </div>
+  <div class="demo-check">✅ <b>ตรวจสอบผล:</b> กล่อง Info แสดง <b>101 instances</b> · <b>16 features</b> (no missing values) · <b>categorical class with 7 values</b> · <b>1 meta attribute</b> · ตาราง Columns แสดง <code>name</code>, <code>hair</code>, <code>feathers</code> … <code>type</code></div>
+</section>
+
+<!-- ===================== 14 DEMO 2: TYPES & ROLES + GLOSSARY ===================== -->
+<section>
+  <h2><span class="part-tag part-demo">สาธิต</span>ขั้นที่ 2 — ดู Type และ Role ในหน้าต่าง File</h2>
+  <div class="step-box"><span class="step-num">5</span>ดูตาราง <b>Columns</b> ในหน้าต่าง File ซึ่งแต่ละแถวแสดง <b>Name · Type · Role · Values</b></div>
+  <div class="step-box"><span class="step-num">6</span>หา <code>type</code> → Role เป็น <b>target</b> · หา <code>name</code> → Role เป็น <b>meta</b> · ที่เหลือ 16 ตัวเป็น <b>feature</b>
+    <span class="note">(ไฟล์กำหนดไว้แล้ว <u>ไม่ต้องแก้ไข</u>ในคาบนี้)</span></div>
+  <h3 style="font-size:.8em; margin:.5em 0 .2em;">คำศัพท์ Feature ในข้อมูล Zoo (1 = ใช่ · 0 = ไม่ใช่)</h3>
+  <div class="gloss">
+    <div><code>hair</code> มีขน</div><div><code>feathers</code> มีขนนก</div><div><code>eggs</code> ออกไข่</div><div><code>milk</code> ให้นมลูก</div>
+    <div><code>airborne</code> บินได้</div><div><code>aquatic</code> อาศัยในน้ำ</div><div><code>predator</code> ล่าเหยื่อ</div><div><code>toothed</code> มีฟัน</div>
+    <div><code>backbone</code> มีกระดูกสันหลัง</div><div><code>breathes</code> หายใจด้วยปอด</div><div><code>venomous</code> มีพิษ</div><div><code>fins</code> มีครีบ</div>
+    <div><code>legs</code> จำนวนขา</div><div><code>tail</code> มีหาง</div><div><code>domestic</code> สัตว์เลี้ยง</div><div><code>catsize</code> ขนาดใหญ่กว่าแมว</div>
+  </div>
+  <h3 style="font-size:.8em; margin:.5em 0 .2em;">ค่าของ Target <code>type</code> (7 ประเภท)</h3>
+  <div class="gloss">
+    <div><code>mammal</code> สัตว์เลี้ยงลูกด้วยนม</div><div><code>bird</code> นก</div><div><code>fish</code> ปลา</div><div><code>insect</code> แมลง</div>
+    <div><code>reptile</code> สัตว์เลื้อยคลาน</div><div><code>amphibian</code> สัตว์สะเทินน้ำสะเทินบก</div><div style="grid-column:span 2;"><code>invertebrate</code> สัตว์ไม่มีกระดูกสันหลังอื่น ๆ (ที่ไม่ใช่แมลง)</div>
+  </div>
+</section>
+
+<!-- ===================== 15 DEMO 3: DATA TABLE ===================== -->
+<section>
+  <h2><span class="part-tag part-demo">สาธิต</span>ขั้นที่ 3 — Data Table: ดูข้อมูลทั้งตาราง</h2>
+  <div class="step-box"><span class="step-num">7</span>ลากเส้นจากขอบขวาของ <b>File</b> ไปปล่อยในพื้นที่ว่าง → พิมพ์ <code>Data Table</code> → กด Enter</div>
+  <div class="step-box"><span class="step-num">8</span>ดับเบิลคลิก <b>Data Table</b> → สังเกตว่าคอลัมน์ <code>type</code> (target) มีพื้นสีเทา และคอลัมน์ <code>name</code> (meta) มีพื้นสีครีม แยกจากคอลัมน์ feature</div>
+  <div class="step-box"><span class="step-num">9</span><b>คลิกหัวคอลัมน์</b> <code>airborne</code> เพื่อเรียงข้อมูล (หากแถวที่มีค่า 1 ไม่อยู่ด้านบน ให้คลิกซ้ำอีกครั้ง) แล้วสังเกตว่าสัตว์ที่บินได้เป็นประเภทใดบ้าง</div>
+  <div class="cols" style="margin-top:.3em;">
+    <div class="shot" style="flex:1.5;"><img src="images/w1_datatable.png" alt="Data Table ใน Orange เรียงตามคอลัมน์ airborne คอลัมน์ type เป็นสีเทา คอลัมน์ name เป็นสีครีม" style="max-height:330px;"></div>
+    <div style="flex:1;">
+      <div class="demo-check" style="margin-top:0;">✅ <b>ตรวจสอบผล:</b> กล่อง Info แสดง 101 instances และ 16 features · แถวที่ <code>airborne = 1</code> ส่วนใหญ่เป็น bird และ insect และมี mammal 2 ตัว คือ <code>fruitbat</code> และ <code>vampire</code> (ค้างคาว)</div>
+      <div class="q" style="font-size:.66em; margin-top:.5em;">คำถามชวนคิด: <code>dolphin</code> (โลมา) ถูกระบุเป็นประเภทใด และเหตุใดจึงไม่ใช่ fish</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 16 DEMO 4: DISTRIBUTIONS ===================== -->
+<section>
+  <h2><span class="part-tag part-demo">สาธิต</span>ขั้นที่ 4 — Distributions: การกระจายของข้อมูล</h2>
+  <div class="step-box"><span class="step-num">10</span>เชื่อม <b>File</b> กับ <code>Distributions</code> (ลากเส้นใหม่จาก File)</div>
+  <div class="step-box"><span class="step-num">11</span>ในกล่อง <b>Variable</b> ด้านซ้าย เลือก <code>type</code> → กราฟแสดงจำนวนสัตว์แต่ละประเภท (ใช้ตอบข้อ 2.2)</div>
+  <div class="step-box"><span class="step-num">12</span>เปลี่ยนเป็น <code>feathers</code> → ในกล่อง Columns ช่อง <b>Split by</b> เลือก <code>type</code> → แท่งกราฟแบ่งสีตามประเภท</div>
+  <div class="cols" style="margin-top:.3em;">
+    <div class="shot" style="flex:1.25;"><img src="images/w1_distributions.png" alt="Distributions ใน Orange แสดง feathers แยกสีตาม type แท่ง feathers = 1 เป็น bird ทั้งหมด" style="max-height:330px;"></div>
+    <div style="flex:1;">
+    <div class="demo-check" style="margin-top:0;">✅ <b>ผลที่ควรได้:</b> แท่ง <code>feathers = 1</code> มี<b>สีเดียว</b> คือ bird ทั้งหมด · แท่ง <code>feathers = 0</code> มีทุกสียกเว้น bird</div>
+    <div class="card" style="flex:1; font-size:.62em; line-height:1.55; border-left:5px solid var(--purple);">
+      <b style="color:var(--purple)">การตีความ:</b> คำถามเพียงข้อเดียว <b>"มีขนนกหรือไม่"</b> แยกนกออกจากสัตว์อื่นได้<b>ครบทุกตัว</b> feature นี้จึงเหมาะมากสำหรับการจำแนกนก
+    </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 17 DEMO 5: SCATTER PLOT ===================== -->
+<section>
+  <h2><span class="part-tag part-demo">สาธิต</span>ขั้นที่ 5 — Scatter Plot: พิจารณา 2 feature พร้อมกัน</h2>
+  <div class="step-box"><span class="step-num">13</span>เชื่อม <b>File</b> กับ <code>Scatter Plot</code></div>
+  <div class="step-box"><span class="step-num">14</span>ในกล่อง Axes ตั้ง <b>Axis x</b> = <code>milk</code> · <b>Axis y</b> = <code>feathers</code> · ในกล่อง Attributes ตั้ง <b>Color</b> = <code>type</code></div>
+  <div class="step-box"><span class="step-num">15</span>จุดที่มีค่าเดียวกันจะซ้อนทับกัน ให้เลื่อนแถบ <b>Jittering</b> (ใต้กล่อง Attributes) ไปทางขวาเพื่อกระจายจุด</div>
+  <div class="cols" style="margin-top:.3em;">
+    <div class="shot" style="flex:1.25;"><img src="images/w1_scatter.png" alt="Scatter Plot ใน Orange แกน x เป็น milk แกน y เป็น feathers ระบายสีตาม type และกระจายจุดด้วย Jittering" style="max-height:330px;"></div>
+    <div style="flex:1;">
+    <div class="demo-check" style="margin-top:0;">✅ <b>ผลที่ควรได้:</b> ข้อมูลแบ่งเป็น 3 กลุ่ม — milk = 1 เป็น mammal ทั้งหมด · feathers = 1 เป็น bird ทั้งหมด · ตำแหน่ง (0, 0) มีสัตว์หลายประเภทปนกัน</div>
+    <div class="card" style="flex:1; font-size:.62em; line-height:1.55; border-left:5px solid var(--purple);">
+      <b style="color:var(--purple)">คำถาม 2 ข้อแยกสัตว์ได้ 2 ประเภท</b><br>กลุ่มที่เหลือที่ตำแหน่ง (0, 0) ต้องใช้คำถามเพิ่มเติม ซึ่งเป็นหลักการของ <b>Decision Tree</b> ที่ Orange จะสร้างให้ในสัปดาห์ที่ 3
+    </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 18 DEMO 6: SAVE ===================== -->
+<section>
+  <h2><span class="part-tag part-demo">สาธิต</span>ขั้นที่ 6 — บันทึก Workflow</h2>
+  <div class="step-box"><span class="step-num">16</span>เมนู <b>File → Save As…</b> → ตั้งชื่อ <code>week1_เลขที่1_เลขที่2.ows</code> เช่น <code>week1_15_16.ows</code></div>
+  <div class="step-box"><span class="step-num">17</span>บันทึกไว้ในโฟลเดอร์ที่ครูกำหนด · <b>บันทึกด้วย Ctrl+S (Mac: ⌘+S) เป็นระยะ</b>ระหว่างทำใบงาน</div>
+  <div class="rule" style="font-size:.64em; margin-top:.5em;">
+    ไฟล์ <code>.ows</code> เก็บเฉพาะ<b>ผังงาน</b> (widget เส้นเชื่อม และการตั้งค่า) ไม่ได้เก็บข้อมูล · หากเลือก <code>zoo.tab</code> จากรายการไฟล์ของ Orange จะเปิดผังงานบนเครื่องอื่นที่ติดตั้ง Orange ได้ทันที · หากเปิดจากไฟล์ที่ครูจัดเตรียมไว้ ต้องนำไฟล์ <code>zoo.tab</code> ไปด้วยเมื่อย้ายเครื่อง
+  </div>
+  <div class="cols" style="margin-top:.6em; align-items:center;">
+    <div class="card" style="flex:1; font-size:.64em; line-height:1.6;">
+      <b>ผังงานเมื่อจบช่วงสาธิต:</b> File 1 widget เชื่อมไปยัง Data Table · Distributions · Scatter Plot
+      <span class="note">ตรวจสอบให้ตรงกับภาพด้านขวาก่อนเริ่มทำใบงาน</span>
+    </div>
+    <div class="shot" style="flex:1;"><img src="images/w1_canvas.png" alt="ผังงานที่สมบูรณ์: File เชื่อมไปยัง Data Table, Distributions และ Scatter Plot" style="max-height:250px;"></div>
+  </div>
+</section>
+
+<!-- ===================== 19 LAB OVERVIEW ===================== -->
+<section>
+  <h2><span class="part-tag part-lab">ปฏิบัติ</span>ใบงานวันนี้: 4 กิจกรรม · 20 คะแนน · 55 นาที</h2>
+  <table>
+    <tr><th style="width:36%;">กิจกรรม</th><th style="width:14%;">คะแนน</th><th style="width:16%;">เวลาแนะนำ</th><th>เครื่องมือ</th></tr>
+    <tr><td><b>1</b> Feature หรือ Target?</td><td>5</td><td>10 นาที</td><td>การวิเคราะห์ (ไม่ต้องใช้ Orange)</td></tr>
+    <tr><td><b>2</b> สำรวจข้อมูล Zoo</td><td>8</td><td>20 นาที</td><td>Data Table · Distributions · Scatter Plot</td></tr>
+    <tr><td><b>3</b> ทำนายประเภทสัตว์ชนิดใหม่</td><td>5</td><td>15 นาที</td><td>ใช้กราฟใน Orange เป็นหลักฐาน</td></tr>
+    <tr><td><b>4</b> ออกแบบชุดคำถามจำแนกสัตว์</td><td>2</td><td>10 นาที</td><td>สรุปจากกิจกรรม 2–3</td></tr>
+  </table>
+  <div class="rule" style="font-size:.62em; margin-top:.4em;">⏱ นาทีที่ 85 ของคาบ <b>สลับผู้ควบคุมเครื่อง</b> · คำตอบที่จะได้คะแนนเต็มต้อง<b>อ้างอิงตัวเลขหรือกราฟจาก Orange</b></div>
+</section>
+
+<!-- ===================== 20 ACTIVITY 1 ===================== -->
+<section>
+  <h2 style="margin-bottom:.2em;">กิจกรรมที่ 1 — Feature หรือ Target? <span class="note">(5 คะแนน)</span></h2>
+  <div class="note" style="font-size:.58em; margin-bottom:.2em;">สำหรับแต่ละสถานการณ์ ให้ระบุ Feature อย่างน้อย 2 รายการ และ Target (หากไม่มี ให้ระบุว่า "ไม่มี") แล้วเลือกประเภทของ ML</div>
+  <table class="scen" style="font-size:.6em;">
+    <tr><th style="width:42%;">สถานการณ์</th><th>Feature / Target</th><th style="width:19%;">ประเภท</th></tr>
+    <tr><td>1.1 แอปพลิเคชันอีเมลทำนายว่าอีเมลฉบับใหม่เป็นสแปมหรือไม่ โดยเรียนรู้จากอีเมลเก่าที่ผู้ใช้รายงานว่าเป็นสแปม</td>
+      <td><textarea class="save ws-field" id="q1_1" data-group="กิจกรรมที่ 1 — Feature หรือ Target?" data-label="1.1 อีเมลสแปม — Feature / Target" placeholder="Feature: ... · Target: ..."></textarea></td>
+      <td><select class="save" id="q1_1t" data-group="กิจกรรมที่ 1 — Feature หรือ Target?" data-label="1.1 ประเภท ML"><option value="">— เลือก —</option><option>Supervised</option><option>Unsupervised</option></select></td></tr>
+    <tr><td>1.2 ผู้ค้าผลไม้ต้องการทำนายว่าทุเรียนสุกพร้อมรับประทานหรือไม่ จากบันทึกของทุเรียนที่ผ่าแล้วในอดีต</td>
+      <td><textarea class="save ws-field" id="q1_2" data-group="กิจกรรมที่ 1 — Feature หรือ Target?" data-label="1.2 ทุเรียนสุก — Feature / Target" placeholder="Feature: ... · Target: ..."></textarea></td>
+      <td><select class="save" id="q1_2t" data-group="กิจกรรมที่ 1 — Feature หรือ Target?" data-label="1.2 ประเภท ML"><option value="">— เลือก —</option><option>Supervised</option><option>Unsupervised</option></select></td></tr>
+    <tr><td>1.3 แอปพลิเคชันฟังเพลงจัดเพลงที่มีลักษณะคล้ายกันไว้เป็นกลุ่ม โดยไม่มีข้อมูลว่าเพลงใดเป็นแนวใด</td>
+      <td><textarea class="save ws-field" id="q1_3" data-group="กิจกรรมที่ 1 — Feature หรือ Target?" data-label="1.3 จัดกลุ่มเพลง — Feature / Target" placeholder="Feature: ... · Target: ..."></textarea></td>
+      <td><select class="save" id="q1_3t" data-group="กิจกรรมที่ 1 — Feature หรือ Target?" data-label="1.3 ประเภท ML"><option value="">— เลือก —</option><option>Supervised</option><option>Unsupervised</option></select></td></tr>
+    <tr><td>1.4 โรงเรียนต้องการทำนายคะแนนสอบปลายภาคของนักเรียน จากข้อมูลของรุ่นพี่ที่ทราบคะแนนจริงแล้ว</td>
+      <td><textarea class="save ws-field" id="q1_4" data-group="กิจกรรมที่ 1 — Feature หรือ Target?" data-label="1.4 ทำนายคะแนนสอบ — Feature / Target" placeholder="Feature: ... · Target: ..."></textarea></td>
+      <td><select class="save" id="q1_4t" data-group="กิจกรรมที่ 1 — Feature หรือ Target?" data-label="1.4 ประเภท ML"><option value="">— เลือก —</option><option>Supervised</option><option>Unsupervised</option></select></td></tr>
+    <tr><td>1.5 ครูต้องการแบ่งนักเรียนเป็นกลุ่มติวตามพฤติกรรมการเรียน โดยยังไม่ทราบว่าควรมีกี่กลุ่มและแต่ละกลุ่มมีลักษณะอย่างไร</td>
+      <td><textarea class="save ws-field" id="q1_5" data-group="กิจกรรมที่ 1 — Feature หรือ Target?" data-label="1.5 กลุ่มติว — Feature / Target" placeholder="Feature: ... · Target: ..."></textarea></td>
+      <td><select class="save" id="q1_5t" data-group="กิจกรรมที่ 1 — Feature หรือ Target?" data-label="1.5 ประเภท ML"><option value="">— เลือก —</option><option>Supervised</option><option>Unsupervised</option></select></td></tr>
+  </table>
+</section>
+
+<!-- ===================== 21 ACTIVITY 2 (A) ===================== -->
+<section>
+  <h2 style="margin-bottom:.2em;">กิจกรรมที่ 2 — สำรวจข้อมูล Zoo (ตอนที่ 1) <span class="note">(ตอนที่ 1–2 รวม 8 คะแนน)</span></h2>
+  <div class="cols">
+    <div>
+      <span class="ws-label">2.1 ข้อมูล Zoo มีสัตว์กี่ตัว มี Feature กี่ตัว และ Target คือคอลัมน์ใด <span class="note">(ดูจากกล่อง Info) — 1 คะแนน</span></span>
+      <textarea class="save ws-field" id="q2_1" data-group="กิจกรรมที่ 2 — สำรวจข้อมูล Zoo" data-label="2.1 จำนวนสัตว์ / Feature / Target" style="min-height:70px;" placeholder="สัตว์ ... ตัว · Feature ... ตัว · Target คือ ..."></textarea>
+      <span class="ws-label">2.2 ใช้ Distributions เลือก <code>type</code> — ประเภทใดมีจำนวน<b>มากที่สุด</b>และ<b>น้อยที่สุด</b> อย่างละกี่ตัว <span class="note">— 1 คะแนน</span></span>
+      <textarea class="save ws-field" id="q2_2" data-group="กิจกรรมที่ 2 — สำรวจข้อมูล Zoo" data-label="2.2 ประเภทที่มากที่สุด / น้อยที่สุด" style="min-height:70px;" placeholder="มากที่สุด: ... (... ตัว) · น้อยที่สุด: ... (... ตัว)"></textarea>
     </div>
     <div>
-      <span class="ws-label">🤖 Prompt ที่รวมให้แล้ว (คลิกเพื่อคัดลอก)</span>
-      <textarea class="save ws-field" id="q11p" readonly style="font-family:'Sarabun',sans-serif; font-size:.7em; width:100%; height:60px; border:1.5px solid var(--line); border-radius:10px; padding:.4em .6em; box-sizing:border-box; background:#f7f9fc; color:var(--blue); cursor:pointer; font-weight:600; resize:none;" onclick="this.select(); document.execCommand('copy'); alert('คัดลอก Prompt แล้ว ✓');" data-group="กิจกรรมที่ 1: ฝึกเขียน Prompt 3 องค์ประกอบ" data-label="ข้อ 1.1 — Prompt ที่ใช้"></textarea>
-      <span class="ws-label gem" style="margin-top: 0.3em;">🤖 คำตอบจาก Gemini</span>
-      <textarea class="save ws-field" id="q11o" data-label="ข้อ 1.1 — คำตอบจาก Gemini" style="height: 105px;"></textarea>
+      <span class="ws-label">2.3 ระบุ Feature <b>1 ตัว</b> ที่แยก <code>mammal</code> ออกจากสัตว์ประเภทอื่นได้<b>ครบถ้วนโดยไม่มีข้อยกเว้น</b> — ระบุชื่อ Feature และอธิบายสิ่งที่กราฟ Distributions (Split by = type) แสดงเป็นหลักฐาน <span class="note">— 2 คะแนน</span></span>
+      <textarea class="save ws-field" id="q2_3" data-group="กิจกรรมที่ 2 — สำรวจข้อมูล Zoo" data-label="2.3 Feature ที่แยก mammal ได้ไม่พลาด + หลักฐานจากกราฟ" style="min-height:150px;" placeholder="Feature ที่เลือก: ...&#10;ในกราฟเห็นว่า แท่ง ... = 1 มีแต่สี ... จำนวน ... ตัว และแท่ง ... = 0 ไม่มีสี ..."></textarea>
     </div>
   </div>
+  <div class="note" style="font-size:.56em;">ข้อสังเกต: ควรตรวจสอบ <code>hair</code> อย่างละเอียด เนื่องจากมี mammal บางตัวที่ไม่มีขน และมีสัตว์ประเภทอื่นที่มีขน</div>
 </section>
 
-<!-- 19 Q1.2 -->
+<!-- ===================== 22 ACTIVITY 2 (B) ===================== -->
 <section>
-  <h3>ข้อ 1.2 <span class="note">(5 คะแนน)</span></h3>
-  <p class="q">แก้ prompt จากข้อ 1.1 ให้เหมาะกับผู้อ่านที่เป็น <b>นักท่องเที่ยวต่างชาติ</b> สำหรับ <b>ติดป้ายที่สนามบิน</b></p>
-  <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 1.1em; align-items: start;">
-    <div style="display: flex; flex-direction: column; gap: 0.35em;">
-      <div>
-        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">① บทบาท (Role) <span id="q12p_role_feedback"></span></span>
-        <textarea class="save prompt-subfield" id="q12p_role" placeholder="ปรับบทบาทให้เหมาะสม เช่น: คุณเป็นประชาสัมพันธ์สนามบิน"></textarea>
-      </div>
-      <div>
-        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">② งาน (Task) <span id="q12p_task_feedback"></span></span>
-        <textarea class="save prompt-subfield" id="q12p_task" placeholder="ปรับงานให้เหมาะสม เช่น: ช่วยแปล/เขียนแนะนำท่องเที่ยวสั้นๆ"></textarea>
-      </div>
-      <div>
-        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">③ รูปแบบ (Format) <span id="q12p_format_feedback"></span></span>
-        <textarea class="save prompt-subfield" id="q12p_format" placeholder="ปรับรูปแบบ เช่น: เป็นภาษาอังกฤษสั้นๆ กระชับ สำหรับขึ้นบอร์ดสนามบิน"></textarea>
-      </div>
+  <h2 style="margin-bottom:.2em;">กิจกรรมที่ 2 — สำรวจข้อมูล Zoo (ตอนที่ 2)</h2>
+  <div class="cols">
+    <div>
+      <span class="ws-label">2.4 ปลาทุกตัวมีครีบ แต่สัตว์ที่มีครีบไม่จำเป็นต้องเป็นปลา — เรียงคอลัมน์ <code>fins</code> ใน Data Table แล้วระบุ<b>ชื่อสัตว์ที่มีครีบแต่ไม่ใช่ fish</b> พร้อมประเภทของสัตว์เหล่านั้น <span class="note">— 1 คะแนน</span></span>
+      <textarea class="save ws-field" id="q2_4" data-group="กิจกรรมที่ 2 — สำรวจข้อมูล Zoo" data-label="2.4 สัตว์ที่มีครีบแต่ไม่ใช่ปลา" style="min-height:70px;" placeholder="... , ... , ... , ... เป็นประเภท ..."></textarea>
+      <span class="ws-label">2.5 ใน Scatter Plot ทดลองเปลี่ยน feature บนแกน x และ y จนได้คู่ที่ทำให้ <code>fish</code> <b>แยกเป็นกลุ่มเดียวโดยไม่ปนกับสัตว์ประเภทอื่น</b> — ระบุคู่ feature ดังกล่าว <span class="note">— 1 คะแนน</span></span>
+      <textarea class="save ws-field" id="q2_5" data-group="กิจกรรมที่ 2 — สำรวจข้อมูล Zoo" data-label="2.5 คู่แกนที่แยก fish ได้" style="min-height:70px;" placeholder="x = ... · y = ... · fish อยู่ที่มุม (... , ...) มี ... ตัว"></textarea>
     </div>
     <div>
-      <span class="ws-label">🤖 Prompt ที่รวมให้แล้ว (คลิกเพื่อคัดลอก)</span>
-      <textarea class="save ws-field" id="q12p" readonly style="font-family:'Sarabun',sans-serif; font-size:.7em; width:100%; height:60px; border:1.5px solid var(--line); border-radius:10px; padding:.4em .6em; box-sizing:border-box; background:#f7f9fc; color:var(--blue); cursor:pointer; font-weight:600; resize:none;" onclick="this.select(); document.execCommand('copy'); alert('คัดลอก Prompt แล้ว ✓');" data-label="ข้อ 1.2 — Prompt ที่ใช้"></textarea>
-      <span class="ws-label gem" style="margin-top: 0.3em;">🤖 คำตอบจาก Gemini</span>
-      <textarea class="save ws-field" id="q12o" data-label="ข้อ 1.2 — คำตอบจาก Gemini" style="height: 105px;"></textarea>
+      <span class="ws-label">2.6 แนบภาพหน้าจอ <b>2 ภาพ</b>: (ก) ผัง Workflow ทั้งผัง (ข) Scatter Plot ของข้อ 2.5 <span class="note">— 2 คะแนน</span></span>
+      <input class="save" id="q_img_workflow" type="text" readonly placeholder="ภาพ (ก) ผัง Workflow — ยังไม่มีภาพ" style="font-size:.6em;">
+      <div class="img-tray" id="q_img_workflow_tray"></div>
+      <div style="height:.5em;"></div>
+      <input class="save" id="q_img_scatter" type="text" readonly placeholder="ภาพ (ข) Scatter Plot — ยังไม่มีภาพ" style="font-size:.6em;">
+      <div class="img-tray" id="q_img_scatter_tray"></div>
+      <div class="note" style="font-size:.55em; margin-top:.4em;">จับภาพหน้าจอ: Windows กด <b>Win+Shift+S</b> · Mac กด <b>⌘+Shift+4</b> แล้ววางด้วย <b>Ctrl+V</b> ในสไลด์นี้ หรือกดปุ่มแนบภาพ</div>
     </div>
   </div>
 </section>
 
-<!-- 20 Q1.3 -->
+<!-- ===================== 23 ACTIVITY 3: MYSTERY ANIMALS ===================== -->
 <section>
-  <h3>ข้อ 1.3</h3>
-  <p class="q">เขียน prompt เพื่อ <b>สร้างภาพกราฟิก</b> จากเนื้อหาข้อ 1.2 โดยใช้ <b>Gemini Canvas</b></p>
-  <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 1.1em; align-items: start;">
-    <div style="display: flex; flex-direction: column; gap: 0.35em;">
-      <div>
-        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">① บทบาท (Role) <span id="q13p_role_feedback"></span></span>
-        <textarea class="save prompt-subfield" id="q13p_role" placeholder="กำหนดบทบาท เช่น: คุณเป็นนักออกแบบกราฟิกมืออาชีพ"></textarea>
-      </div>
-      <div>
-        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">② งาน (Task) <span id="q13p_task_feedback"></span></span>
-        <textarea class="save prompt-subfield" id="q13p_task" placeholder="สั่งวาดรูป เช่น: ช่วยสร้างรูปประกอบสำหรับป้ายโฆษณาตามเนื้อหาข้อ 1.2"></textarea>
-      </div>
-      <div>
-        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">③ รูปแบบ (Format) <span id="q13p_format_feedback"></span></span>
-        <textarea class="save prompt-subfield" id="q13p_format" placeholder="รูปแบบภาพ เช่น: ภาพถ่ายเสมือนจริง โทนอุ่นและสดใส คุณภาพระดับสตูดิโอ"></textarea>
-      </div>
+  <h2 style="margin-bottom:.2em;">กิจกรรมที่ 3 — ทำนายประเภทสัตว์ชนิดใหม่ <span class="note">(5 คะแนน)</span></h2>
+  <div class="note" style="font-size:.58em; margin-bottom:.2em;">สัตว์ 3 ชนิดนี้<b>ไม่มีในข้อมูล Zoo</b> จึงเป็น "ข้อมูลใหม่" ให้ใช้กราฟใน Orange เป็นหลักฐานในการทำนายประเภท (คำตอบต้องระบุ feature และกราฟที่ใช้ ไม่ใช่อาศัยความรู้เดิมเพียงอย่างเดียว)</div>
+  <table class="mystery" style="font-size:.58em;">
+    <tr><th>สัตว์</th><th>hair</th><th>feathers</th><th>eggs</th><th>milk</th><th>aquatic</th><th>backbone</th><th>fins</th><th>legs</th><th>tail</th></tr>
+    <tr><td>ก. พะยูน (dugong)</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+    <tr><td>ข. แมงมุม (spider)</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>8</td><td>0</td></tr>
+    <tr><td>ค. ตุ๊กแก (gecko)</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>4</td><td>1</td></tr>
+  </table>
+  <div class="cols">
+    <div>
+      <span class="ws-label">3.1 พะยูนเป็นประเภทใด และใช้หลักฐานใด (Feature + กราฟ) <span class="note">— 1</span></span>
+      <textarea class="save ws-field" id="q3_1" data-group="กิจกรรมที่ 3 — ทำนายประเภทสัตว์ชนิดใหม่" data-label="3.1 พะยูน — ประเภท + เหตุผล" style="min-height:62px;" placeholder="ประเภท: ... เพราะ ..."></textarea>
+      <span class="ws-label">3.2 แมงมุมเป็นประเภทใด และใช้หลักฐานใด <span class="note">— 1</span></span>
+      <textarea class="save ws-field" id="q3_2" data-group="กิจกรรมที่ 3 — ทำนายประเภทสัตว์ชนิดใหม่" data-label="3.2 แมงมุม — ประเภท + เหตุผล" style="min-height:62px;" placeholder="ประเภท: ... เพราะใน Distributions ของ legs ..."></textarea>
     </div>
     <div>
-      <span class="ws-label">🤖 Prompt ที่รวมให้แล้ว (คลิกเพื่อคัดลอก)</span>
-      <textarea class="save ws-field" id="q13p" readonly style="font-family:'Sarabun',sans-serif; font-size:.7em; width:100%; height:60px; border:1.5px solid var(--line); border-radius:10px; padding:.4em .6em; box-sizing:border-box; background:#f7f9fc; color:var(--blue); cursor:pointer; font-weight:600; resize:none;" onclick="this.select(); document.execCommand('copy'); alert('คัดลอก Prompt แล้ว ✓');" data-label="ข้อ 1.3 — Prompt ที่ใช้"></textarea>
-      <span class="ws-label gem" style="margin-top: 0.3em;">🤖 ผลลัพธ์ / อธิบายภาพที่ได้ (หรือแปะลิงก์)</span>
-      <textarea class="save ws-field" id="q13o" data-label="ข้อ 1.3 — ผลลัพธ์จาก Canvas" style="height: 105px;"></textarea>
+      <span class="ws-label">3.3 ตุ๊กแกเป็นประเภทใด และใช้หลักฐานใด (ข้อนี้ต้องใช้ Feature มากกว่า 1 ตัว) <span class="note">— 2</span></span>
+      <textarea class="save ws-field" id="q3_3" data-group="กิจกรรมที่ 3 — ทำนายประเภทสัตว์ชนิดใหม่" data-label="3.3 ตุ๊กแก — ประเภท + เหตุผล" style="min-height:62px;" placeholder="ประเภท: ... เพราะ สัตว์ที่ backbone = 1, legs = 4, milk = 0 มีเพียง ... และ ... จากนั้น ..."></textarea>
+      <span class="ws-label">3.4 คำทำนายของสัตว์ชนิดใดที่นักเรียน<b>มั่นใจน้อยที่สุด</b> เพราะเหตุใด <span class="note">— 1</span></span>
+      <textarea class="save ws-field" id="q3_4" data-group="กิจกรรมที่ 3 — ทำนายประเภทสัตว์ชนิดใหม่" data-label="3.4 ตัวที่มั่นใจน้อยที่สุด เพราะ" style="min-height:62px;" placeholder="... เพราะในข้อมูลมีสัตว์ที่มีลักษณะคล้ายกันเพียง ... ตัว"></textarea>
     </div>
   </div>
 </section>
 
-<!-- Q1.4 Few-Shot -->
+<!-- ===================== 24 ACTIVITY 4 ===================== -->
 <section>
-  <h3>ข้อ 1.4</h3>
-  <p class="q">ลองใช้เทคนิค <b>Few-Shot Prompting (การเรียนรู้แบบมีคำแนะนำ)</b> โดยใส่ <b>ตัวอย่างการแปลศัพท์สแลงอย่างน้อย 2 ตัวอย่าง</b> ในช่องงาน (Task) เพื่อช่วย Gemini แปลคำว่า <b>“<span data-var="slang">ตึงจัด</span>”</b></p>
-  <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 1.1em; align-items: start;">
-    <div style="display: flex; flex-direction: column; gap: 0.35em;">
-      <div>
-        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">① บทบาท (Role) <span id="q14p_role_feedback"></span></span>
-        <textarea class="save prompt-subfield" id="q14p_role" placeholder="กำหนดบทบาท เช่น: คุณเป็นผู้เชี่ยวชาญด้านภาษาวัยรุ่นไทยและนักแปลคำศัพท์ภาษาถิ่น"></textarea>
-      </div>
-      <div>
-        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">② งาน (Task) <span id="q14p_task_feedback"></span></span>
-        <textarea class="save prompt-subfield" id="q14p_task" placeholder="ช่วยแปลคำศัพท์โดยมีตัวอย่างนำทาง เช่น: ช่วยแปลความหมายคำศัพท์ ตัวอย่าง: ช็อตฟีล = อารมณ์เสียเฉียบพลัน, เลิศเกิ๊น = ดีมาก คำศัพท์ที่ให้แปลคือ: [คำสแลงของคุณ]"></textarea>
-      </div>
-      <div>
-        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">③ รูปแบบ (Format) <span id="q14p_format_feedback"></span></span>
-        <textarea class="save prompt-subfield" id="q14p_format" placeholder="รูปแบบคำตอบ เช่น: อธิบายสั้นๆ คำแปลบรรทัดเดียว ไม่เวิ่นเว้อ"></textarea>
-      </div>
-    </div>
-    <div>
-      <span class="ws-label">🤖 Prompt ที่รวมให้แล้ว (คลิกเพื่อคัดลอก)</span>
-      <textarea class="save ws-field" id="q14p" readonly style="font-family:'Sarabun',sans-serif; font-size:.7em; width:100%; height:60px; border:1.5px solid var(--line); border-radius:10px; padding:.4em .6em; box-sizing:border-box; background:#f7f9fc; color:var(--blue); cursor:pointer; font-weight:600; resize:none;" onclick="this.select(); document.execCommand('copy'); alert('คัดลอก Prompt แล้ว ✓');" data-label="ข้อ 1.4 — Prompt ที่ใช้"></textarea>
-      <span class="ws-label gem" style="margin-top: 0.3em;">🤖 คำตอบจาก Gemini</span>
-      <textarea class="save ws-field" id="q14o" data-label="ข้อ 1.4 — คำตอบจาก Gemini" style="height: 105px;"></textarea>
-    </div>
-  </div>
+  <h2 style="margin-bottom:.2em;">กิจกรรมที่ 4 — ออกแบบชุดคำถามจำแนกสัตว์ <span class="note">(2 คะแนน)</span></h2>
+  <span class="ws-label">4.1 ออกแบบคำถามแบบ "ใช่ / ไม่ใช่" <b>ไม่เกิน 5 ข้อ เรียงตามลำดับ</b> เพื่อจำแนกสัตว์ให้ได้มากประเภทที่สุด (ใช้เฉพาะ Feature ในข้อมูล Zoo)</span>
+  <textarea class="save ws-field" id="q4_1" data-group="กิจกรรมที่ 4 — ออกแบบชุดคำถามจำแนกสัตว์" data-label="4.1 ลำดับคำถามใช่/ไม่ใช่" style="min-height:300px;" placeholder="ข้อ 1: milk = 1 หรือไม่ — ใช่ → mammal / ไม่ใช่ → ไปข้อ 2&#10;ข้อ 2: ... = 1 หรือไม่ — ใช่ → ... / ไม่ใช่ → ไปข้อ 3&#10;ข้อ 3: ...&#10;ข้อ 4: ...&#10;ข้อ 5: ..."></textarea>
+  <div class="note" style="font-size:.55em;">ชุดคำถามนี้คือ <b>Decision Tree ที่สร้างด้วยมือ</b> ในสัปดาห์ที่ 3 จะนำไปเปรียบเทียบกับ Decision Tree ที่ Orange สร้าง (โปรดเก็บคำตอบนี้ไว้)</div>
 </section>
 
-<!-- 21 ACT2 intro -->
+<!-- ===================== 25 SUMMARY ===================== -->
 <section>
-  <span class="kicker">กิจกรรมที่ 2</span>
-  <h2>เรียนรู้ และ “ตรวจสอบ” กับ AI 🔍</h2>
-  <p>ใช้ AI เป็น <b>ติวเตอร์</b> และทดสอบว่ามัน <b>เชื่อถือได้แค่ไหน</b></p>
-</section>
-
-<!-- 22 Q2.1 -->
-<section>
-  <h3>ข้อ 2.1</h3>
-  <p class="q">สมมุติว่าไม่เข้าใจเรื่อง <b>“<span data-var="topic">เพาเวอร์เซต (power set)</span>”</b> เขียน prompt เพื่อเรียนเรื่องนี้ โดยกำหนดบทบาท: <b>ฉันเป็นนักเรียน ม.4</b> และ <b>Gemini เป็นครูคณิตที่เข้มงวดแต่ใจดี</b></p>
-  <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 1.1em; align-items: start;">
-    <div style="display: flex; flex-direction: column; gap: 0.35em;">
-      <div>
-        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">① บทบาท (Role) <span id="q21p_role_feedback"></span></span>
-        <textarea class="save prompt-subfield" id="q21p_role" placeholder="สวมบทบาทครูคณิต เช่น: คุณเป็นครูคณิตศาสตร์ที่เข้มงวดแต่ใจดี"></textarea>
-      </div>
-      <div>
-        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">② งาน (Task) <span id="q21p_task_feedback"></span></span>
-        <textarea class="save prompt-subfield" id="q21p_task" placeholder="สั่งสอนหนังสือ เช่น: ช่วยสอนและอธิบายเรื่องเพาเวอร์เซตให้เข้าใจ"></textarea>
-      </div>
-      <div>
-        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">③ รูปแบบ (Format) <span id="q21p_format_feedback"></span></span>
-        <textarea class="save prompt-subfield" id="q21p_format" placeholder="รูปแบบเช่น: อธิบายเป็นขั้นๆ ด้วยภาษาง่ายๆ เหมาะสำหรับนักเรียน ม.4"></textarea>
-      </div>
-    </div>
-    <div>
-      <span class="ws-label">🤖 Prompt ที่รวมให้แล้ว (คลิกเพื่อคัดลอก)</span>
-      <textarea class="save ws-field" id="q21p" readonly style="font-family:'Sarabun',sans-serif; font-size:.7em; width:100%; height:60px; border:1.5px solid var(--line); border-radius:10px; padding:.4em .6em; box-sizing:border-box; background:#f7f9fc; color:var(--blue); cursor:pointer; font-weight:600; resize:none;" onclick="this.select(); document.execCommand('copy'); alert('คัดลอก Prompt แล้ว ✓');" data-group="กิจกรรมที่ 2: เรียนรู้และตรวจสอบกับ AI" data-label="ข้อ 2.1 — Prompt ที่ใช้"></textarea>
-      <span class="ws-label gem" style="margin-top: 0.3em;">🤖 คำตอบจาก Gemini</span>
-      <textarea class="save ws-field" id="q21o" data-label="ข้อ 2.1 — คำตอบจาก Gemini" style="height: 105px;"></textarea>
-    </div>
-  </div>
-</section>
-
-<!-- 23 Q2.2 -->
-<section>
-  <h3>ข้อ 2.2</h3>
-  <p class="q">เขียน prompt <b>ขอโจทย์ “<span data-var="topic">เพาเวอร์เซต (power set)</span>” 3 ข้อ</b> จาก Gemini</p>
-  <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 1.1em; align-items: start;">
-    <div style="display: flex; flex-direction: column; gap: 0.35em;">
-      <div>
-        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">① บทบาท (Role) <span id="q22p_role_feedback"></span></span>
-        <textarea class="save prompt-subfield" id="q22p_role" placeholder="บทบาทผู้สอน เช่น: คุณเป็นครูสอนคณิตศาสตร์"></textarea>
-      </div>
-      <div>
-        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">② งาน (Task) <span id="q22p_task_feedback"></span></span>
-        <textarea class="save prompt-subfield" id="q22p_task" placeholder="สั่งสร้างข้อสอบ เช่น: ช่วยตั้งโจทย์ฝึกฝนเรื่องเพาเวอร์เซต"></textarea>
-      </div>
-      <div>
-        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">③ รูปแบบ (Format) <span id="q22p_format_feedback"></span></span>
-        <textarea class="save prompt-subfield" id="q22p_format" placeholder="รูปแบบคำตอบ เช่น: ขอโจทย์จำนวน 3 ข้อ พร้อมเฉลยแยกไว้ด้านล่าง"></textarea>
-      </div>
-    </div>
-    <div>
-      <span class="ws-label">🤖 Prompt ที่รวมให้แล้ว (คลิกเพื่อคัดลอก)</span>
-      <textarea class="save ws-field" id="q22p" readonly style="font-family:'Sarabun',sans-serif; font-size:.7em; width:100%; height:60px; border:1.5px solid var(--line); border-radius:10px; padding:.4em .6em; box-sizing:border-box; background:#f7f9fc; color:var(--blue); cursor:pointer; font-weight:600; resize:none;" onclick="this.select(); document.execCommand('copy'); alert('คัดลอก Prompt แล้ว ✓');" data-label="ข้อ 2.2 — Prompt ที่ใช้"></textarea>
-      <span class="ws-label gem" style="margin-top: 0.3em;">🤖 โจทย์ 3 ข้อที่ได้</span>
-      <textarea class="save ws-field" id="q22o" data-label="ข้อ 2.2 — โจทย์ที่ได้จาก Gemini" style="height: 105px;"></textarea>
-    </div>
-  </div>
-</section>
-
-<!-- 24 Q2.3 -->
-<section>
-  <h3>ข้อ 2.3</h3>
-  <p class="q">ตอบโจทย์ 3 ข้อข้างต้น โดย <b>จงใจตอบผิดอย่างน้อย 1 ข้อ</b> แล้วส่งให้ Gemini ตรวจ — <b>มันจับผิดได้ไหม?</b></p>
-  <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 1.1em; align-items: start;">
-    <div style="display: flex; flex-direction: column; gap: 0.35em;">
-      <div>
-        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">① บทบาท (Role) <span id="q23p_role_feedback"></span></span>
-        <textarea class="save prompt-subfield" id="q23p_role" placeholder="ผู้ตรวจการบ้าน เช่น: คุณเป็นครูผู้ตรวจข้อสอบคณิตศาสตร์"></textarea>
-      </div>
-      <div>
-        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">② งาน (Task) <span id="q23p_task_feedback"></span></span>
-        <textarea class="save prompt-subfield" id="q23p_task" placeholder="สั่งตรวจคำตอบ เช่น: นี่คือคำตอบโจทย์ 3 ข้อของฉัน ช่วยตรวจสอบว่าถูกหรือผิด"></textarea>
-      </div>
-      <div>
-        <span class="ws-label" style="margin: 0; display: flex; justify-content: space-between; align-items: center;">③ รูปแบบ (Format) <span id="q23p_format_feedback"></span></span>
-        <textarea class="save prompt-subfield" id="q23p_format" placeholder="รูปแบบวิเคราะห์ เช่น: ช่วยบอกว่าฉันทำผิดข้อไหนอย่างละเอียด"></textarea>
-      </div>
-    </div>
-    <div>
-      <span class="ws-label">🤖 Prompt ที่รวมให้แล้ว (คลิกเพื่อคัดลอก)</span>
-      <textarea class="save ws-field" id="q23p" readonly style="font-family:'Sarabun',sans-serif; font-size:.7em; width:100%; height:60px; border:1.5px solid var(--line); border-radius:10px; padding:.4em .6em; box-sizing:border-box; background:#f7f9fc; color:var(--blue); cursor:pointer; font-weight:600; resize:none;" onclick="this.select(); document.execCommand('copy'); alert('คัดลอก Prompt แล้ว ✓');" data-label="ข้อ 2.3 — คำตอบที่ส่งให้ตรวจ"></textarea>
-      <span class="ws-label gem" style="margin-top: 0.3em;">🤖 ผลการตรวจจาก Gemini (จับผิดได้ไหม?)</span>
-      <textarea class="save ws-field" id="q23o" data-label="ข้อ 2.3 — ผลการตรวจจาก Gemini" style="height: 105px;"></textarea>
-    </div>
-  </div>
-</section>
-
-<!-- 25 Q2.4 -->
-<section>
-  <h3>ข้อ 2.4 — เปรียบเทียบโมเดล</h3>
-  <p class="q">พิมพ์ prompt <b>“<span data-var="expr">44 ÷ 8</span>”</b> ในโมเดลต่างกัน แล้วสังเกตผล</p>
-  <span class="ws-label gem">(a) ผลจาก <b>Gemini 3 Flash</b></span>
-  <textarea class="save ws-field" id="q24a" data-label="ข้อ 2.4 (a) — ผลจาก Gemini 3 Flash" style="height:60px"></textarea>
-  <span class="ws-label gem">(b) ผลจาก <b>Gemini 3 Pro</b></span>
-  <textarea class="save ws-field" id="q24b" data-label="ข้อ 2.4 (b) — ผลจาก Gemini 3 Pro" style="height:60px"></textarea>
-  <span class="ws-label">(c) ✏️ (a) กับ (b) ต่างกันอย่างไร เพราะอะไร</span>
-  <textarea class="save ws-field" id="q24c" data-label="ข้อ 2.4 (c) — ต่างกันอย่างไร เพราะอะไร" style="height:60px"></textarea>
-</section>
-
-<!-- 26 Q2.5 -->
-<section>
-  <h3>ข้อ 2.5 — ภาษากำกวม</h3>
-  <p class="q">ทดลอง prompt <b>“อธิบาย ม้าเป็นลูกตา”</b> และ <b>“อธิบาย แม่เป็นลูกตา”</b> → AI ตอบแปลกไหม? จากนั้น <b>แก้ prompt</b> ให้ Gemini เข้าใจสิ่งที่เราต้องการจริง ๆ</p>
-  <span class="ws-label gem">🤖 ผลลัพธ์ตอนแรก (prompt กำกวม)</span>
-  <textarea class="save ws-field" id="q25a" data-label="ข้อ 2.5 — ผลลัพธ์จาก prompt กำกวม" style="height:60px"></textarea>
-  <span class="ws-label">✏️ Prompt ที่แก้ใหม่ให้ชัดเจน</span>
-  <textarea class="save ws-field" id="q25b" data-label="ข้อ 2.5 — Prompt ที่แก้ใหม่" style="height:60px"></textarea>
-  <span class="ws-label gem">🤖 ผลลัพธ์หลังแก้</span>
-  <textarea class="save ws-field" id="q25c" data-label="ข้อ 2.5 — ผลลัพธ์หลังแก้ prompt" style="height:60px"></textarea>
-</section>
-
-<!-- 27 ACT3 intro -->
-<section>
-  <span class="kicker">กิจกรรมที่ 3</span>
-  <h2>AI ผู้ช่วยทำการบ้าน (อย่างถูกวิธี) 📚</h2>
-  <p>ใช้ Gemini ช่วย <b>อธิบาย / วางโครงร่าง / ติชม</b> งานของคุณ — <span class="warn">ไม่ใช่ให้มันทำให้ทั้งหมด</span></p>
-</section>
-
-<!-- 28 Q3.1 -->
-<section>
-  <h3>ข้อ 3.1</h3>
-  <p class="q">เลือกการบ้าน/หัวข้อที่กำลังเรียนอยู่ เขียน prompt ขอให้ Gemini <b>อธิบายแบบเข้าใจง่าย</b> หรือ <b>ช่วยวางโครงร่าง</b> หรือ <b>ติชมงานของฉัน</b></p>
-  <span class="ws-label">✏️ Prompt ของฉัน</span>
-  <textarea class="save ws-field" id="q31p" data-group="กิจกรรมที่ 3: AI ผู้ช่วยทำการบ้าน" data-label="ข้อ 3.1 — Prompt ที่ใช้"></textarea>
-  <span class="ws-label gem">🤖 คำตอบจาก Gemini</span>
-  <textarea class="save ws-field" id="q31o" data-label="ข้อ 3.1 — คำตอบจาก Gemini"></textarea>
-</section>
-
-<!-- 29 REFLECTION -->
-<section>
-  <span class="kicker">สะท้อนคิด</span>
-  <h3>คำถามท้ายคาบ</h3>
-  <p class="q">วันนี้ Gemini ตอบ <b>ผิดหรือมั่ว</b> ตรงไหนบ้าง? และคุณ <b>แก้ prompt อย่างไร</b> ให้ได้คำตอบดีขึ้น?</p>
-  <textarea class="save ws-field" id="qref" data-group="สะท้อนคิด (Reflection)" data-label="สิ่งที่ AI ตอบผิด และวิธีแก้ prompt ของฉัน" style="height:130px"></textarea>
-</section>
-
-<!-- 30 ACT4 -->
-<section>
-  <span class="kicker">กิจกรรมที่ 4</span>
-  <h3>สร้างผู้ช่วย AI ของตัวเอง 🤖</h3>
-  <p class="q">เลือก 1 อย่าง: สร้าง <b>Gem</b> ผู้ช่วยติวของตัวเอง <b>หรือ</b> ใช้ <b>Canvas</b> สร้างแบบทดสอบทบทวนบทเรียน</p>
-  <span class="ws-label gem">🤖 สิ่งที่ทำ + ผลลัพธ์ (หรือแปะลิงก์)</span>
-  <textarea class="save ws-field" id="qbonus" data-group="กิจกรรมที่ 4: สร้างผู้ช่วย AI" data-label="ข้อ 4.1 — Gem หรือ Canvas ที่สร้าง" style="height:80px"></textarea>
-</section>
-
-<!-- 30.5 NEXT WEEK: NOTEBOOKLM PREVIEW -->
-<section>
-  <span class="kicker">สัปดาห์ถัดไป</span>
-  <h2>เรียนรู้เร็วขึ้นด้วย NotebookLM 📓</h2>
-  <div class="cols" style="align-items: center;">
-    <div style="flex: 1.2;">
-      <p style="font-size: 0.8em; margin-bottom: 0.8em; line-height: 1.4;">สัปดาห์หน้า เราจะไปรู้จักเครื่องมือจัดระเบียบข้อมูลอัจฉริยะจาก Google:</p>
-      <ul style="font-size: 0.72em; line-height: 1.55; padding-left: 1.2em;">
-        <li>📂 <b>รวบรวมเอกสาร:</b> โยน PDF, Google Docs, ลิงก์เว็บ หรือ YouTube เข้ามาวิเคราะห์ร่วมกัน</li>
-        <li>💬 <b>คุยกับข้อมูลอย่างแม่นยำ:</b> ถามตอบจากเอกสารที่อัปโหลดเท่านั้น ไม่มั่ว (No Hallucination)</li>
-        <li>🎧 <b>สร้าง Audio Overview:</b> แปลงเอกสารข้อความให้กลายเป็นบทสนทนาพอดคาสต์เสียงโต้ตอบสุดล้ำ!</li>
+  <h2>สรุปบทเรียน</h2>
+  <div class="cols">
+    <div class="card" style="border-top:4px solid var(--blue); font-size:.64em; line-height:1.65;">
+      <b style="color:var(--blue)">สาระสำคัญ</b>
+      <ul style="margin:.25em 0 0; padding-left:1.1em;">
+        <li>ML คือการให้คอมพิวเตอร์<b>เรียนรู้กฎจากตัวอย่าง</b> แทนการให้มนุษย์เขียนกฎ</li>
+        <li><b>Feature</b> = ลักษณะที่ใช้ทำนาย · <b>Target</b> = สิ่งที่ต้องการทำนาย</li>
+        <li><b>Supervised</b> มีเฉลย · <b>Unsupervised</b> ไม่มีเฉลย</li>
+        <li>Orange: File → Data Table · Distributions · Scatter Plot</li>
       </ul>
     </div>
-    <div style="flex: 1.3; text-align: center;">
-      <img src="images/notebooklm_concept.png" alt="NotebookLM Concept Illustration" style="width: 100%; max-height: 290px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid var(--line); background: #ffffff;">
+    <div class="card" style="border-top:4px solid var(--purple); font-size:.64em; line-height:1.65;">
+      <b style="color:var(--purple)">หลักคิดสำหรับภาคเรียนนี้</b>
+      <ul style="margin:.25em 0 0; padding-left:1.1em;">
+        <li>AI ไม่ได้มีความสามารถวิเศษ แต่ค้นหารูปแบบจากข้อมูล</li>
+        <li>ตัวอย่างลำเอียง → กฎลำเอียง (กิจกรรมฟลิบ)</li>
+        <li>ข้อมูลมีข้อยกเว้นเสมอ (โลมามีครีบ · ตุ่นปากเป็ดออกไข่)</li>
+      </ul>
     </div>
+  </div>
+  <div class="topic-banner" style="margin-top:.6em;">
+    <div class="tb-l">สัปดาห์หน้า — สำรวจและทำความสะอาดข้อมูล</div>
+    <div class="tb-t">ข้อมูลจริงมักไม่เป็นระเบียบเท่าข้อมูล Zoo</div>
+    <div class="tb-h">ข้อสังเกต: ในข้อมูล Zoo มีชื่อสัตว์ชนิดหนึ่งปรากฏ <b>2 ครั้ง</b> ให้ลองค้นหาใน Data Table</div>
   </div>
 </section>
 
-<!-- 31 SUBMIT -->
+<!-- ===================== 26 SUBMIT ===================== -->
 <section>
-  <div class="title-wrap">
-    <span class="badge">ส่งงาน</span>
-    <h2 style="margin:.3em 0">ทำเสร็จแล้ว — ส่งใบงานกันเลย!</h2>
-    <p>① ตรวจว่ากรอก <b>ชื่อ / ชั้น / เลขที่</b> แล้ว (สไลด์ที่ 2)<br>
-       ② กดปุ่มด้านล่าง → หน้าต่างพิมพ์จะเปิดขึ้น<br>
-       ③ ที่ช่อง “ปลายทาง/Destination” เลือก <b>“บันทึกเป็น PDF” (Save as PDF)</b> แล้วกด <b>บันทึก</b></p>
+  <h2>ตรวจความครบถ้วน แล้วบันทึกเป็น PDF</h2>
+  <div class="check-panel">
+    <div class="prog-meta"><span>ความคืบหน้าใบงาน</span><span id="prog-count">0 / 0 ช่อง</span></div>
+    <div class="prog-wrap"><div class="prog-bar" id="prog-bar"></div></div>
+    <div class="check-msg" id="check-msg">ระบบจะตรวจสอบความครบถ้วนของใบงานโดยอัตโนมัติ</div>
+    <div class="check-grid" id="check-rows"></div>
+  </div>
+  <div class="rule" style="font-size:.62em; margin-top:.5em;">
+    ส่ง 2 ไฟล์ต่อ 1 คู่: <b>PDF ใบงาน</b> + <b>ไฟล์ workflow <code>.ows</code></b>
+  </div>
+  <div style="text-align:center; margin-top:.7em;">
     <button class="dlbig" onclick="downloadPDF()">⬇ บันทึกใบงานเป็น PDF</button>
-    <p class="note" style="margin-top:.8em">ไฟล์จะมีเฉพาะคำตอบในใบงาน ไม่รวมสไลด์บรรยาย</p>
   </div>
 </section>
 
 </div></div>
 
-<!-- assignment-only area, shown only during printing -->
+<!-- ===================== PDF PRINT AREA ===================== -->
 <div id="print-area"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<!-- ===================== REVEAL.JS INIT ===================== -->
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js" integrity="sha384-M/JtqCVlLcK9lwVnBnMXP0V577CBULkjodKsR/PITOe4MSKNbbwqCemEyluOw0+5" crossorigin="anonymous"></script>
 <script>
-  Reveal.initialize({
-    hash:false, respondToHashChanges:false, slideNumber:'c/t', controls:true, progress:true,
-    width:1280, height:800, margin:0.06, minScale:0.2, maxScale:1.5,
-    transition:'slide'
-  });
+Reveal.initialize({
+  hash: true, slideNumber: 'c/t', controlsTutorial: false,
+  width: 1100, height: 700, margin: 0.04,
+  transition: 'slide', backgroundTransition: 'slide'
+});
+</script>
 
-  /* ---- auto-save to localStorage & Cookies ---- */
-  const SAVE_KEY='aied_w1';
-  const hint=document.getElementById('savehint'); let hintTimer;
-
+<!-- ===================== LOCALSTORAGE AUTO-SAVE ===================== -->
+<script>
+const SAVE_KEY = 'aied2_w1_data';
+(function(){
   function setCookie(name, value, days) {
     let expires = "";
     if (days) {
@@ -843,7 +875,6 @@ textarea::-webkit-scrollbar-thumb:hover {
     }
     document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/; SameSite=Lax";
   }
-
   function getCookie(name) {
     const nameEQ = name + "=";
     const ca = document.cookie.split(';');
@@ -854,484 +885,236 @@ textarea::-webkit-scrollbar-thumb:hover {
     }
     return null;
   }
-
-  function loadSaved(){
-    let data={};
+  function store(){
+    let data = {};
+    try { const local = localStorage.getItem(SAVE_KEY); if (local) data = JSON.parse(local); } catch(e) {}
     try {
-      data = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
+      const cook = getCookie(SAVE_KEY);
+      if (cook) { const cookData = JSON.parse(cook); for (const k in cookData) { if (data[k] === undefined) data[k] = cookData[k]; } }
     } catch(e) {}
-    
-    let updated = false;
-    document.querySelectorAll('.save').forEach(el => {
-      if (data[el.id] !== undefined) {
-        el.value = data[el.id];
-      } else {
-        const cookieVal = getCookie(SAVE_KEY + '_' + el.id);
-        if (cookieVal !== null) {
-          el.value = cookieVal;
-          data[el.id] = cookieVal;
-          updated = true;
-        }
+    return data;
+  }
+  function persist(d){
+    try { localStorage.setItem(SAVE_KEY, JSON.stringify(d)); } catch(e) {}
+    try {
+      const textData = {};
+      for (const k in d) {
+        if (!k.startsWith('img:') && !k.startsWith('q_img') && typeof d[k] === 'string' && d[k].length < 1000) textData[k] = d[k];
       }
-    });
-
-    if (updated) {
-      try {
-        localStorage.setItem(SAVE_KEY, JSON.stringify(data));
-      } catch(e) {}
-    }
-  }
-
-  function saveField(el){
-    // Save to localStorage
-    let data={};
-    try {
-      data = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
+      setCookie(SAVE_KEY, JSON.stringify(textData), 30);
     } catch(e) {}
-    data[el.id] = el.value;
-    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
-    
-    // Save to Cookie
-    setCookie(SAVE_KEY + '_' + el.id, el.value, 365);
-
-    hint.style.opacity=1; clearTimeout(hintTimer);
-    hintTimer=setTimeout(()=>hint.style.opacity=0, 900);
   }
-  window.saveField = saveField;
-
-  document.addEventListener('input', e=>{ if(e.target.classList.contains('save')) saveField(e.target); });
-  loadSaved();
-
-  /* ---- show floating download button only on the last slide ---- */
-  function updateDlBtnVisibility() {
-    const dlBtn = document.getElementById('dlbtn');
-    if (dlBtn) {
-      dlBtn.style.display = Reveal.isLastSlide() ? 'block' : 'none';
-    }
+  function flash(){ const h=document.getElementById('savehint'); h.style.opacity='1'; setTimeout(()=>h.style.opacity='0',1200); }
+  window.saveField = function(el){ const d=store(); d[el.id]=el.value; persist(d); flash(); };
+  function loadAll(){
+    const d=store();
+    document.querySelectorAll('.save').forEach(el=>{ if(el.readOnly) return; if(d[el.id]!==undefined) el.value=d[el.id]; });
+    if(window.refreshFeedback) window.refreshFeedback();
   }
-  Reveal.on('ready', updateDlBtnVisibility);
-  Reveal.on('slidechanged', updateDlBtnVisibility);
-
-  /* ---- don't let reveal hijack arrow keys while typing ---- */
-  ['focusin','focusout'].forEach(ev=>document.addEventListener(ev, e=>{
-    if(e.target.matches('input,textarea')) Reveal.configure({keyboard: ev==='focusout'});
-  }));
-
-  /* ---- build & download the assignment-only PDF ---- */
-  function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-  function val(id){ const el=document.getElementById(id); return el?el.value:''; }
-  function getImgs(id){
-    try{ const d=JSON.parse(localStorage.getItem(SAVE_KEY)||'{}'); return d['img:'+id]||[]; }
-    catch(e){ return []; }
+  document.addEventListener('input', e=>{ if(e.target.classList && e.target.classList.contains('save')) saveField(e.target); });
+  document.addEventListener('change', e=>{ if(e.target.classList && e.target.classList.contains('save')) saveField(e.target); });
+  if(document.readyState!=='loading') loadAll(); else document.addEventListener('DOMContentLoaded', loadAll);
+  function toggleBtn(){
+    const d=store();
+    const any = Object.values(d).some(v=>v&&v.length>0);
+    const b = document.getElementById('dlbtn');
+    if(b) b.style.display = any ? 'block' : 'none';
   }
+  document.addEventListener('input', toggleBtn);
+  document.addEventListener('change', toggleBtn);
+  setTimeout(toggleBtn, 500);
+})();
+</script>
 
-  function buildAssignmentHTML(){
-    const name=val('ws-name'), cls=val('ws-class'), no=val('ws-no');
-    const si=(window.getSetInfo && window.getSetInfo())||null;
-    let html=`<div class="pdf-doc">
-      <h1>ใบงาน AI for Ed — สัปดาห์ที่ 1</h1>
-      <div class="pdf-meta">
-        <span><b>ชื่อ–สกุล:</b> ${esc(name)||'____________________'}</span>
-        <span><b>ชั้น:</b> ${esc(cls)||'________'}</span>
-        <span><b>เลขที่:</b> ${esc(no)||'____'}</span>
-        ${ si ? `<span><b>ชุดโจทย์:</b> ชุดที่ ${si.n} (จังหวัด${esc(si.province)} · ${esc(si.topic)} · ${esc(si.expr)})</span>` : '' }
-      </div>`;
-    let curGroup='';
-    document.querySelectorAll('.ws-field').forEach(f=>{
-      const g=f.getAttribute('data-group')||'';
-      if(g && g!==curGroup){ curGroup=g; html+=`<h2>${esc(g)}</h2>`; }
-      const label=f.getAttribute('data-label')||'';
-      const v=f.value||'';
-      const imgs=getImgs(f.id);
-      const ans = v ? esc(v).replace(/\n/g,'<br>')
-                    : (imgs.length ? '<span class="empty">(แนบรูปภาพด้านล่าง)</span>' : '<span class="empty">(ยังไม่ได้ตอบ)</span>');
-      let imgHtml='';
-      if(imgs.length){ imgHtml='<div class="pdf-imgs">'+imgs.map(s=>`<img src="${s}">`).join('')+'</div>'; }
-      html+=`<div class="pdf-item"><div class="pdf-label">${esc(label)}</div><div class="pdf-answer">${ans}</div>${imgHtml}</div>`;
-    });
-    html+=`</div>`;
-    return html;
-  }
-
+<!-- ===================== PDF DOWNLOAD ===================== -->
+<script>
   function downloadPDF(){
-    const name=val('ws-name').trim();
-    if(!name){
-      alert('กรุณากรอก “ชื่อ–นามสกุล” ในสไลด์ที่ 2 ก่อนบันทึก');
-      Reveal.slide(1); return;
+    const fields = document.querySelectorAll('.save[data-group]');
+    const groups = {};
+    fields.forEach(f=>{
+      const g = f.getAttribute('data-group');
+      const l = f.getAttribute('data-label');
+      if(!groups[g]) groups[g]=[];
+      groups[g].push({ label:l, value:(f.value||'').trim() });
+    });
+    function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    const v = id => (document.getElementById(id)||{}).value||'';
+    const name1=v('ws-name1'), name2=v('ws-name2'), cls=v('ws-class'), no1=v('ws-no'), no2=v('ws-no2');
+
+    let html = '<div class="pdf-doc">';
+    html += '<h1>AI for Ed 2 — สัปดาห์ที่ 1: รู้จัก Machine Learning และ Orange</h1>';
+    html += '<div class="pdf-meta">';
+    html += '<span><b>คู่:</b> '+esc(name1||'—')+(name2?' / '+esc(name2):'')+'</span>';
+    html += '<span><b>ชั้น:</b> '+esc(cls||'—')+'</span>';
+    html += '<span><b>เลขที่:</b> '+esc(no1||'—')+(no2?' , '+esc(no2):'')+'</span>';
+    html += '</div>';
+    html += '<div class="pdf-item"><div class="pdf-label">โจทย์</div><div class="pdf-answer">สำรวจข้อมูลสัตว์ 101 ชนิด (Zoo) ด้วย Orange และใช้เป็นหลักฐานในการทำนายประเภทของสัตว์ชนิดใหม่</div></div>';
+
+    let imgStore = {};
+    try { imgStore = JSON.parse(localStorage.getItem(SAVE_KEY)||'{}'); } catch(e){}
+
+    for(const [gName, items] of Object.entries(groups)){
+      html += '<h2>'+esc(gName)+'</h2>';
+      items.forEach(it=>{
+        html += '<div class="pdf-item"><div class="pdf-label">'+esc(it.label)+'</div>';
+        html += '<div class="pdf-answer">'+(it.value ? esc(it.value) : '<span class="empty">(ยังไม่ได้ตอบ)</span>')+'</div></div>';
+      });
     }
-    const area=document.getElementById('print-area');
-    area.innerHTML=buildAssignmentHTML();
+    const IMG_LABELS = {
+      'q_img_workflow': 'ภาพหน้าจอ (ก) — ผัง Workflow ทั้งผัง (ข้อ 2.6)',
+      'q_img_scatter': 'ภาพหน้าจอ (ข) — Scatter Plot ที่แยก fish ได้ (ข้อ 2.6)'
+    };
+    html += '<h2>ภาพหน้าจอประกอบ</h2>';
+    Object.keys(IMG_LABELS).forEach(id=>{
+      const imgs = imgStore['img:'+id] || [];
+      html += '<div class="pdf-item"><div class="pdf-label">'+esc(IMG_LABELS[id])+'</div>';
+      if(imgs.length){ html += '<div class="pdf-imgs">'; imgs.forEach(src=>{ html += '<img src="'+src+'">'; }); html += '</div>'; }
+      else html += '<div class="pdf-answer"><span class="empty">(ยังไม่ได้แนบภาพ)</span></div>';
+      html += '</div>';
+    });
+    html += '</div>';
+
+    const area = document.getElementById('print-area');
+    area.innerHTML = html;
     document.body.classList.add('printing');
-    // let layout/fonts settle, then open the browser print dialog (choose "Save as PDF")
-    setTimeout(()=>{ try{ window.print(); }catch(e){ cleanupPrint();
-      alert('เบราว์เซอร์เปิดหน้าต่างพิมพ์ไม่ได้ในมุมมองนี้\nให้เปิดไฟล์ใบงานในเบราว์เซอร์ (เช่น Chrome) โดยตรง แล้วลองใหม่'); } }, 120);
+    setTimeout(()=>{ window.print(); setTimeout(()=>{ document.body.classList.remove('printing'); },500); },300);
   }
-  function cleanupPrint(){
-    document.body.classList.remove('printing');
-    const area=document.getElementById('print-area'); if(area) area.innerHTML='';
-  }
-  window.addEventListener('afterprint', cleanupPrint);
-  window.downloadPDF=downloadPDF;
+  window.downloadPDF = downloadPDF;
 </script>
 
-<!-- ===================== AI PROMPT COACH ===================== -->
+<!-- ===================== IMAGE ATTACH ===================== -->
 <script>
 (function(){
-  const SYS = `คุณคือ "AI โค้ช" ผู้ช่วยฝึกเขียน prompt สำหรับนักเรียนชั้นมัธยมศึกษาปีที่ 4 (อายุ ~15-16 ปี) ในเวิร์กช็อปวิชา AI
+  const IMG_TARGETS = ['q_img_workflow', 'q_img_scatter'];
+  function store(){ try{ return JSON.parse(localStorage.getItem(SAVE_KEY)||'{}'); }catch(e){ return {}; } }
+  function persist(d){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(d)); }catch(e){} }
 
-หน้าที่ของคุณคือ "ให้คำแนะนำเพื่อให้นักเรียนแก้ prompt ด้วยตัวเอง" ไม่ใช่เขียน prompt ฉบับสมบูรณ์ให้
-
-ประเมิน prompt ของนักเรียนตามสูตร 3 องค์ประกอบที่เรียนในคาบ:
-1. บทบาท (Role) — ให้ AI สวมบทเป็นใคร
-2. งาน (Task) — อยากให้ทำอะไร ชัดเจนพอไหม
-3. รูปแบบ (Format) — อยากได้ผลลัพธ์แบบไหน (ความยาว โทน ภาษา กลุ่มผู้อ่าน)
-
-ตอบเป็นภาษาไทย สั้น กระชับ เป็นกันเอง ให้กำลังใจ ตามรูปแบบนี้เป๊ะ ๆ:
-
-บทบาท: ✅ หรือ ⚠️ — <สั้น ๆ>
-งาน: ✅ หรือ ⚠️ — <สั้น ๆ>
-รูปแบบ: ✅ หรือ ⚠️ — <สั้น ๆ>
-
-ข้อเสนอแนะ: <1-2 ข้อ บอกแนวทางทำให้ prompt ดีขึ้น ยกตัวอย่างเป็น "คำ" หรือ "วลี" ได้บางส่วน>
-
-ลองคิดต่อ: <คำถามชวนคิด 1 ข้อ>
-
-กฎสำคัญ: ห้ามเขียน prompt ฉบับเต็มที่แก้แล้วให้นักเรียนลอก ให้เพียงทิศทางและคำใบ้ ถ้า prompt ดีอยู่แล้วให้ชมและเสนอวิธีต่อยอดเล็กน้อย`;
-
-  function localCoach(text){
-    const hasRole=/(คุณเป็น|คุณคือ|สมมุติว่าคุณ|ทำตัวเป็น|ในฐานะ|รับบทเป็น|สวมบทเป็น|act as|you are|you're)/i.test(text);
-    const hasTask=/(ช่วย|เขียน|อธิบาย|สร้าง|สรุป|แปล|ออกแบบ|วางโครงร่าง|แต่ง|แนะนำ|เปรียบเทียบ|ยกตัวอย่าง|จง|ขอให้|ทำให้|วิเคราะห์|ตรวจ|\?|？)/.test(text);
-    const hasFormat=/(ย่อหน้า|ข้อ|ตาราง|คำ|ประโยค|โทน|น้ำเสียง|สำหรับ|ภาษา|รายการ|bullet|list|สั้น|ยาว|กระชับ|ละเอียด|อีโมจิ|emoji|วัยรุ่น|นักเรียน|ระดับ|ความยาว|bullet)/i.test(text);
-    const mark=b=>b?'✅':'⚠️';
-    let tips=[];
-    if(!hasRole) tips.push('เพิ่ม “บทบาท” ให้ AI เช่น ขึ้นต้นด้วย “คุณเป็น…” (ไกด์ / ครู / นักเขียน)');
-    if(!hasTask) tips.push('ระบุ “งาน” ให้ชัดด้วยคำกริยา เช่น เขียน / อธิบาย / สรุป / ออกแบบ');
-    if(!hasFormat) tips.push('บอก “รูปแบบ” ที่อยากได้ เช่น ความยาว (กี่ย่อหน้า) โทน ภาษา และกลุ่มผู้อ่าน');
-    if(tips.length===0) tips.push('ครบทั้ง 3 องค์ประกอบแล้ว! ลองเพิ่ม “ตัวอย่าง” หรือ “บริบท” เพื่อให้คำตอบตรงใจยิ่งขึ้น');
-    const q = !hasFormat ? 'ถ้าผู้อ่านคือคนละกลุ่ม (เช่น เด็ก vs ผู้ใหญ่) prompt ควรเปลี่ยนตรงไหน?'
-            : !hasRole ? 'ถ้าให้ AI สวมบทผู้เชี่ยวชาญคนละแบบ คำตอบจะต่างไหม?'
-            : 'มีรายละเอียดอะไรอีกที่ถ้าใส่เพิ่ม จะทำให้คำตอบดีขึ้น?';
-    return `บทบาท: ${mark(hasRole)} ${hasRole?'มีการกำหนดบทบาท':'ยังไม่พบการกำหนดบทบาท'}
-งาน: ${mark(hasTask)} ${hasTask?'ระบุงานชัด':'งานยังไม่ชัดเจน'}
-รูปแบบ: ${mark(hasFormat)} ${hasFormat?'มีการระบุรูปแบบ/ผู้อ่าน':'ยังไม่ระบุรูปแบบผลลัพธ์'}
-
-ข้อเสนอแนะ: ${tips.join(' · ')}
-
-ลองคิดต่อ: ${q}`;
-  }
-
-  async function coach(field, btn, box){
-    const text=(field.value||'').trim();
-    box.classList.remove('err');
-    if(!text){
-      box.style.display='block'; box.classList.add('err');
-      box.textContent='✏️ ลองเขียน prompt ของคุณในช่องด้านบนก่อน แล้วค่อยกดขอคำแนะนำนะ';
-      return;
-    }
-    const orig=btn.textContent;
-    btn.disabled=true; btn.textContent='🤖 กำลังคิด…';
-    box.style.display='block'; box.classList.remove('err');
-    box.innerHTML='<span class="coach-head">AI โค้ช</span>กำลังอ่าน prompt ของคุณ…';
-    let resultText='', offline=false;
-    try{
-      const res=await fetch('https://api.anthropic.com/v1/messages',{
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          model:'claude-sonnet-4-20250514',
-          max_tokens:1000,
-          system:SYS,
-          messages:[{role:'user',content:'นี่คือ prompt ของนักเรียน:\n\n"""'+text+'"""\n\nช่วยให้คำแนะนำตามรูปแบบที่กำหนด'}]
-        })
+  function renderTray(id){
+    const tray = document.getElementById(id+'_tray'); if(!tray) return;
+    const imgs = store()['img:'+id] || [];
+    tray.innerHTML='';
+    const inp = document.getElementById(id);
+    if(inp) inp.value = imgs.length ? imgs.length+' ภาพ' : '';
+    imgs.forEach((src, i)=>{
+      const th = document.createElement('div'); th.className='img-thumb';
+      const im = document.createElement('img'); im.src=src;
+      const rm = document.createElement('button'); rm.className='rm'; rm.type='button'; rm.textContent='×';
+      rm.addEventListener('click', ()=>{
+        const dd=store(); dd['img:'+id].splice(i,1); persist(dd); renderTray(id);
+        if(window.refreshFeedback) window.refreshFeedback();
       });
-      if(!res.ok) throw new Error('HTTP '+res.status);
-      const data=await res.json();
-      resultText=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n').trim();
-      if(!resultText) throw new Error('empty');
-    }catch(e){
-      offline=true;
-      resultText=localCoach(text);
-    }finally{
-      btn.disabled=false; btn.textContent=orig;
-    }
-    box.innerHTML='';
-    const head=document.createElement('span'); head.className='coach-head';
-    head.textContent='💡 คำแนะนำจาก AI โค้ช';
-    const body=document.createElement('div'); body.textContent=resultText;
-    box.appendChild(head); box.appendChild(body);
-    if(offline){
-      const foot=document.createElement('span'); foot.className='coach-foot';
-      foot.textContent='(โหมดพื้นฐาน — เปิดใบงานในแอป Claude เพื่อรับคำแนะนำจาก AI เต็มรูปแบบ)';
-      box.appendChild(foot);
-    }
-  }
-
-  function attach(field){
-    const btn=document.createElement('button');
-    btn.className='coach-btn'; btn.type='button';
-    btn.textContent='💡 ขอคำแนะนำปรับปรุง prompt';
-    const box=document.createElement('div'); box.className='coach-box';
-    btn.addEventListener('click',()=>coach(field,btn,box));
-    field.insertAdjacentElement('afterend', box);
-    field.insertAdjacentElement('afterend', btn);
-  }
-
-  function init(){
-    document.querySelectorAll('.ws-field').forEach(f=>{
-      const lbl=f.getAttribute('data-label')||'';
-      if(lbl.indexOf('Prompt')!==-1) attach(f);
+      th.appendChild(im); th.appendChild(rm); tray.appendChild(th);
     });
   }
-  if(document.readyState!=='loading') init();
-  else document.addEventListener('DOMContentLoaded', init);
-})();
-</script>
-
-<!-- ===================== IMAGE ATTACH / PASTE ===================== -->
-<script>
-(function(){
-  const KEY='aied_w1';
-  const MAXDIM=1280;            // resize cap (px)
-  const QUALITY=0.82;           // jpeg quality
-  function readAll(){ try{return JSON.parse(localStorage.getItem(KEY)||'{}');}catch(e){return {};} }
-  function getImgs(id){ return readAll()['img:'+id]||[]; }
-  function setImgs(id,arr){
-    const d=readAll(); d['img:'+id]=arr;
-    try{ localStorage.setItem(KEY, JSON.stringify(d)); return true; }
-    catch(e){ alert('พื้นที่จัดเก็บในเครื่องเต็ม — รูปอาจมีขนาดใหญ่หรือมีหลายรูปเกินไป\nลองลบรูปเก่าบางรูปออกก่อนนะ'); return false; }
+  function addImg(id, dataURL){
+    const d=store();
+    if(!d['img:'+id]) d['img:'+id]=[];
+    d['img:'+id].push(dataURL);
+    persist(d); renderTray(id);
+    if(window.refreshFeedback) window.refreshFeedback();
+    const b=document.getElementById('dlbtn'); if(b) b.style.display='block';
   }
-
-  function compress(file){
-    return new Promise((res,rej)=>{
-      const r=new FileReader();
-      r.onerror=()=>rej(new Error('read'));
-      r.onload=()=>{
-        const img=new Image();
-        img.onerror=()=>rej(new Error('decode'));
-        img.onload=()=>{
-          let w=img.naturalWidth, h=img.naturalHeight;
-          if(w>MAXDIM||h>MAXDIM){ const k=Math.min(MAXDIM/w, MAXDIM/h); w=Math.round(w*k); h=Math.round(h*k); }
-          const c=document.createElement('canvas'); c.width=w; c.height=h;
-          c.getContext('2d').drawImage(img,0,0,w,h);
-          try{ res(c.toDataURL('image/jpeg', QUALITY)); }catch(e){ rej(e); }
-        };
-        img.src=r.result;
-      };
-      r.readAsDataURL(file);
-    });
+  function shrink(dataURL, cb){
+    const img = new Image();
+    img.onload = ()=>{
+      const canvas = document.createElement('canvas');
+      let w=img.width, h=img.height; const maxDim = 1200;
+      if(w>maxDim){ h=h*(maxDim/w); w=maxDim; }
+      if(h>maxDim){ w=w*(maxDim/h); h=maxDim; }
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      cb(canvas.toDataURL('image/jpeg',0.7));
+    };
+    img.src = dataURL;
   }
-
-  async function addFiles(id, files, tray){
-    const list=[...files].filter(f=>f && f.type && f.type.indexOf('image/')===0);
-    if(!list.length) return;
-    const arr=getImgs(id);
-    for(const f of list){ try{ arr.push(await compress(f)); }catch(e){} }
-    if(setImgs(id,arr)) renderTray(id,tray);
-  }
-
-  function renderTray(id,tray){
-    const arr=getImgs(id); tray.innerHTML='';
-    arr.forEach((src,i)=>{
-      const t=document.createElement('div'); t.className='img-thumb';
-      const im=document.createElement('img'); im.src=src; im.alt='แนบรูป';
-      const rm=document.createElement('button'); rm.className='rm'; rm.type='button';
-      rm.textContent='✕'; rm.title='ลบรูปนี้';
-      rm.addEventListener('click',()=>{ const a=getImgs(id); a.splice(i,1); setImgs(id,a); renderTray(id,tray); });
-      t.appendChild(im); t.appendChild(rm); tray.appendChild(t);
-    });
-  }
-
-  function attach(field){
-    const id=field.id;
-    const btn=document.createElement('button'); btn.className='img-btn'; btn.type='button';
-    btn.textContent='📎 แนบรูป / วางรูป';
-    const hint=document.createElement('span'); hint.className='img-hint';
-    hint.textContent='หรือคัดลอกรูปแล้ววางในช่อง (Ctrl/⌘ + V)';
-    const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
-    inp.multiple=true; inp.style.display='none';
-    const tray=document.createElement('div'); tray.className='img-tray';
-
-    btn.addEventListener('click',()=>inp.click());
-    inp.addEventListener('change',()=>{ addFiles(id, inp.files, tray); inp.value=''; });
-    field.addEventListener('paste',e=>{
-      const items=e.clipboardData && e.clipboardData.items;
-      if(!items) return;
-      const imgs=[...items].filter(it=>it.kind==='file' && it.type.indexOf('image/')===0)
-                           .map(it=>it.getAsFile());
-      if(imgs.length){ e.preventDefault(); addFiles(id, imgs, tray); }
-    });
-
-    // order after the field: button, hint, then tray below
-    field.insertAdjacentElement('afterend', tray);
-    field.insertAdjacentElement('afterend', hint);
-    field.insertAdjacentElement('afterend', inp);
-    field.insertAdjacentElement('afterend', btn);
-    renderTray(id,tray);
-  }
-
-  function init(){
-    document.querySelectorAll('.ws-field').forEach(f=>{
-      const lbl=f.getAttribute('data-label')||'';
-      if(lbl.indexOf('Prompt')===-1) attach(f);   // image attach on answer/result fields
-    });
-  }
-  if(document.readyState!=='loading') init();
-  else document.addEventListener('DOMContentLoaded', init);
-})();
-</script>
-
-<!-- ===================== PROBLEM SETS (anti-copy) ===================== -->
-<script>
-(function(){
-  // 5 tweaked sets — auto-assigned by seat number (เลขที่). Same structure, different specifics.
-  const SETS=[
-    {province:'เชียงใหม่', topic:'เพาเวอร์เซต (power set)', expr:'44 ÷ 8', slang:'ตึงจัด'},
-    {province:'ภูเก็ต',    topic:'สมการกำลังสอง',          expr:'123 × 7', slang:'ช็อตฟีล'},
-    {province:'ขอนแก่น',   topic:'ฟังก์ชันเชิงเส้น',        expr:'2^10', slang:'ตัวมารดา'},
-    {province:'กระบี่',    topic:'ความน่าจะเป็นเบื้องต้น',  expr:'17% ของ 250', slang:'เลิศเกิ๊น'},
-    {province:'น่าน',      topic:'เลขยกกำลังและราก',       expr:'√225', slang:'ฉ่ำ'}
-  ];
-
-  function setIndexOf(noStr){
-    const n=parseInt(String(noStr||'').replace(/[^0-9]/g,''),10);
-    if(!n || n<1) return null;
-    return (n-1) % SETS.length;       // เลขที่ 1→ชุด1, 6→ชุด1, ...
-  }
-  function applySet(i){
-    const s=SETS[i];
-    document.querySelectorAll('[data-var="province"]').forEach(e=>e.textContent=s.province);
-    document.querySelectorAll('[data-var="topic"]').forEach(e=>e.textContent=s.topic);
-    document.querySelectorAll('[data-var="expr"]').forEach(e=>e.textContent=s.expr);
-    document.querySelectorAll('[data-var="slang"]').forEach(e=>e.textContent=s.slang);
-  }
-  function refresh(){
-    const noEl=document.getElementById('ws-no');
-    const lbl=document.getElementById('setlabel');
-    const i=setIndexOf(noEl?noEl.value:'');
-    if(i===null){ applySet(0); if(lbl) lbl.textContent='— (กรอก “เลขที่” ก่อน เพื่อรับชุดโจทย์ของคุณ)'; return; }
-    applySet(i);
-    const s=SETS[i];
-    if(lbl) lbl.textContent='ชุดที่ '+(i+1)+' · จังหวัด'+s.province+' · คณิต: '+s.topic+' · โจทย์คำนวณ: '+s.expr;
-  }
-
-  // expose for the PDF builder
-  window.getSetInfo=function(){
-    const noEl=document.getElementById('ws-no');
-    const i=setIndexOf(noEl?noEl.value:'');
-    if(i===null) return null;
-    return { n:i+1, province:SETS[i].province, topic:SETS[i].topic, expr:SETS[i].expr, slang:SETS[i].slang };
-  };
-
-  function init(){
-    const noEl=document.getElementById('ws-no');
-    if(noEl) noEl.addEventListener('input', refresh);
-    refresh();
-  }
-  if(document.readyState!=='loading') init();
-  else document.addEventListener('DOMContentLoaded', init);
-})();
-</script>
-
-<!-- ===================== PROMPT SPLIT BUILDER AND VALIDATION ===================== -->
-<script>
-(function(){
-  const promptIds = ['q11p', 'q12p', 'q13p', 'q14p', 'q21p', 'q22p', 'q23p'];
-  
-  function validateField(promptId, type, val) {
-    if (!val) return { ok: false, text: '⚠️ ยังไม่ได้กรอก' };
-    
-    if (type === 'role') {
-      const hasRole = /(คุณเป็น|คุณคือ|สมมุติว่าคุณ|ทำตัวเป็น|ในฐานะ|รับบทเป็น|สวมบทเป็น|act as|you are|you're)/i.test(val);
-      if (!hasRole) return { ok: false, text: '⚠️ ควรใช้คำระบุบทบาท เช่น "คุณเป็น..."' };
-      return { ok: true, text: '✅ ระบุบทบาทแล้ว' };
-    }
-    
-    if (type === 'task') {
-      if (promptId === 'q14p') {
-        const hasExample = /(ตัวอย่าง|เช่น|=|:|->|—)/.test(val);
-        if (!hasExample) return { ok: false, text: '⚠️ ควรมีตัวอย่างสอน AI เช่น "ตึงจัด = เจ๋งมาก"' };
+  function attach(id){
+    const inp = document.getElementById(id); if(!inp) return;
+    const btn = document.createElement('button'); btn.className='img-btn'; btn.type='button'; btn.textContent='📎 แนบภาพหน้าจอ';
+    const hint = document.createElement('span'); hint.className='img-hint'; hint.textContent='วาง (Ctrl+V) หรือเลือกไฟล์';
+    const file = document.createElement('input'); file.type='file'; file.accept='image/*'; file.style.display='none';
+    btn.addEventListener('click', ()=>file.click());
+    file.addEventListener('change', ()=>{
+      if(file.files && file.files[0]){
+        const reader = new FileReader();
+        reader.onload = e=> shrink(e.target.result, d=>addImg(id, d));
+        reader.readAsDataURL(file.files[0]);
       }
-      const hasTask = /(ช่วย|เขียน|อธิบาย|สร้าง|สรุป|แปล|ออกแบบ|วางโครงร่าง|แต่ง|แนะนำ|เปรียบเทียบ|ยกตัวอย่าง|จง|ขอให้|ทำให้|วิเคราะห์|ตรวจ|\?|อังกฤษ|english)/.test(val);
-      if (!hasTask) return { ok: false, text: '⚠️ ควรระบุสิ่งที่ให้ทำ เช่น "ช่วยแปล..."' };
-      return { ok: true, text: '✅ ระบุงานแล้ว' };
-    }
-    
-    if (type === 'format') {
-      const hasFormat = /(ย่อหน้า|ข้อ|ตาราง|คำ|ประโยค|โทน|น้ำเสียง|สำหรับ|ภาษา|รายการ|bullet|list|สั้น|ยาว|กระชับ|ละเอียด|อีโมจิ|emoji|วัยรุ่น|นักเรียน|ระดับ|ความยาว)/i.test(val);
-      if (!hasFormat) return { ok: false, text: '⚠️ ควรระบุรูปแบบ เช่น "ความยาว...", "มีอีโมจิ"' };
-      return { ok: true, text: '✅ ระบุรูปแบบแล้ว' };
-    }
-    
-    return { ok: true, text: '✅ เรียบร้อย' };
-  }
-
-  function updateCombined(promptId) {
-    const roleEl = document.getElementById(promptId + '_role');
-    const taskEl = document.getElementById(promptId + '_task');
-    const formatEl = document.getElementById(promptId + '_format');
-    const combEl = document.getElementById(promptId);
-    if (!roleEl || !taskEl || !formatEl || !combEl) return;
-
-    const roleVal = roleEl.value.trim();
-    const taskVal = taskEl.value.trim();
-    const formatVal = formatEl.value.trim();
-
-    // Validate and update label feedback
-    const roleCheck = validateField(promptId, 'role', roleVal);
-    const taskCheck = validateField(promptId, 'task', taskVal);
-    const formatCheck = validateField(promptId, 'format', formatVal);
-
-    updateFeedbackDisplay(promptId + '_role_feedback', roleCheck);
-    updateFeedbackDisplay(promptId + '_task_feedback', taskCheck);
-    updateFeedbackDisplay(promptId + '_format_feedback', formatCheck);
-
-    // Concatenate the final prompt
-    let combined = "";
-    if (roleVal) combined += roleVal;
-    if (taskVal) {
-      if (combined) combined += " ";
-      combined += taskVal;
-    }
-    if (formatVal) {
-      if (combined) combined += " ";
-      combined += formatVal;
-    }
-
-    if (combEl.value !== combined) {
-      combEl.value = combined;
-      if (window.saveField) window.saveField(combEl);
-    }
-  }
-
-  function updateFeedbackDisplay(elementId, result) {
-    const el = document.getElementById(elementId);
-    if (!el) return;
-    el.textContent = result.text;
-    el.style.color = result.ok ? 'var(--good)' : 'var(--warn)';
-    el.style.fontSize = '0.75em';
-    el.style.fontWeight = '600';
-  }
-
-  function init(){
-    promptIds.forEach(id => {
-      ['role', 'task', 'format'].forEach(type => {
-        const el = document.getElementById(id + '_' + type);
-        if (el) {
-          el.addEventListener('input', () => updateCombined(id));
-        }
-      });
-      // Initial update on load
-      updateCombined(id);
+      file.value='';
     });
+    inp.insertAdjacentElement('afterend', file);
+    inp.insertAdjacentElement('afterend', hint);
+    inp.insertAdjacentElement('afterend', btn);
   }
-
-  // Bind to page load and expose globally
-  if (document.readyState !== 'loading') {
-    setTimeout(init, 150);
-  } else {
-    document.addEventListener('DOMContentLoaded', () => setTimeout(init, 150));
-  }
-  window.updateCombined = updateCombined;
+  // Paste goes to the first image slot on the current slide that has no image yet.
+  document.addEventListener('paste', e=>{
+    const items = (e.clipboardData||{}).items;
+    if(!items) return;
+    for(const item of items){
+      if(item.type.indexOf('image')===0){
+        e.preventDefault();
+        const reader = new FileReader();
+        reader.onload = ev=>{
+          const active = window.Reveal ? Reveal.getCurrentSlide() : document;
+          const here = IMG_TARGETS.filter(id=> active.querySelector('#'+id+'_tray'));
+          const d = store();
+          const empty = here.filter(id=> !(d['img:'+id]||[]).length);
+          const tid = empty[0] || here[0] || IMG_TARGETS[0];
+          shrink(ev.target.result, u=>addImg(tid, u));
+        };
+        reader.readAsDataURL(item.getAsFile());
+        break;
+      }
+    }
+  });
+  function init(){ IMG_TARGETS.forEach(id=>{ attach(id); renderTray(id); }); }
+  if(document.readyState!=='loading') init(); else document.addEventListener('DOMContentLoaded', init);
 })();
 </script>
+
+<!-- ===================== LIVE FEEDBACK & SUBMISSION CHECK ===================== -->
+<script>
+(function(){
+  function txt(id){ const e=document.getElementById(id); return e ? (e.value||'').trim() : ''; }
+  function imgCount(id){ try{ const d=JSON.parse(localStorage.getItem(SAVE_KEY)||'{}'); return (d['img:'+id]||[]).length; }catch(e){ return 0; } }
+  const ACTS=[
+    {name:'ข้อมูลคู่', slots:[['t','ws-name1'],['t','ws-name2'],['t','ws-class'],['t','ws-no']]},
+    {name:'กิจกรรมที่ 1 — Feature หรือ Target?', slots:[['t','q1_1'],['t','q1_1t'],['t','q1_2'],['t','q1_2t'],['t','q1_3'],['t','q1_3t'],['t','q1_4'],['t','q1_4t'],['t','q1_5'],['t','q1_5t']]},
+    {name:'กิจกรรมที่ 2 — สำรวจข้อมูล Zoo', slots:[['t','q2_1'],['t','q2_2'],['t','q2_3'],['t','q2_4'],['t','q2_5'],['i','q_img_workflow'],['i','q_img_scatter']]},
+    {name:'กิจกรรมที่ 3 — ทำนายประเภทสัตว์ชนิดใหม่', slots:[['t','q3_1'],['t','q3_2'],['t','q3_3'],['t','q3_4']]},
+    {name:'กิจกรรมที่ 4 — ออกแบบชุดคำถามจำแนกสัตว์', slots:[['t','q4_1']]}
+  ];
+  function slotFilled(type,id){ return type==='i' ? imgCount(id)>=1 : txt(id).length>=2; }
+  function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function renderPanel(){
+    const rows=document.getElementById('check-rows'); if(!rows) return;
+    let done=0, total=0, html='';
+    ACTS.forEach(a=>{
+      let f=0; a.slots.forEach(sl=>{ total++; if(slotFilled(sl[0],sl[1])){ f++; done++; } });
+      const all=f===a.slots.length;
+      const ic = all ? '✅' : (f>0 ? '◑' : '○');
+      html += '<div class="check-row'+(all?' done':'')+'"><span class="ic">'+ic+'</span><span class="body"><span class="ttl">'+esc(a.name)+'</span> <span class="sub">('+f+'/'+a.slots.length+')</span></span></div>';
+    });
+    rows.innerHTML=html;
+    const bar=document.getElementById('prog-bar'), cnt=document.getElementById('prog-count'), msg=document.getElementById('check-msg');
+    const pct = total ? Math.round(done/total*100) : 0;
+    if(bar) bar.style.width = pct+'%';
+    if(cnt) cnt.textContent = done+' / '+total+' ช่อง ('+pct+'%)';
+    if(msg){
+      const n1 = txt('ws-name1'), n2 = txt('ws-name2');
+      if(done===total && n1 && n2) msg.textContent='กรอกครบทุกช่องแล้ว กดปุ่มบันทึกใบงานเป็น PDF เพื่อส่งงาน';
+      else if(done===total) msg.textContent='ตอบคำถามครบแล้ว โปรดกรอกชื่อผู้เรียนทั้งสองคนในสไลด์ที่ 2 ก่อนบันทึก';
+      else if(pct>=60) msg.textContent='เหลืออีก '+(total-done)+' ช่อง';
+      else if(done>0) msg.textContent='กรอกแล้ว '+done+' จาก '+total+' ช่อง';
+      else msg.textContent='ระบบจะตรวจสอบความครบถ้วนของใบงานโดยอัตโนมัติ';
+    }
+  }
+  window.refreshFeedback = renderPanel;
+  document.addEventListener('input', e=>{ if(e.target.classList && e.target.classList.contains('save')) renderPanel(); });
+  document.addEventListener('change', e=>{ if(e.target.classList && e.target.classList.contains('save')) renderPanel(); });
+  if(window.Reveal) Reveal.on('slidechanged', renderPanel);
+  if(document.readyState!=='loading') renderPanel(); else document.addEventListener('DOMContentLoaded', renderPanel);
+})();
+</script>
+
 </body>
 </html>

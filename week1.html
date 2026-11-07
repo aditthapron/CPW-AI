@@ -222,6 +222,30 @@ textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); }
 .time-strip .t-demo { background:var(--teal); flex:30; }
 .time-strip .t-lab { background:var(--purple); flex:55; }
 .time-strip .t-sub { background:#9aa5b8; flex:8; }
+.flow { display:grid; grid-template-columns:repeat(5,1fr); gap:.45em; font-size:.58em; line-height:1.5; }
+.flow > div { border:1px solid var(--line); border-radius:12px; padding:.5em .6em; background:#fff; position:relative; }
+.flow > div.now { background:linear-gradient(135deg,#eef3fb,#f7f0ff); border-color:#cbb6ef; }
+.flow .fn { display:inline-flex; align-items:center; justify-content:center; width:1.6em; height:1.6em; border-radius:50%;
+  background:var(--accent-grad); color:#fff; font-weight:700; margin-right:.3em; }
+.flow .ft { font-weight:700; color:var(--ink); }
+.flow .fz { display:block; margin-top:.35em; padding-top:.35em; border-top:1px dashed var(--line); color:var(--muted); }
+.flow .fw { display:inline-block; margin-top:.35em; font-size:.92em; font-weight:700; color:var(--purple); }
+.ml3 { display:grid; grid-template-columns:repeat(3,1fr); gap:.5em; font-size:.6em; line-height:1.55; }
+.ml3 > div { border:1px solid var(--line); border-radius:14px; padding:.6em .75em; background:#fff; }
+.ml3 h4 { margin:0 0 .2em; font-size:1.15em; }
+.ml3 .lbl { display:inline-block; font-size:.85em; font-weight:700; border-radius:999px; padding:.05em .6em; margin-bottom:.3em; }
+.ml3 ul { margin:.2em 0 0; padding-left:1.1em; }
+.ftrow { display:flex; align-items:center; gap:.5em; font-size:.6em; margin:.3em 0; padding:.35em .6em; border:1px solid var(--line); border-radius:12px; background:#fff; }
+.ftrow .ic { font-size:1.9em; width:1.3em; text-align:center; }
+.ftrow .tt { width:9.2em; font-weight:700; line-height:1.35; }
+.ftrow .chips { flex:1; line-height:1.9; }
+.chip { display:inline-block; background:#eef3fb; border:1px solid #cfe0fb; border-radius:999px; padding:0 .6em; margin:0 .1em; white-space:nowrap; }
+.ftrow .arr { color:var(--muted); font-size:1.3em; }
+.tchip { background:#f7f0ff; border:1px solid #e1d2fa; color:var(--purple); font-weight:700; border-radius:10px; padding:.2em .6em; white-space:nowrap; min-width:7.2em; text-align:center; }
+.icon-tiles { display:grid; gap:.5em; }
+.icon-tile { display:flex; gap:.6em; align-items:center; border:1px solid var(--line); border-radius:12px; background:#fff; padding:.5em .7em; font-size:.64em; line-height:1.5; }
+.icon-tile .em { font-size:2em; line-height:1; }
+.icon-tile b { color:var(--ink); }
 .ex-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.5em; }
 .ex-card { border:1px solid var(--line); border-radius:12px; padding:.55em .7em; background:#fff; font-size:.6em; line-height:1.5; }
 .ex-card .em { font-size:1.6em; display:block; }
@@ -288,22 +312,21 @@ textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); }
 <!-- ===================== 3 BRIDGE: SEM 1 → SEM 2 ===================== -->
 <section>
   <h2>จากผู้ใช้ AI สู่ผู้สร้างโมเดล AI</h2>
-  <div class="cols">
-    <div class="card" style="border-top:4px solid var(--blue); font-size:.62em; line-height:1.6;">
-      <b style="color:var(--blue)">ภาคเรียนที่ 1 — ผู้ใช้ AI</b>
-      <ul style="margin:.25em 0 0; padding-left:1.1em;">
-        <li>เขียน prompt สั่งงาน Gemini · สร้างภาพและวิดีโอ · NotebookLM</li>
-        <li>ชนิดข้อมูล · Filter · ทำความสะอาดข้อมูล · Dashboard ใน Power BI</li>
-      </ul>
-    </div>
-    <div class="card" style="border-top:4px solid var(--purple); font-size:.62em; line-height:1.6;">
-      <b style="color:var(--purple)">ภาคเรียนที่ 2 — ผู้สร้างโมเดล</b>
-      <ul style="margin:.25em 0 0; padding-left:1.1em;">
-        <li>ป้อนข้อมูลให้คอมพิวเตอร์ เพื่อให้คอมพิวเตอร์ <b>หากฎด้วยตนเอง</b></li>
-        <li>วัดความแม่นยำของโมเดล · วิเคราะห์ว่าโมเดลผิดพลาดที่ใด</li>
-      </ul>
-    </div>
-  </div>
+  <svg class="svgfig" viewBox="0 0 1000 210" width="1000" role="img" aria-label="ภาคเรียนที่ 1 ผู้ใช้สั่งงาน AI ด้วย prompt ภาคเรียนที่ 2 ป้อนข้อมูลให้คอมพิวเตอร์เรียนรู้เป็นโมเดลแล้วนำไปทำนาย">
+    <defs><marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5b6678"/></marker></defs>
+    <g font-family="Sarabun" text-anchor="middle">
+      <rect x="5" y="5" width="430" height="200" rx="16" fill="#eef3fb" stroke="#cfe0fb" stroke-width="2"/>
+      <text x="220" y="42" font-size="22" font-weight="700" fill="#1a73e8">ภาคเรียนที่ 1 · ผู้ใช้ AI</text>
+      <text x="55" y="128" font-size="46">🧑‍💻</text><line x1="88" y1="112" x2="128" y2="112" stroke="#5b6678" stroke-width="3" marker-end="url(#ar3)"/><rect x="136" y="88" width="100" height="46" rx="14" fill="#fff" stroke="#cfe0fb" stroke-width="2"/><text x="186" y="118" font-size="17" fill="#1a2235">prompt</text><line x1="242" y1="112" x2="276" y2="112" stroke="#5b6678" stroke-width="3" marker-end="url(#ar3)"/><text x="308" y="128" font-size="46">🤖</text><line x1="338" y1="112" x2="368" y2="112" stroke="#5b6678" stroke-width="3" marker-end="url(#ar3)"/><text x="398" y="126" font-size="38">🖼️</text><g font-size="15" fill="#5b6678"><text x="55" y="160">ผู้ใช้</text><text x="308" y="160">AI</text><text x="398" y="160">ผลงาน</text></g>
+      <text x="220" y="192" font-size="15" fill="#1a2235">Gemini · NotebookLM · Power BI</text>
+      <path d="M447,96 L520,96 L520,80 L553,108 L520,136 L520,120 L447,120 Z" fill="url(#g3)"/>
+      <defs><linearGradient id="g3"><stop offset="0" stop-color="#1a73e8"/><stop offset="1" stop-color="#7b41d8"/></linearGradient></defs>
+      <rect x="565" y="5" width="430" height="200" rx="16" fill="#f7f0ff" stroke="#e1d2fa" stroke-width="2"/>
+      <text x="780" y="42" font-size="22" font-weight="700" fill="#7b41d8">ภาคเรียนที่ 2 · ผู้สร้างโมเดล</text>
+      <rect x="592" y="92" width="20" height="12" fill="#e9ddff" stroke="#cbb6ef"/><rect x="614" y="92" width="20" height="12" fill="#e9ddff" stroke="#cbb6ef"/><rect x="636" y="92" width="20" height="12" fill="#e9ddff" stroke="#cbb6ef"/><rect x="592" y="106" width="20" height="12" fill="#fff" stroke="#cbb6ef"/><rect x="614" y="106" width="20" height="12" fill="#fff" stroke="#cbb6ef"/><rect x="636" y="106" width="20" height="12" fill="#fff" stroke="#cbb6ef"/><rect x="592" y="120" width="20" height="12" fill="#fff" stroke="#cbb6ef"/><rect x="614" y="120" width="20" height="12" fill="#fff" stroke="#cbb6ef"/><rect x="636" y="120" width="20" height="12" fill="#fff" stroke="#cbb6ef"/><line x1="664" y1="112" x2="694" y2="112" stroke="#5b6678" stroke-width="3" marker-end="url(#ar3)"/><text x="726" y="128" font-size="44">⚙️</text><line x1="756" y1="112" x2="786" y2="112" stroke="#5b6678" stroke-width="3" marker-end="url(#ar3)"/><text x="818" y="128" font-size="44">🌳</text><line x1="848" y1="112" x2="878" y2="112" stroke="#5b6678" stroke-width="3" marker-end="url(#ar3)"/><text x="912" y="128" font-size="40">🎯</text><g font-size="15" fill="#5b6678"><text x="625" y="160">ข้อมูล</text><text x="726" y="160">เรียนรู้</text><text x="818" y="160">โมเดล</text><text x="912" y="160">ทำนาย</text></g>
+      <text x="780" y="192" font-size="15" fill="#1a2235">คอมพิวเตอร์<tspan font-weight="700">หากฎเอง</tspan>จากข้อมูล · วัดความแม่นยำ</text>
+    </g>
+  </svg>
   <div class="wk-grid" style="margin-top:.6em;">
     <div class="wk-cell now"><b>สัปดาห์ 1 — วันนี้</b>ML คืออะไร · รู้จัก Orange</div>
     <div class="wk-cell"><b>สัปดาห์ 2</b>สำรวจและทำความสะอาดข้อมูล</div>
@@ -325,22 +348,14 @@ textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); }
     <div class="t-lab">60–115 นาที<br>ปฏิบัติด้วยตนเอง (งานคู่)</div>
     <div class="t-sub">ส่งงาน</div>
   </div>
-  <div class="cols">
-    <div class="card" style="font-size:.62em; line-height:1.6;">
-      <b>ข้อตกลงในชั้นเรียน</b>
-      <ul style="margin:.25em 0 0; padding-left:1.1em;">
-        <li>ทำงานเป็นคู่ และ<b>สลับผู้ควบคุมเครื่อง</b>เมื่อผ่านครึ่งเวลาของช่วงปฏิบัติ</li>
-        <li>ใบงานสัปดาห์ละ 20 คะแนน · <b>คะแนนส่วนใหญ่มาจากการอธิบายเหตุผล</b> ไม่ใช่ความสวยงามของงาน</li>
-        <li>ส่งไฟล์ PDF ใบงาน และไฟล์ workflow <code>.ows</code></li>
-      </ul>
-    </div>
-    <div class="card" style="font-size:.62em; line-height:1.6;">
-      <b>การใช้ Gemini</b>
-      <ul style="margin:.25em 0 0; padding-left:1.1em;">
-        <li class="good" style="font-weight:600;">ใช้ได้: แปลคำศัพท์ · สอบถามการทำงานของเมนูหรือปุ่ม</li>
-        <li class="warn">ไม่อนุญาต: ให้ Gemini ตอบคำถามในใบงานแทน — คำตอบต้องอ้างอิง<u>ผลที่ปรากฏใน Orange ของนักเรียนเอง</u></li>
-      </ul>
-    </div>
+  <div class="icon-tiles" style="grid-template-columns:repeat(3,1fr);">
+    <div class="icon-tile"><span class="em">👥</span><div><b>ทำงานเป็นคู่</b><br>สลับผู้ควบคุมเครื่องเมื่อผ่านครึ่งเวลา</div></div>
+    <div class="icon-tile"><span class="em">💬</span><div><b>คะแนนมาจากเหตุผล</b><br>ไม่ใช่ความสวยงามของงาน · 20 คะแนน/สัปดาห์</div></div>
+    <div class="icon-tile"><span class="em">📤</span><div><b>ส่ง 2 ไฟล์</b><br>PDF ใบงาน + workflow <code>.ows</code></div></div>
+  </div>
+  <div class="icon-tiles" style="grid-template-columns:1fr 1fr; margin-top:.5em;">
+    <div class="icon-tile gem-ok"><span class="em">✅</span><div><b>Gemini ใช้ได้</b><br>แปลคำศัพท์ · ถามวิธีใช้เมนูหรือปุ่ม</div></div>
+    <div class="icon-tile gem-no"><span class="em">⛔</span><div><b>ไม่อนุญาต</b><br>ให้ Gemini ตอบใบงานแทน — คำตอบต้องมาจาก<u>ผลใน Orange ของตนเอง</u></div></div>
   </div>
 </section>
 
@@ -398,7 +413,62 @@ textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); }
   </div>
 </section>
 
-<!-- ===================== 7 FLIB GAME ===================== -->
+<!-- ===================== 7 WHEN TO USE ML ===================== -->
+<section>
+  <h2>เมื่อใดจึงควรใช้ Machine Learning</h2>
+  <svg class="svgfig" viewBox="0 0 1000 430" width="1000" role="img" aria-label="ผังตัดสินใจ: ถ้ากฎชัดเจนและไม่เปลี่ยนแปลง ใช้โปรแกรมทั่วไป เช่น ตัดเกรด ภาษี ตรวจอายุ ถ้าไม่ใช่ ใช้ Machine Learning เมื่อกฎซับซ้อน รูปแบบเปลี่ยนเสมอ หรือต้องปรับให้แต่ละคน">
+    <defs><marker id="ar7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5b6678"/></marker></defs>
+    <g font-family="Sarabun" text-anchor="middle">
+      <!-- question -->
+      <rect x="270" y="6" width="460" height="70" rx="35" fill="#1a2235"/>
+      <text x="500" y="38" font-size="21" font-weight="700" fill="#fff">เขียนกฎได้ชัดเจน</text>
+      <text x="500" y="63" font-size="21" font-weight="700" fill="#fff">และกฎไม่เปลี่ยนแปลง ใช่หรือไม่</text>
+      <!-- branches -->
+      <path d="M330,62 C230,80 175,95 175,140" fill="none" stroke="#5b6678" stroke-width="3" marker-end="url(#ar7)"/>
+      <path d="M670,62 C740,80 660,95 660,140" fill="none" stroke="#5b6678" stroke-width="3" marker-end="url(#ar7)"/>
+      <text x="160" y="104" font-size="20" font-weight="700" fill="#1a73e8">ใช่</text>
+      <text x="725" y="104" font-size="20" font-weight="700" fill="#7b41d8">ไม่ใช่</text>
+
+      <!-- left: ordinary program -->
+      <rect x="10" y="148" width="330" height="276" rx="18" fill="#eef3fb" stroke="#cfe0fb" stroke-width="2"/>
+      <text x="175" y="186" font-size="23" font-weight="700" fill="#1a73e8">โปรแกรมทั่วไป</text>
+      <g text-anchor="start">
+        <text x="36" y="240" font-size="30">🧮</text><text x="84" y="236" font-size="18" fill="#1a2235">ตัดเกรดจากคะแนน</text><text x="84" y="258" font-size="15" fill="#5b6678">80 ขึ้นไป = เกรด 4</text>
+        <text x="36" y="310" font-size="30">🧾</text><text x="84" y="306" font-size="18" fill="#1a2235">คำนวณภาษี VAT</text><text x="84" y="328" font-size="15" fill="#5b6678">ราคา × 7%</text>
+        <text x="36" y="380" font-size="30">🎂</text><text x="84" y="376" font-size="18" fill="#1a2235">ตรวจอายุครบ 18 ปี</text><text x="84" y="398" font-size="15" fill="#5b6678">ปีปัจจุบัน − ปีเกิด</text>
+      </g>
+
+      <!-- right: ML -->
+      <rect x="360" y="148" width="630" height="276" rx="18" fill="#f7f0ff" stroke="#e1d2fa" stroke-width="2"/>
+      <text x="675" y="186" font-size="23" font-weight="700" fill="#7b41d8">Machine Learning</text>
+      <g>
+        <rect x="378" y="204" width="190" height="204" rx="14" fill="#fff" stroke="#e1d2fa" stroke-width="2"/>
+        <text x="473" y="262" font-size="44">🐱🐶</text>
+        <text x="473" y="304" font-size="18" font-weight="700" fill="#1a2235">กฎซับซ้อน</text>
+        <text x="473" y="326" font-size="18" font-weight="700" fill="#1a2235">เกินกว่าจะเขียนเอง</text>
+        <text x="473" y="360" font-size="15" fill="#5b6678">แยกภาพแมวกับสุนัข</text>
+        <text x="473" y="382" font-size="15" fill="#5b6678">อ่านลายมือ</text>
+
+        <rect x="580" y="204" width="190" height="204" rx="14" fill="#fff" stroke="#e1d2fa" stroke-width="2"/>
+        <text x="675" y="262" font-size="44">📧🔄</text>
+        <text x="675" y="304" font-size="18" font-weight="700" fill="#1a2235">รูปแบบ</text>
+        <text x="675" y="326" font-size="18" font-weight="700" fill="#1a2235">เปลี่ยนแปลงอยู่เสมอ</text>
+        <text x="675" y="360" font-size="15" fill="#5b6678">"ถูกรางวัล" → "ได้รับสิทธิ์"</text>
+        <text x="675" y="382" font-size="15" fill="#5b6678">สแปมเปลี่ยนคำใหม่</text>
+
+        <rect x="782" y="204" width="190" height="204" rx="14" fill="#fff" stroke="#e1d2fa" stroke-width="2"/>
+        <text x="877" y="262" font-size="44">👤👤</text>
+        <text x="877" y="304" font-size="18" font-weight="700" fill="#1a2235">ผลต้องต่างกัน</text>
+        <text x="877" y="326" font-size="18" font-weight="700" fill="#1a2235">ในแต่ละบุคคล</text>
+        <text x="877" y="360" font-size="15" fill="#5b6678">คลิปแนะนำ</text>
+        <text x="877" y="382" font-size="15" fill="#5b6678">ของผู้ใช้แต่ละคน</text>
+      </g>
+    </g>
+  </svg>
+  <div class="q" style="font-size:.64em; margin-top:.4em;">คำถามชวนคิด: งานใดควรใช้ ML — (ก) แปลงองศาเซลเซียสเป็นฟาเรนไฮต์ (ข) ทำนายว่าลูกค้าจะยกเลิกสมาชิกฟิตเนสหรือไม่</div>
+</section>
+
+<!-- ===================== 8 FLIB GAME ===================== -->
 <section>
   <h2>กิจกรรม: "ฟลิบ" คืออะไร? <span class="note">— หากฎจากตัวอย่างด้วยตนเอง</span></h2>
   <svg class="svgfig" viewBox="0 0 1000 300" width="1000" role="img" aria-label="ตัวอย่างสิ่งมีชีวิต 6 ตัวพร้อมเฉลยว่าเป็นฟลิบหรือไม่ และข้อมูลใหม่ 2 ตัว">
@@ -477,67 +547,87 @@ textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); }
   </svg>
 </section>
 
-<!-- ===================== 8 FLIB ANSWER ===================== -->
+<!-- ===================== 9 FLIB ANSWER ===================== -->
 <section>
   <h2>เฉลย: ฟลิบ = <span style="color:var(--purple)">ตัวที่มีจุด</span> (สีและจำนวนตาไม่เกี่ยว)</h2>
-  <div class="cols">
-    <div class="card gem-ok" style="font-size:.62em; line-height:1.65;">
-      <b class="good">ตัว ก → ฟลิบ · ตัว ข → ไม่ใช่</b><br>
-      กิจกรรมนี้มีขั้นตอนเดียวกับการทำงานของ ML:
-      <ol style="margin:.25em 0 0; padding-left:1.2em;">
-        <li>พิจารณา<b>ตัวอย่าง</b>ที่มี<b>เฉลย</b></li>
-        <li>สังเกต<b>ลักษณะ</b> (สี · จำนวนตา · จุด)</li>
-        <li>หา<b>กฎ</b>ที่อธิบายเฉลยได้ทุกตัว</li>
-        <li>ใช้กฎนั้น<b>ทำนายตัวใหม่</b></li>
-      </ol>
-    </div>
-    <div class="card gem-no" style="font-size:.62em; line-height:1.65;">
-      <b class="warn">หากตัวอย่างมีความลำเอียง</b><br>
-      สมมติว่าได้เห็นเพียงตัวที่ 1 (ฟ้า มีจุด → ฟลิบ) และตัวที่ 5 (แดง ไม่มีจุด → ไม่ใช่)<br>
-      อาจสรุปกฎผิดว่า <b>"สีฟ้า = ฟลิบ"</b> และทำนายตัวที่ 3 ผิด<br>
-      <span class="note" style="font-size:.95em;">AI ก็เช่นเดียวกัน: <b>คุณภาพของสิ่งที่เรียนรู้ขึ้นอยู่กับตัวอย่างที่ได้รับ</b> (จะศึกษาเพิ่มเติมในสัปดาห์ที่ 7)</span>
-    </div>
-  </div>
+  <svg class="svgfig" viewBox="0 0 1000 440" width="1000" role="img" aria-label="ขั้นตอน 4 ขั้นของกิจกรรมฟลิบ ตัว ก มีจุดจึงเป็นฟลิบ ตัว ข ไม่มีจุดจึงไม่ใช่ และตัวอย่างลำเอียงทำให้ได้กฎผิดว่าสีฟ้าคือฟลิบ">
+    <defs><marker id="ar9" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5b6678"/></marker></defs>
+    <defs><linearGradient id="g9"><stop offset="0" stop-color="#1a73e8"/><stop offset="1" stop-color="#7b41d8"/></linearGradient></defs>
+    <g font-family="Sarabun" text-anchor="middle">
+      <text x="5" y="18" font-size="17" fill="#5b6678" text-anchor="start">ขั้นตอนในกิจกรรมนี้ = ขั้นตอนการทำงานของ ML</text>
+      <rect x="5" y="30" width="230" height="100" rx="14" fill="#fff" stroke="#dfe4ec" stroke-width="2"/><circle cx="29" cy="54" r="14" fill="url(#g9)"/><text x="29" y="60" font-size="16" font-weight="700" fill="#fff">1</text><text x="120" y="82" font-size="34">👀</text><text x="120" y="117" font-size="18" font-weight="700" fill="#1a2235">ดูตัวอย่างที่มีเฉลย</text><line x1="238" y1="80" x2="257" y2="80" stroke="#5b6678" stroke-width="3" marker-end="url(#ar9)"/><rect x="258" y="30" width="230" height="100" rx="14" fill="#fff" stroke="#dfe4ec" stroke-width="2"/><circle cx="282" cy="54" r="14" fill="url(#g9)"/><text x="282" y="60" font-size="16" font-weight="700" fill="#fff">2</text><text x="373" y="82" font-size="34">🔍</text><text x="373" y="117" font-size="18" font-weight="700" fill="#1a2235">สังเกตลักษณะ</text><line x1="491" y1="80" x2="510" y2="80" stroke="#5b6678" stroke-width="3" marker-end="url(#ar9)"/><rect x="511" y="30" width="230" height="100" rx="14" fill="#fff" stroke="#dfe4ec" stroke-width="2"/><circle cx="535" cy="54" r="14" fill="url(#g9)"/><text x="535" y="60" font-size="16" font-weight="700" fill="#fff">3</text><text x="626" y="82" font-size="34">📏</text><text x="626" y="117" font-size="18" font-weight="700" fill="#1a2235">หากฎที่ถูกกับทุกตัว</text><line x1="744" y1="80" x2="763" y2="80" stroke="#5b6678" stroke-width="3" marker-end="url(#ar9)"/><rect x="764" y="30" width="230" height="100" rx="14" fill="#fff" stroke="#dfe4ec" stroke-width="2"/><circle cx="788" cy="54" r="14" fill="url(#g9)"/><text x="788" y="60" font-size="16" font-weight="700" fill="#fff">4</text><text x="879" y="82" font-size="34">🔮</text><text x="879" y="117" font-size="18" font-weight="700" fill="#1a2235">ทำนายตัวใหม่</text>
+      <rect x="5" y="150" width="470" height="285" rx="16" fill="#f4fbf7" stroke="#cdeadb" stroke-width="2"/>
+      <text x="240" y="186" font-size="20" font-weight="700" fill="#0f8a4f">ใช้กฎ "มีจุด" ทำนายข้อมูลใหม่</text>
+      <g transform="translate(130,262) scale(1.0)"><ellipse cx="0" cy="0" rx="48" ry="42" fill="#5b9cf2"/><circle cx="-22" cy="-13" r="8" fill="#fff"/><circle cx="-22" cy="-12" r="3.6" fill="#1a2235"/><circle cx="0" cy="-22" r="8" fill="#fff"/><circle cx="0" cy="-21" r="3.6" fill="#1a2235"/><circle cx="22" cy="-13" r="8" fill="#fff"/><circle cx="22" cy="-12" r="3.6" fill="#1a2235"/><circle cx="-20" cy="18" r="6" fill="#1a2235" opacity=".4"/><circle cx="2" cy="26" r="5" fill="#1a2235" opacity=".4"/><circle cx="22" cy="12" r="6" fill="#1a2235" opacity=".4"/></g>
+      <g transform="translate(350,262) scale(1.0)"><ellipse cx="0" cy="0" rx="48" ry="42" fill="#f26b5b"/><circle cx="0" cy="-16" r="10" fill="#fff"/><circle cx="0" cy="-15" r="4.5" fill="#1a2235"/></g>
+      <text x="130" y="334" font-size="17" fill="#1a2235">ตัว ก · มีจุด</text><text x="130" y="364" font-size="22" font-weight="700" fill="#0f8a4f">ฟลิบ ✓</text>
+      <text x="350" y="334" font-size="17" fill="#1a2235">ตัว ข · ไม่มีจุด</text><text x="350" y="364" font-size="22" font-weight="700" fill="#c2410c">ไม่ใช่ ✗</text>
+      <text x="240" y="412" font-size="15" fill="#5b6678">สีและจำนวนตาไม่มีผลต่อคำตอบ</text>
+
+      <rect x="495" y="150" width="500" height="285" rx="16" fill="#fff6ed" stroke="#ffd8b8" stroke-width="2"/>
+      <text x="745" y="186" font-size="20" font-weight="700" fill="#c2410c">หากตัวอย่างลำเอียง</text>
+      <text x="592" y="214" font-size="14" fill="#5b6678">เห็นเพียง 2 ตัว</text>
+      <g transform="translate(555,262) scale(0.62)"><ellipse cx="0" cy="0" rx="48" ry="42" fill="#5b9cf2"/><circle cx="-16" cy="-15" r="9" fill="#fff"/><circle cx="-16" cy="-14" r="4.0" fill="#1a2235"/><circle cx="16" cy="-15" r="9" fill="#fff"/><circle cx="16" cy="-14" r="4.0" fill="#1a2235"/><circle cx="-20" cy="18" r="6" fill="#1a2235" opacity=".4"/><circle cx="2" cy="26" r="5" fill="#1a2235" opacity=".4"/><circle cx="22" cy="12" r="6" fill="#1a2235" opacity=".4"/></g>
+      <g transform="translate(630,262) scale(0.62)"><ellipse cx="0" cy="0" rx="48" ry="42" fill="#f26b5b"/><circle cx="-16" cy="-15" r="9" fill="#fff"/><circle cx="-16" cy="-14" r="4.0" fill="#1a2235"/><circle cx="16" cy="-15" r="9" fill="#fff"/><circle cx="16" cy="-14" r="4.0" fill="#1a2235"/></g>
+      <text x="555" y="312" font-size="15" font-weight="700" fill="#0f8a4f">ฟลิบ ✓</text><text x="630" y="312" font-size="15" font-weight="700" fill="#c2410c">ไม่ใช่ ✗</text>
+      <line x1="668" y1="262" x2="700" y2="262" stroke="#5b6678" stroke-width="3" marker-end="url(#ar9)"/>
+      <rect x="706" y="232" width="124" height="62" rx="10" fill="#fff" stroke="#c2410c" stroke-width="2"/>
+      <text x="768" y="256" font-size="14" fill="#5b6678">สรุปกฎผิด</text><text x="768" y="281" font-size="17" font-weight="700" fill="#c2410c">สีฟ้า = ฟลิบ</text>
+      <line x1="834" y1="262" x2="866" y2="262" stroke="#5b6678" stroke-width="3" marker-end="url(#ar9)"/>
+      <g transform="translate(920,262) scale(0.62)"><ellipse cx="0" cy="0" rx="48" ry="42" fill="#5b9cf2"/><circle cx="-16" cy="-15" r="9" fill="#fff"/><circle cx="-16" cy="-14" r="4.0" fill="#1a2235"/><circle cx="16" cy="-15" r="9" fill="#fff"/><circle cx="16" cy="-14" r="4.0" fill="#1a2235"/></g>
+      <text x="920" y="312" font-size="14" fill="#1a2235">ตัวที่ 3 → ทายว่าฟลิบ</text><text x="920" y="334" font-size="16" font-weight="700" fill="#c2410c">✗ ผิด</text>
+      <text x="745" y="380" font-size="17" font-weight="700" fill="#1a2235">AI ก็เช่นเดียวกัน</text>
+      <text x="745" y="405" font-size="16" fill="#1a2235">คุณภาพของสิ่งที่เรียนรู้ขึ้นอยู่กับตัวอย่างที่ได้รับ</text>
+      <text x="745" y="427" font-size="14" fill="#5b6678">(ศึกษาเพิ่มเติมในสัปดาห์ที่ 7)</text>
+    </g>
+  </svg>
 </section>
 
-<!-- ===================== 9 VOCABULARY ===================== -->
+<!-- ===================== 10 VOCABULARY ===================== -->
 <section>
   <h2>คำศัพท์พื้นฐานของ ML: ตัวอย่าง · Feature · Target</h2>
   <table class="zoo-tbl">
+    <tr><th class="meta" style="font-size:.9em;">🏷️ Meta<br><span class="note">ไม่ใช้ทำนาย</span></th><th class="feat" colspan="7" style="font-size:.9em;">🔎 Feature — ลักษณะที่ทราบแล้ว ใช้ในการทำนาย</th><th class="targ" style="font-size:.9em;">🎯 Target<br><span class="note">สิ่งที่ต้องการทำนาย</span></th></tr>
     <tr><th class="meta">name</th><th class="feat">hair<br><span class="note">มีขน</span></th><th class="feat">feathers<br><span class="note">มีขนนก</span></th><th class="feat">eggs<br><span class="note">ออกไข่</span></th><th class="feat">milk<br><span class="note">ให้นม</span></th><th class="feat">aquatic<br><span class="note">อยู่ในน้ำ</span></th><th class="feat">fins<br><span class="note">มีครีบ</span></th><th class="feat">legs<br><span class="note">จำนวนขา</span></th><th class="targ">type<br><span class="note">ประเภท</span></th></tr>
     <tr><td class="meta">lion</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>4</td><td class="targ">mammal</td></tr>
     <tr><td class="meta">penguin</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td><td>2</td><td class="targ">bird</td></tr>
     <tr><td class="meta">tuna</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td class="targ">fish</td></tr>
     <tr><td class="meta">honeybee</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>6</td><td class="targ">insect</td></tr>
   </table>
-  <div class="cols" style="margin-top:.2em;">
-    <div class="card" style="font-size:.58em; line-height:1.55;"><b>1 แถว = 1 ตัวอย่าง</b> (instance)<br>สัตว์ 1 ตัว · อีเมล 1 ฉบับ · นักเรียน 1 คน<br><span class="note">1 = ใช่ · 0 = ไม่ใช่</span></div>
-    <div class="card" style="font-size:.58em; line-height:1.55; background:#eef3fb;"><b style="color:var(--blue)">Feature</b> = ลักษณะที่ใช้ในการทำนาย<br>(ข้อมูลที่ทราบอยู่แล้ว)</div>
-    <div class="card" style="font-size:.58em; line-height:1.55; background:#f7f0ff;"><b style="color:var(--purple)">Target</b> = สิ่งที่ต้องการทำนาย<br>(คำตอบที่โมเดลต้องเรียนรู้)</div>
-    <div class="card" style="font-size:.58em; line-height:1.55; background:#f5f6f8;"><b style="color:var(--muted)">Meta</b> = ข้อมูลประกอบ<br>ไม่ใช้ในการทำนาย (เช่น ชื่อสัตว์)</div>
+  <div class="icon-tiles" style="grid-template-columns:1fr 1fr; margin-top:.1em;">
+    <div class="icon-tile"><span class="em">➡️</span><div><b>1 แถว = 1 ตัวอย่าง (instance)</b><br>สัตว์ 1 ตัว · อีเมล 1 ฉบับ · นักเรียน 1 คน</div></div>
+    <div class="icon-tile"><span class="em">🔢</span><div><b>1 = ใช่ · 0 = ไม่ใช่</b><br>เช่น lion มี <code>hair</code> = 1 คือมีขน</div></div>
   </div>
   <div class="q" style="font-size:.66em;">เหตุใดจึงไม่ควรใช้ <code>name</code> เป็น Feature <span class="note">— หากโมเดลใช้ชื่อ จะเป็นการจดจำรายตัวแทนการเรียนรู้ลักษณะ และจะทำนายสัตว์ที่ไม่มีชื่ออยู่ในข้อมูลไม่ได้</span></div>
 </section>
 
-<!-- ===================== 10 DATA TYPES RECAP ===================== -->
+<!-- ===================== 11 FEATURE / TARGET EXAMPLES ===================== -->
 <section>
-  <h2>ทบทวนจากภาคเรียนที่ 1: ชนิดข้อมูลใน Orange</h2>
-  <table>
-    <tr><th style="width:24%;">ชื่อที่ใช้ในภาคเรียนที่ 1</th><th style="width:22%;">ชื่อใน Orange</th><th>ตัวอย่างในข้อมูล Zoo</th></tr>
-    <tr><td>ข้อมูลหมวดหมู่ (Nominal)</td><td><b>categorical</b></td><td><code>type</code> = mammal, bird, fish … · <code>feathers</code> = 0 / 1</td></tr>
-    <tr><td>ข้อมูลหมวดหมู่มีลำดับ (Ordinal)</td><td><b>categorical</b></td><td><span class="note">(ไม่มีใน Zoo) เช่น ระดับความพอใจ น้อย–กลาง–มาก</span></td></tr>
-    <tr><td>ข้อมูลตัวเลข (Numerical)</td><td><b>numeric</b></td><td><span class="note">ในไฟล์ Zoo ตั้ง <code>legs</code> เป็น categorical ไว้ (0, 2, 4, 5, 6, 8 ขา)</span></td></tr>
-    <tr><td>ข้อความ</td><td><b>text</b></td><td><code>name</code> = aardvark, antelope …</td></tr>
-  </table>
-  <div class="card" style="font-size:.62em; line-height:1.6; margin-top:.4em; border-left:5px solid var(--teal);">
-    <b style="color:var(--teal)">ใน Orange ทุกคอลัมน์มีคุณสมบัติ 2 ประการ:</b>
-    <b>Type</b> (ชนิดข้อมูล — categorical / numeric / text) และ
-    <b>Role</b> (หน้าที่ — <b>feature</b> / <b>target</b> / <b>meta</b> / skip)
-    ซึ่งจะเห็นได้ในหน้าต่าง File
+  <h2>ตัวอย่าง Feature และ Target ในโจทย์อื่น</h2>
+  <div style="font-size:.58em; margin:.1em 0 .2em;"><span class="chip">Feature = ข้อมูลที่ทราบแล้ว</span> <span class="arr" style="color:var(--muted);">→</span> <span class="tchip" style="display:inline-block; min-width:0;">Target = สิ่งที่ต้องการทำนาย</span></div>
+  <div class="ftrow"><span class="ic">🏢</span><span class="tt">ทำนายราคาคอนโด</span><span class="chips"><span class="chip">พื้นที่ 35 ตร.ม.</span><span class="chip">1 ห้องนอน</span><span class="chip">ห่างรถไฟฟ้า 300 ม.</span><span class="chip">อายุอาคาร 5 ปี</span></span><span class="arr">→</span><span class="tchip">ราคา 2.8 ล้านบาท</span></div>
+  <div class="ftrow"><span class="ic">✈️</span><span class="tt">เที่ยวบินจะล่าช้าหรือไม่</span><span class="chips"><span class="chip">สายการบิน A</span><span class="chip">ออก 18:00 น.</span><span class="chip">ฝนตกหนัก</span><span class="chip">วันศุกร์</span></span><span class="arr">→</span><span class="tchip">ล่าช้า</span></div>
+  <div class="ftrow"><span class="ic">🌾</span><span class="tt">ตรวจโรคใบข้าวจากภาพ</span><span class="chips"><span class="chip">🖼️ ภาพใบข้าว (ค่าสีของทุก pixel)</span></span><span class="arr">→</span><span class="tchip">โรคไหม้</span></div>
+  <div class="ftrow"><span class="ic">▶️</span><span class="tt">ผู้ชมจะดูคลิปจนจบหรือไม่</span><span class="chips"><span class="chip">ยาว 8 นาที</span><span class="chip">หมวดทำอาหาร</span><span class="chip">เคยดูแนวนี้ 12 คลิป</span><span class="chip">เปิดดู 21:00 น.</span></span><span class="arr">→</span><span class="tchip">ดูจบ</span></div>
+  <div class="icon-tiles" style="grid-template-columns:1fr 1fr; margin-top:.5em;">
+    <div class="icon-tile" style="border-left:5px solid var(--blue);"><span class="em">🤔</span><div><b>ขณะทำนาย ทราบค่านี้แล้วหรือยัง</b><br>ทราบแล้ว → <b>Feature</b> · ยังไม่ทราบ → <b>Target</b></div></div>
+    <div class="icon-tile gem-no"><span class="em">⚠️</span><div><b>Feature ต้องทราบก่อนเกิดผล</b><br>"จำนวนผู้ร้องเรียน" ใช้ทำนายความล่าช้าไม่ได้ เพราะทราบหลังเครื่องล่าช้าแล้ว</div></div>
   </div>
 </section>
 
-<!-- ===================== 11 SUPERVISED vs UNSUPERVISED ===================== -->
+<!-- ===================== 12 DATA TYPES RECAP ===================== -->
+<section>
+  <h2>ทบทวนจากภาคเรียนที่ 1: ชนิดข้อมูลใน Orange</h2>
+  <svg class="svgfig" viewBox="0 0 1000 452" width="1000" role="img" aria-label="ชนิดข้อมูล 4 แบบ: หมวดหมู่ไม่มีลำดับ หมวดหมู่มีลำดับ ตัวเลข และข้อความ พร้อมชื่อใน Orange และแผนภาพ Type กับ Role ของคอลัมน์">
+    <defs><marker id="ar12" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5b6678"/></marker></defs>
+    <g font-family="Sarabun" text-anchor="middle">
+      <rect x="5" y="5" width="238" height="292" rx="16" fill="#fff" stroke="#dfe4ec" stroke-width="2"/><path d="M5,21 a16,16 0 0 1 16,-16 h206 a16,16 0 0 1 16,16 v48 h-238 z" fill="#eef3fb"/><text x="124" y="36" font-size="18" font-weight="700" fill="#1a2235">หมวดหมู่ (Nominal)</text><text x="124" y="60" font-size="15" fill="#1a73e8">Orange: <tspan font-weight="700">categorical</tspan></text><rect x="257" y="5" width="238" height="292" rx="16" fill="#fff" stroke="#dfe4ec" stroke-width="2"/><path d="M257,21 a16,16 0 0 1 16,-16 h206 a16,16 0 0 1 16,16 v48 h-238 z" fill="#eef3fb"/><text x="376" y="36" font-size="18" font-weight="700" fill="#1a2235">หมวดหมู่มีลำดับ (Ordinal)</text><text x="376" y="60" font-size="15" fill="#1a73e8">Orange: <tspan font-weight="700">categorical</tspan></text><rect x="509" y="5" width="238" height="292" rx="16" fill="#fff" stroke="#dfe4ec" stroke-width="2"/><path d="M509,21 a16,16 0 0 1 16,-16 h206 a16,16 0 0 1 16,16 v48 h-238 z" fill="#f4fbf7"/><text x="628" y="36" font-size="18" font-weight="700" fill="#1a2235">ตัวเลข (Numerical)</text><text x="628" y="60" font-size="15" fill="#0f8a4f">Orange: <tspan font-weight="700">numeric</tspan></text><rect x="761" y="5" width="238" height="292" rx="16" fill="#fff" stroke="#dfe4ec" stroke-width="2"/><path d="M761,21 a16,16 0 0 1 16,-16 h206 a16,16 0 0 1 16,16 v48 h-238 z" fill="#f5f6f8"/><text x="880" y="36" font-size="18" font-weight="700" fill="#1a2235">ข้อความ (Text)</text><text x="880" y="60" font-size="15" fill="#5b6678">Orange: <tspan font-weight="700">text</tspan></text><text x="62" y="150" font-size="40">🐦</text><text x="124" y="150" font-size="40">🐟</text><text x="186" y="150" font-size="40">🦁</text><text x="93" y="140" font-size="22" fill="#5b6678">≠</text><text x="155" y="140" font-size="22" fill="#5b6678">≠</text><text x="124" y="200" font-size="17" font-weight="700" fill="#1a2235">ไม่มีลำดับก่อน–หลัง</text><text x="124" y="236" font-size="15" fill="#1a2235"><tspan font-family="monospace">type</tspan> = mammal, bird …</text><text x="124" y="260" font-size="15" fill="#1a2235"><tspan font-family="monospace">feathers</tspan> = 0 / 1</text><rect x="301" y="156" width="44" height="22" rx="5" fill="#cfe0fb"/><text x="323" y="148" font-size="24">😞</text><text x="323" y="196" font-size="14" fill="#5b6678">น้อย</text><rect x="353" y="134" width="44" height="44" rx="5" fill="#cfe0fb"/><text x="375" y="126" font-size="24">😐</text><text x="375" y="196" font-size="14" fill="#5b6678">กลาง</text><rect x="405" y="112" width="44" height="66" rx="5" fill="#cfe0fb"/><text x="427" y="104" font-size="24">😊</text><text x="427" y="196" font-size="14" fill="#5b6678">มาก</text><text x="376" y="226" font-size="17" font-weight="700" fill="#1a2235">มีลำดับ น้อย → มาก</text><text x="376" y="252" font-size="15" fill="#1a2235">ความพอใจ · ไซซ์เสื้อ S &lt; M &lt; L</text><text x="376" y="278" font-size="13" fill="#5b6678">(ไม่มีในข้อมูล Zoo)</text><line x1="533" y1="150" x2="723" y2="150" stroke="#0f8a4f" stroke-width="3"/><line x1="538" y1="142" x2="538" y2="158" stroke="#0f8a4f" stroke-width="2"/><text x="538" y="178" font-size="13" fill="#5b6678">150</text><line x1="598" y1="142" x2="598" y2="158" stroke="#0f8a4f" stroke-width="2"/><text x="598" y="178" font-size="13" fill="#5b6678">160</text><line x1="658" y1="142" x2="658" y2="158" stroke="#0f8a4f" stroke-width="2"/><text x="658" y="178" font-size="13" fill="#5b6678">170</text><line x1="718" y1="142" x2="718" y2="158" stroke="#0f8a4f" stroke-width="2"/><text x="718" y="178" font-size="13" fill="#5b6678">180</text><path d="M598,118 l-8,-14 h16 z" fill="#c2410c"/><text x="598" y="100" font-size="14" font-weight="700" fill="#c2410c">165 ซม.</text><text x="628" y="212" font-size="17" font-weight="700" fill="#1a2235">คำนวณได้</text><text x="628" y="236" font-size="15" fill="#1a2235">บวก · ลบ · หาค่าเฉลี่ย</text><text x="628" y="260" font-size="15" fill="#1a2235">ส่วนสูง · ราคา · คะแนนสอบ</text><text x="628" y="284" font-size="13" fill="#5b6678">ใน Zoo ตั้ง legs เป็น categorical</text><rect x="800" y="105" width="160" height="62" rx="10" fill="#f5f6f8" stroke="#c9cfd9" stroke-width="2"/><circle cx="818" cy="136" r="6" fill="#fff" stroke="#c9cfd9" stroke-width="2"/><text x="888" y="144" font-size="22" font-family="monospace" fill="#1a2235">aardvark</text><text x="880" y="212" font-size="17" font-weight="700" fill="#1a2235">ใช้เป็นชื่อเรียก</text><text x="880" y="236" font-size="15" fill="#1a2235">ไม่นำไปคำนวณ</text><text x="880" y="260" font-size="15" fill="#1a2235"><tspan font-family="monospace">name</tspan> = aardvark …</text>
+      <g transform="translate(0,12)"><rect x="405" y="322" width="190" height="112" rx="12" fill="#fff" stroke="#0aa3a3" stroke-width="2.5"/><rect x="405" y="322" width="190" height="34" rx="12" fill="#effaf8"/><text x="500" y="345" font-size="18" font-weight="700" font-family="monospace" fill="#1a2235">legs</text><text x="500" y="378" font-size="16" fill="#5b6678">4</text><text x="500" y="400" font-size="16" fill="#5b6678">2</text><text x="500" y="422" font-size="16" fill="#5b6678">0 …</text><line x1="400" y1="378" x2="352" y2="378" stroke="#5b6678" stroke-width="3" marker-end="url(#ar12)"/><line x1="600" y1="378" x2="648" y2="378" stroke="#5b6678" stroke-width="3" marker-end="url(#ar12)"/><rect x="10" y="330" width="335" height="96" rx="12" fill="#effaf8" stroke="#bfe7e2" stroke-width="2"/><text x="177" y="360" font-size="19" font-weight="700" fill="#0aa3a3">Type = ชนิดของค่า</text><text x="177" y="392" font-size="15" fill="#1a2235">categorical · numeric · text</text><text x="177" y="414" font-size="14" fill="#5b6678">ค่าในคอลัมน์เป็นแบบใด</text><rect x="655" y="330" width="335" height="96" rx="12" fill="#f7f0ff" stroke="#e1d2fa" stroke-width="2"/><text x="822" y="360" font-size="19" font-weight="700" fill="#7b41d8">Role = หน้าที่</text><text x="822" y="392" font-size="15" fill="#1a2235">feature · target · meta · skip</text><text x="822" y="414" font-size="14" fill="#5b6678">คอลัมน์นี้ใช้ทำอะไรในโมเดล</text></g><text x="500" y="324" font-size="15" fill="#5b6678">ทุกคอลัมน์ใน Orange มี 2 คุณสมบัติ (ดูได้ในหน้าต่าง File)</text>
+    </g>
+  </svg>
+</section>
+
+<!-- ===================== 13 SUPERVISED vs UNSUPERVISED ===================== -->
 <section>
   <h2>ML 2 ประเภทหลัก: มีเฉลย และไม่มีเฉลย</h2>
   <svg class="svgfig" viewBox="0 0 1000 250" width="1000" role="img" aria-label="Supervised: จุดมีสีบอกเฉลย · Unsupervised: จุดสีเทา คอมพิวเตอร์จัดกลุ่มเอง">
@@ -568,7 +658,25 @@ textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); }
   <div class="note" style="font-size:.6em; margin-top:.3em;">สัปดาห์ 3, 4, 6 = Supervised · สัปดาห์ 5 = Unsupervised · ข้อมูล Zoo ที่ใช้ในวันนี้มีเฉลย (<code>type</code>) จึงเป็นแบบ Supervised</div>
 </section>
 
-<!-- ===================== 12 ORANGE INTRO ===================== -->
+<!-- ===================== 14 CLASSIFICATION / REGRESSION / CLUSTERING ===================== -->
+<section>
+  <h2>แยกประเภทงาน ML ตามลักษณะของ Target</h2>
+  <svg class="svgfig" viewBox="0 0 1000 378" width="1000" role="img" aria-label="Classification แบ่งจุดเป็นสองสี Regression ลากเส้นแนวโน้มเพื่อทำนายค่าตัวเลข Clustering จัดจุดสีเทาเป็นกลุ่ม">
+    <g font-family="Sarabun" text-anchor="middle"><rect x="5" y="5" width="320" height="368" rx="16" fill="#fff" stroke="#dfe4ec" stroke-width="2"/><rect x="5" y="5" width="320" height="5" rx="2" fill="#1a73e8"/><rect x="70" y="20" width="190" height="26" rx="13" fill="#eef3fb"/><text x="165" y="38" font-size="14" font-weight="700" fill="#1a73e8">Supervised · มี Target</text><text x="165" y="76" font-size="24" font-weight="700" fill="#1a73e8">Classification</text><text x="165" y="100" font-size="16" fill="#1a2235">การจำแนกประเภท</text><rect x="340" y="5" width="320" height="368" rx="16" fill="#fff" stroke="#dfe4ec" stroke-width="2"/><rect x="340" y="5" width="320" height="5" rx="2" fill="#7b41d8"/><rect x="405" y="20" width="190" height="26" rx="13" fill="#f7f0ff"/><text x="500" y="38" font-size="14" font-weight="700" fill="#7b41d8">Supervised · มี Target</text><text x="500" y="76" font-size="24" font-weight="700" fill="#7b41d8">Regression</text><text x="500" y="100" font-size="16" fill="#1a2235">การทำนายค่าตัวเลข</text><rect x="675" y="5" width="320" height="368" rx="16" fill="#fff" stroke="#dfe4ec" stroke-width="2"/><rect x="675" y="5" width="320" height="5" rx="2" fill="#0aa3a3"/><rect x="740" y="20" width="190" height="26" rx="13" fill="#effaf8"/><text x="835" y="38" font-size="14" font-weight="700" fill="#0aa3a3">Unsupervised · ไม่มี Target</text><text x="835" y="76" font-size="24" font-weight="700" fill="#0aa3a3">Clustering</text><text x="835" y="100" font-size="16" fill="#1a2235">การจัดกลุ่ม</text><circle cx="60" cy="150" r="9" fill="#1a73e8"/><circle cx="85" cy="175" r="9" fill="#1a73e8"/><circle cx="55" cy="200" r="9" fill="#1a73e8"/><circle cx="100" cy="140" r="9" fill="#1a73e8"/><circle cx="95" cy="205" r="9" fill="#1a73e8"/><circle cx="75" cy="230" r="9" fill="#1a73e8"/><circle cx="215" cy="150" r="9" fill="#f26b5b"/><circle cx="240" cy="180" r="9" fill="#f26b5b"/><circle cx="200" cy="210" r="9" fill="#f26b5b"/><circle cx="255" cy="220" r="9" fill="#f26b5b"/><circle cx="230" cy="135" r="9" fill="#f26b5b"/><circle cx="265" cy="160" r="9" fill="#f26b5b"/><line x1="170" y1="118" x2="140" y2="252" stroke="#5b6678" stroke-width="2" stroke-dasharray="6 5"/><circle cx="180" cy="242" r="11" fill="#fff" stroke="#7b41d8" stroke-width="3" stroke-dasharray="4 3"/><text x="180" y="248" font-size="15" font-weight="700" fill="#7b41d8">?</text><text x="165" y="292" font-size="17" font-weight="700" fill="#1a2235">"เป็นประเภทใด"</text><text x="165" y="318" font-size="15" fill="#5b6678">ประเภทสัตว์ · ฝนตก / ไม่ตก</text><text x="165" y="352" font-size="15" font-weight="700" fill="#1a73e8">สัปดาห์ที่ 3</text><line x1="385" y1="262" x2="385" y2="118" stroke="#5b6678" stroke-width="2"/><line x1="385" y1="262" x2="645" y2="262" stroke="#5b6678" stroke-width="2"/><text x="600" y="256" font-size="13" fill="#5b6678">อุณหภูมิ</text><text x="393" y="126" font-size="13" fill="#5b6678" text-anchor="start">ยอดขายไอศกรีม</text><circle cx="410" cy="240" r="7" fill="#7b41d8" opacity=".75"/><circle cx="440" cy="230" r="7" fill="#7b41d8" opacity=".75"/><circle cx="470" cy="215" r="7" fill="#7b41d8" opacity=".75"/><circle cx="500" cy="205" r="7" fill="#7b41d8" opacity=".75"/><circle cx="530" cy="185" r="7" fill="#7b41d8" opacity=".75"/><circle cx="560" cy="175" r="7" fill="#7b41d8" opacity=".75"/><circle cx="590" cy="158" r="7" fill="#7b41d8" opacity=".75"/><circle cx="620" cy="140" r="7" fill="#7b41d8" opacity=".75"/><line x1="400" y1="248" x2="635" y2="133" stroke="#7b41d8" stroke-width="3"/><line x1="575" y1="262" x2="575" y2="166" stroke="#c2410c" stroke-width="2" stroke-dasharray="5 4"/><line x1="575" y1="166" x2="385" y2="166" stroke="#c2410c" stroke-width="2" stroke-dasharray="5 4"/><circle cx="575" cy="166" r="9" fill="#fff" stroke="#c2410c" stroke-width="3"/><text x="383" y="171" font-size="15" font-weight="700" fill="#c2410c" text-anchor="end">?</text><text x="500" y="292" font-size="17" font-weight="700" fill="#1a2235">"มีค่าเท่าใด"</text><text x="500" y="318" font-size="15" fill="#5b6678">ยอดขาย · ราคาคอนโด</text><text x="500" y="352" font-size="15" font-weight="700" fill="#7b41d8">สัปดาห์ที่ 6</text><ellipse cx="745" cy="165" rx="48" ry="38" fill="none" stroke="#0aa3a3" stroke-width="2.5" stroke-dasharray="7 5"/><circle cx="727" cy="155" r="8" fill="#9aa5b8"/><circle cx="755" cy="147" r="8" fill="#9aa5b8"/><circle cx="745" cy="177" r="8" fill="#9aa5b8"/><circle cx="767" cy="171" r="8" fill="#9aa5b8"/><circle cx="735" cy="187" r="8" fill="#9aa5b8"/><ellipse cx="905" cy="150" rx="48" ry="38" fill="none" stroke="#0aa3a3" stroke-width="2.5" stroke-dasharray="7 5"/><circle cx="890" cy="142" r="8" fill="#9aa5b8"/><circle cx="917" cy="136" r="8" fill="#9aa5b8"/><circle cx="903" cy="164" r="8" fill="#9aa5b8"/><circle cx="923" cy="160" r="8" fill="#9aa5b8"/><ellipse cx="830" cy="232" rx="48" ry="38" fill="none" stroke="#0aa3a3" stroke-width="2.5" stroke-dasharray="7 5"/><circle cx="810" cy="228" r="8" fill="#9aa5b8"/><circle cx="834" cy="220" r="8" fill="#9aa5b8"/><circle cx="848" cy="238" r="8" fill="#9aa5b8"/><circle cx="826" cy="244" r="8" fill="#9aa5b8"/><text x="835" y="292" font-size="17" font-weight="700" fill="#1a2235">"แบ่งได้กี่กลุ่ม"</text><text x="835" y="318" font-size="15" fill="#5b6678">กลุ่มลูกค้า · กลุ่มข่าว</text><text x="835" y="352" font-size="15" font-weight="700" fill="#0aa3a3">สัปดาห์ที่ 5</text></g>
+  </svg>
+  <div class="q" style="font-size:.64em; margin-top:.5em;">ลองจำแนก: (1) พรุ่งนี้ฝนจะตกหรือไม่ (2) อุณหภูมิสูงสุดของวันพรุ่งนี้เป็นเท่าใด</div>
+</section>
+
+<!-- ===================== 15 ML WORKFLOW ===================== -->
+<section>
+  <h2>ขั้นตอนการสร้างโมเดล ML <span class="note">— ใช้ตลอดภาคเรียน</span></h2>
+  <svg class="svgfig" viewBox="0 0 1000 395" width="1000" role="img" aria-label="5 ขั้นตอน: ตั้งคำถาม รวบรวมข้อมูล สำรวจข้อมูล สร้างโมเดล ทดสอบและนำไปใช้ และการแบ่งข้อมูลเป็นข้อมูลสอนกับข้อมูลทดสอบ">
+    <defs><marker id="ar15" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5b6678"/></marker></defs>
+    <g font-family="Sarabun" text-anchor="middle"><rect x="15" y="40" width="170" height="160" rx="16" fill="#f3edff" stroke="#cbb6ef" stroke-width="2"/><text x="100" y="98" font-size="42">❓</text><text x="100" y="134" font-size="19" font-weight="700" fill="#1a2235">ตั้งคำถาม</text><text x="100" y="158" font-size="15" fill="#5b6678">ทำนายอะไร</text><text x="100" y="188" font-size="14" font-weight="700" fill="#7b41d8">วันนี้</text><line x1="188" y1="120" x2="212" y2="120" stroke="#5b6678" stroke-width="3" marker-end="url(#ar15)"/><rect x="215" y="40" width="170" height="160" rx="16" fill="#f3edff" stroke="#cbb6ef" stroke-width="2"/><text x="300" y="98" font-size="42">🗂️</text><text x="300" y="134" font-size="19" font-weight="700" fill="#1a2235">รวบรวมข้อมูล</text><text x="300" y="158" font-size="15" fill="#5b6678">ตัวอย่างที่มีเฉลย</text><text x="300" y="188" font-size="14" font-weight="700" fill="#7b41d8">วันนี้</text><line x1="388" y1="120" x2="412" y2="120" stroke="#5b6678" stroke-width="3" marker-end="url(#ar15)"/><rect x="415" y="40" width="170" height="160" rx="16" fill="#f3edff" stroke="#cbb6ef" stroke-width="2"/><text x="500" y="98" font-size="42">🔍</text><text x="500" y="134" font-size="19" font-weight="700" fill="#1a2235">สำรวจข้อมูล</text><text x="500" y="158" font-size="15" fill="#5b6678">ตาราง · กราฟ</text><text x="500" y="188" font-size="14" font-weight="700" fill="#7b41d8">วันนี้ + สัปดาห์ 2</text><line x1="588" y1="120" x2="612" y2="120" stroke="#5b6678" stroke-width="3" marker-end="url(#ar15)"/><rect x="615" y="40" width="170" height="160" rx="16" fill="#fff" stroke="#dfe4ec" stroke-width="2"/><text x="700" y="98" font-size="42">🌳</text><text x="700" y="134" font-size="19" font-weight="700" fill="#1a2235">สร้างโมเดล</text><text x="700" y="158" font-size="15" fill="#5b6678">(Train)</text><text x="700" y="188" font-size="14" font-weight="700" fill="#7b41d8">สัปดาห์ 3</text><line x1="788" y1="120" x2="812" y2="120" stroke="#5b6678" stroke-width="3" marker-end="url(#ar15)"/><rect x="815" y="40" width="170" height="160" rx="16" fill="#fff" stroke="#dfe4ec" stroke-width="2"/><text x="900" y="98" font-size="42">🎯</text><text x="900" y="134" font-size="19" font-weight="700" fill="#1a2235">ทดสอบ → ใช้งาน</text><text x="900" y="158" font-size="15" fill="#5b6678">วัดความแม่นยำ</text><text x="900" y="188" font-size="14" font-weight="700" fill="#7b41d8">สัปดาห์ 4</text><path d="M15,30 V22 H585 V30" fill="none" stroke="#7b41d8" stroke-width="2.5"/><rect x="262" y="8" width="76" height="26" rx="13" fill="#7b41d8"/><text x="300" y="26" font-size="15" font-weight="700" fill="#fff">วันนี้</text><text x="500" y="246" font-size="19" font-weight="700" fill="#1a2235">ก่อนสร้างโมเดล ต้องแบ่งข้อมูลเป็น 2 ส่วน</text><rect x="40" y="262" width="600" height="56" rx="12" fill="#f3edff" stroke="#cbb6ef" stroke-width="2"/><text x="340" y="297" font-size="18" font-weight="700" fill="#7b41d8">📘 ข้อมูลสอน (Training) · ส่วนใหญ่</text><rect x="648" y="262" width="312" height="56" rx="12" fill="#effaf8" stroke="#bfe7e2" stroke-width="2"/><text x="804" y="297" font-size="18" font-weight="700" fill="#0aa3a3">📝 ข้อมูลทดสอบ (Test)</text><text x="340" y="346" font-size="16" fill="#1a2235">เหมือน<tspan font-weight="700">แบบฝึกหัด</tspan> · ใช้ให้โมเดลเรียนรู้</text><text x="804" y="346" font-size="16" fill="#1a2235">เหมือน<tspan font-weight="700">ข้อสอบจริง</tspan> · โมเดลไม่เคยเห็น</text><text x="500" y="384" font-size="15" fill="#5b6678">หากข้อสอบเป็นข้อเดียวกับแบบฝึกหัด คะแนนจะสูง แต่ไม่ได้แสดงว่าเข้าใจจริง</text></g>
+  </svg>
+</section>
+
+<!-- ===================== 16 ORANGE INTRO ===================== -->
 <section>
   <h2>Orange: สร้างโมเดลด้วยการเชื่อมต่อ widget โดยไม่ต้องเขียนโค้ด</h2>
   <div class="cols" style="align-items:center;">
@@ -588,7 +696,7 @@ textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); }
   <div class="note" style="font-size:.55em; margin-top:.3em;">ดาวน์โหลดฟรี: orangedatamining.com/download (ติดตั้งไว้แล้วในห้องปฏิบัติการคอมพิวเตอร์)</div>
 </section>
 
-<!-- ===================== 13 DEMO 1: OPEN + FILE ===================== -->
+<!-- ===================== 17 DEMO 1: OPEN + FILE ===================== -->
 <section>
   <h2><span class="part-tag part-demo">สาธิต</span>ขั้นที่ 1 — เปิด Orange และโหลดข้อมูล Zoo</h2>
   <div class="cols">
@@ -604,7 +712,7 @@ textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); }
   <div class="demo-check">✅ <b>ตรวจสอบผล:</b> กล่อง Info แสดง <b>101 instances</b> · <b>16 features</b> (no missing values) · <b>categorical class with 7 values</b> · <b>1 meta attribute</b> · ตาราง Columns แสดง <code>name</code>, <code>hair</code>, <code>feathers</code> … <code>type</code></div>
 </section>
 
-<!-- ===================== 14 DEMO 2: TYPES & ROLES + GLOSSARY ===================== -->
+<!-- ===================== 18 DEMO 2: TYPES & ROLES + GLOSSARY ===================== -->
 <section>
   <h2><span class="part-tag part-demo">สาธิต</span>ขั้นที่ 2 — ดู Type และ Role ในหน้าต่าง File</h2>
   <div class="step-box"><span class="step-num">5</span>ดูตาราง <b>Columns</b> ในหน้าต่าง File ซึ่งแต่ละแถวแสดง <b>Name · Type · Role · Values</b></div>
@@ -624,7 +732,7 @@ textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); }
   </div>
 </section>
 
-<!-- ===================== 15 DEMO 3: DATA TABLE ===================== -->
+<!-- ===================== 19 DEMO 3: DATA TABLE ===================== -->
 <section>
   <h2><span class="part-tag part-demo">สาธิต</span>ขั้นที่ 3 — Data Table: ดูข้อมูลทั้งตาราง</h2>
   <div class="step-box"><span class="step-num">7</span>ลากเส้นจากขอบขวาของ <b>File</b> ไปปล่อยในพื้นที่ว่าง → พิมพ์ <code>Data Table</code> → กด Enter</div>
@@ -639,7 +747,7 @@ textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); }
   </div>
 </section>
 
-<!-- ===================== 16 DEMO 4: DISTRIBUTIONS ===================== -->
+<!-- ===================== 20 DEMO 4: DISTRIBUTIONS ===================== -->
 <section>
   <h2><span class="part-tag part-demo">สาธิต</span>ขั้นที่ 4 — Distributions: การกระจายของข้อมูล</h2>
   <div class="step-box"><span class="step-num">10</span>เชื่อม <b>File</b> กับ <code>Distributions</code> (ลากเส้นใหม่จาก File)</div>
@@ -656,7 +764,7 @@ textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); }
   </div>
 </section>
 
-<!-- ===================== 17 DEMO 5: SCATTER PLOT ===================== -->
+<!-- ===================== 21 DEMO 5: SCATTER PLOT ===================== -->
 <section>
   <h2><span class="part-tag part-demo">สาธิต</span>ขั้นที่ 5 — Scatter Plot: พิจารณา 2 feature พร้อมกัน</h2>
   <div class="step-box"><span class="step-num">13</span>เชื่อม <b>File</b> กับ <code>Scatter Plot</code></div>
@@ -673,37 +781,16 @@ textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); }
   </div>
 </section>
 
-<!-- ===================== 18 DEMO 6: SAVE ===================== -->
-<section>
-  <h2><span class="part-tag part-demo">สาธิต</span>ขั้นที่ 6 — บันทึก Workflow</h2>
-  <div class="step-box"><span class="step-num">16</span>เมนู <b>File → Save As…</b> → ตั้งชื่อ <code>week1_เลขที่1_เลขที่2.ows</code> เช่น <code>week1_15_16.ows</code></div>
-  <div class="step-box"><span class="step-num">17</span>บันทึกไว้ในโฟลเดอร์ที่ครูกำหนด · <b>บันทึกด้วย Ctrl+S (Mac: ⌘+S) เป็นระยะ</b>ระหว่างทำใบงาน</div>
-  <div class="rule" style="font-size:.64em; margin-top:.5em;">
-    ไฟล์ <code>.ows</code> เก็บเฉพาะ<b>ผังงาน</b> (widget เส้นเชื่อม และการตั้งค่า) ไม่ได้เก็บข้อมูล · หากเลือก <code>zoo.tab</code> จากรายการไฟล์ของ Orange จะเปิดผังงานบนเครื่องอื่นที่ติดตั้ง Orange ได้ทันที · หากเปิดจากไฟล์ที่ครูจัดเตรียมไว้ ต้องนำไฟล์ <code>zoo.tab</code> ไปด้วยเมื่อย้ายเครื่อง
-  </div>
-  <div class="cols" style="margin-top:.6em; align-items:center;">
-    <div class="card" style="flex:1; font-size:.64em; line-height:1.6;">
-      <b>ผังงานเมื่อจบช่วงสาธิต:</b> File 1 widget เชื่อมไปยัง Data Table · Distributions · Scatter Plot
-      <span class="note">ตรวจสอบให้ตรงกับภาพด้านขวาก่อนเริ่มทำใบงาน</span>
-    </div>
-    <div class="shot" style="flex:1;"><img src="images/w1_canvas.png" alt="ผังงานที่สมบูรณ์: File เชื่อมไปยัง Data Table, Distributions และ Scatter Plot" style="max-height:250px;"></div>
-  </div>
-</section>
-
-<!-- ===================== 19 LAB OVERVIEW ===================== -->
+<!-- ===================== 22 LAB OVERVIEW ===================== -->
 <section>
   <h2><span class="part-tag part-lab">ปฏิบัติ</span>ใบงานวันนี้: 4 กิจกรรม · 20 คะแนน · 55 นาที</h2>
-  <table>
-    <tr><th style="width:36%;">กิจกรรม</th><th style="width:14%;">คะแนน</th><th style="width:16%;">เวลาแนะนำ</th><th>เครื่องมือ</th></tr>
-    <tr><td><b>1</b> Feature หรือ Target?</td><td>5</td><td>10 นาที</td><td>การวิเคราะห์ (ไม่ต้องใช้ Orange)</td></tr>
-    <tr><td><b>2</b> สำรวจข้อมูล Zoo</td><td>8</td><td>20 นาที</td><td>Data Table · Distributions · Scatter Plot</td></tr>
-    <tr><td><b>3</b> ทำนายประเภทสัตว์ชนิดใหม่</td><td>5</td><td>15 นาที</td><td>ใช้กราฟใน Orange เป็นหลักฐาน</td></tr>
-    <tr><td><b>4</b> ออกแบบชุดคำถามจำแนกสัตว์</td><td>2</td><td>10 นาที</td><td>สรุปจากกิจกรรม 2–3</td></tr>
-  </table>
-  <div class="rule" style="font-size:.62em; margin-top:.4em;">⏱ นาทีที่ 85 ของคาบ <b>สลับผู้ควบคุมเครื่อง</b> · คำตอบที่จะได้คะแนนเต็มต้อง<b>อ้างอิงตัวเลขหรือกราฟจาก Orange</b></div>
+  <svg class="svgfig" viewBox="0 0 1000 310" width="1000" role="img" aria-label="ใบงาน 4 กิจกรรม ความกว้างของแต่ละกล่องตามเวลา: กิจกรรมที่ 1 5 คะแนน 10 นาที กิจกรรมที่ 2 8 คะแนน 20 นาที กิจกรรมที่ 3 5 คะแนน 15 นาที กิจกรรมที่ 4 2 คะแนน 10 นาที สลับผู้ควบคุมเครื่องที่นาทีที่ 85">
+    <g font-family="Sarabun" text-anchor="middle"><rect x="10" y="30" width="172" height="230" rx="14" fill="#eef3fb" stroke="#cfe0fb" stroke-width="2"/><text x="96" y="86" font-size="40">🧩</text><text x="96" y="122" font-size="17" font-weight="700" fill="#1a73e8">กิจกรรมที่ 1</text><text x="96" y="148" font-size="15" fill="#1a2235">Feature หรือ</text><text x="96" y="168" font-size="15" fill="#1a2235">Target?</text><text x="96" y="214" font-size="26" font-weight="700" fill="#1a2235">5 คะแนน</text><text x="96" y="242" font-size="15" fill="#5b6678">10 นาที</text><rect x="188" y="30" width="350" height="230" rx="14" fill="#f3edff" stroke="#cbb6ef" stroke-width="2"/><text x="363" y="86" font-size="40">🔎</text><text x="363" y="122" font-size="17" font-weight="700" fill="#7b41d8">กิจกรรมที่ 2</text><text x="363" y="148" font-size="15" fill="#1a2235">สำรวจข้อมูล Zoo</text><text x="363" y="168" font-size="13" fill="#5b6678">ใช้ widget 3 ตัวใน Orange</text><text x="363" y="214" font-size="26" font-weight="700" fill="#1a2235">8 คะแนน</text><text x="363" y="242" font-size="15" fill="#5b6678">20 นาที</text><rect x="545" y="30" width="261" height="230" rx="14" fill="#effaf8" stroke="#bfe7e2" stroke-width="2"/><text x="675" y="86" font-size="40">🔮</text><text x="675" y="122" font-size="17" font-weight="700" fill="#0aa3a3">กิจกรรมที่ 3</text><text x="675" y="148" font-size="15" fill="#1a2235">ทำนายประเภท</text><text x="675" y="168" font-size="15" fill="#1a2235">สัตว์ชนิดใหม่</text><text x="675" y="214" font-size="26" font-weight="700" fill="#1a2235">5 คะแนน</text><text x="675" y="242" font-size="15" fill="#5b6678">15 นาที</text><rect x="812" y="30" width="172" height="230" rx="14" fill="#fff6ed" stroke="#ffd8b8" stroke-width="2"/><text x="898" y="86" font-size="40">🌳</text><text x="898" y="122" font-size="17" font-weight="700" fill="#c2410c">กิจกรรมที่ 4</text><text x="898" y="148" font-size="15" fill="#1a2235">ออกแบบชุดคำถาม</text><text x="898" y="168" font-size="15" fill="#1a2235">จำแนกสัตว์</text><text x="898" y="214" font-size="26" font-weight="700" fill="#1a2235">2 คะแนน</text><text x="898" y="242" font-size="15" fill="#5b6678">10 นาที</text><line x1="455" y1="18" x2="455" y2="272" stroke="#c2410c" stroke-width="3" stroke-dasharray="7 5"/><text x="455" y="298" font-size="17" font-weight="700" fill="#c2410c">🔄 นาทีที่ 85 สลับผู้ควบคุมเครื่อง</text></g>
+  </svg>
+  <div class="rule" style="font-size:.62em; margin-top:.4em;">คำตอบที่จะได้คะแนนเต็มต้อง<b>อ้างอิงตัวเลขหรือกราฟจาก Orange</b> · กิจกรรมที่ 1 ไม่ต้องใช้ Orange</div>
 </section>
 
-<!-- ===================== 20 ACTIVITY 1 ===================== -->
+<!-- ===================== 23 ACTIVITY 1 ===================== -->
 <section>
   <h2 style="margin-bottom:.2em;">กิจกรรมที่ 1 — Feature หรือ Target? <span class="note">(5 คะแนน)</span></h2>
   <div class="note" style="font-size:.58em; margin-bottom:.2em;">สำหรับแต่ละสถานการณ์ ให้ระบุ Feature อย่างน้อย 2 รายการ และ Target (หากไม่มี ให้ระบุว่า "ไม่มี") แล้วเลือกประเภทของ ML</div>
@@ -727,7 +814,7 @@ textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); }
   </table>
 </section>
 
-<!-- ===================== 21 ACTIVITY 2 (A) ===================== -->
+<!-- ===================== 24 ACTIVITY 2 (A) ===================== -->
 <section>
   <h2 style="margin-bottom:.2em;">กิจกรรมที่ 2 — สำรวจข้อมูล Zoo (ตอนที่ 1) <span class="note">(ตอนที่ 1–2 รวม 8 คะแนน)</span></h2>
   <div class="cols">
@@ -745,7 +832,7 @@ textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); }
   <div class="note" style="font-size:.56em;">ข้อสังเกต: ควรตรวจสอบ <code>hair</code> อย่างละเอียด เนื่องจากมี mammal บางตัวที่ไม่มีขน และมีสัตว์ประเภทอื่นที่มีขน</div>
 </section>
 
-<!-- ===================== 22 ACTIVITY 2 (B) ===================== -->
+<!-- ===================== 25 ACTIVITY 2 (B) ===================== -->
 <section>
   <h2 style="margin-bottom:.2em;">กิจกรรมที่ 2 — สำรวจข้อมูล Zoo (ตอนที่ 2)</h2>
   <div class="cols">
@@ -767,7 +854,7 @@ textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); }
   </div>
 </section>
 
-<!-- ===================== 23 ACTIVITY 3: MYSTERY ANIMALS ===================== -->
+<!-- ===================== 26 ACTIVITY 3: MYSTERY ANIMALS ===================== -->
 <section>
   <h2 style="margin-bottom:.2em;">กิจกรรมที่ 3 — ทำนายประเภทสัตว์ชนิดใหม่ <span class="note">(5 คะแนน)</span></h2>
   <div class="note" style="font-size:.58em; margin-bottom:.2em;">สัตว์ 3 ชนิดนี้<b>ไม่มีในข้อมูล Zoo</b> จึงเป็น "ข้อมูลใหม่" ให้ใช้กราฟใน Orange เป็นหลักฐานในการทำนายประเภท (คำตอบต้องระบุ feature และกราฟที่ใช้ ไม่ใช่อาศัยความรู้เดิมเพียงอย่างเดียว)</div>
@@ -793,7 +880,7 @@ textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); }
   </div>
 </section>
 
-<!-- ===================== 24 ACTIVITY 4 ===================== -->
+<!-- ===================== 27 ACTIVITY 4 ===================== -->
 <section>
   <h2 style="margin-bottom:.2em;">กิจกรรมที่ 4 — ออกแบบชุดคำถามจำแนกสัตว์ <span class="note">(2 คะแนน)</span></h2>
   <span class="ws-label">4.1 ออกแบบคำถามแบบ "ใช่ / ไม่ใช่" <b>ไม่เกิน 5 ข้อ เรียงตามลำดับ</b> เพื่อจำแนกสัตว์ให้ได้มากประเภทที่สุด (ใช้เฉพาะ Feature ในข้อมูล Zoo)</span>
@@ -801,27 +888,21 @@ textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); }
   <div class="note" style="font-size:.55em;">ชุดคำถามนี้คือ <b>Decision Tree ที่สร้างด้วยมือ</b> ในสัปดาห์ที่ 3 จะนำไปเปรียบเทียบกับ Decision Tree ที่ Orange สร้าง (โปรดเก็บคำตอบนี้ไว้)</div>
 </section>
 
-<!-- ===================== 25 SUMMARY ===================== -->
+<!-- ===================== 28 SUMMARY ===================== -->
 <section>
   <h2>สรุปบทเรียน</h2>
-  <div class="cols">
-    <div class="card" style="border-top:4px solid var(--blue); font-size:.64em; line-height:1.65;">
-      <b style="color:var(--blue)">สาระสำคัญ</b>
-      <ul style="margin:.25em 0 0; padding-left:1.1em;">
-        <li>ML คือการให้คอมพิวเตอร์<b>เรียนรู้กฎจากตัวอย่าง</b> แทนการให้มนุษย์เขียนกฎ</li>
-        <li><b>Feature</b> = ลักษณะที่ใช้ทำนาย · <b>Target</b> = สิ่งที่ต้องการทำนาย</li>
-        <li><b>Supervised</b> มีเฉลย · <b>Unsupervised</b> ไม่มีเฉลย</li>
-        <li>Orange: File → Data Table · Distributions · Scatter Plot</li>
-      </ul>
-    </div>
-    <div class="card" style="border-top:4px solid var(--purple); font-size:.64em; line-height:1.65;">
-      <b style="color:var(--purple)">หลักคิดสำหรับภาคเรียนนี้</b>
-      <ul style="margin:.25em 0 0; padding-left:1.1em;">
-        <li>AI ไม่ได้มีความสามารถวิเศษ แต่ค้นหารูปแบบจากข้อมูล</li>
-        <li>ตัวอย่างลำเอียง → กฎลำเอียง (กิจกรรมฟลิบ)</li>
-        <li>ข้อมูลมีข้อยกเว้นเสมอ (โลมามีครีบ · ตุ่นปากเป็ดออกไข่)</li>
-      </ul>
-    </div>
+  <div style="font-size:.6em; font-weight:700; color:var(--blue); margin:.1em 0 .3em;">สาระสำคัญ</div>
+  <div class="icon-tiles" style="grid-template-columns:repeat(4,1fr);">
+    <div class="icon-tile"><span class="em">🧠</span><div><b>ML</b><br>เรียนรู้กฎจากตัวอย่าง แทนการให้มนุษย์เขียนกฎ</div></div>
+    <div class="icon-tile"><span class="em">🎯</span><div><b>Feature → Target</b><br>ใช้ลักษณะที่ทราบ ทำนายสิ่งที่ยังไม่ทราบ</div></div>
+    <div class="icon-tile"><span class="em">🏷️</span><div><b>Supervised</b> มีเฉลย<br><b>Unsupervised</b> ไม่มีเฉลย</div></div>
+    <div class="icon-tile"><span class="em">🍊</span><div><b>Orange</b><br>File → Data Table · Distributions · Scatter Plot</div></div>
+  </div>
+  <div style="font-size:.6em; font-weight:700; color:var(--purple); margin:.6em 0 .3em;">หลักคิดสำหรับภาคเรียนนี้</div>
+  <div class="icon-tiles" style="grid-template-columns:repeat(3,1fr);">
+    <div class="icon-tile"><span class="em">✨</span><div>AI ไม่ได้มีความสามารถวิเศษ แต่<b>ค้นหารูปแบบจากข้อมูล</b></div></div>
+    <div class="icon-tile"><span class="em">⚖️</span><div><b>ตัวอย่างลำเอียง → กฎลำเอียง</b><br>(กิจกรรมฟลิบ)</div></div>
+    <div class="icon-tile"><span class="em">🐬</span><div><b>ข้อมูลมีข้อยกเว้นเสมอ</b><br>โลมามีครีบ · ตุ่นปากเป็ดออกไข่</div></div>
   </div>
   <div class="topic-banner" style="margin-top:.6em;">
     <div class="tb-l">สัปดาห์หน้า — สำรวจและทำความสะอาดข้อมูล</div>
@@ -830,7 +911,7 @@ textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); }
   </div>
 </section>
 
-<!-- ===================== 26 SUBMIT ===================== -->
+<!-- ===================== 29 SUBMIT ===================== -->
 <section>
   <h2>ตรวจความครบถ้วน แล้วบันทึกเป็น PDF</h2>
   <div class="check-panel">
@@ -839,8 +920,9 @@ textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); }
     <div class="check-msg" id="check-msg">ระบบจะตรวจสอบความครบถ้วนของใบงานโดยอัตโนมัติ</div>
     <div class="check-grid" id="check-rows"></div>
   </div>
-  <div class="rule" style="font-size:.62em; margin-top:.5em;">
+  <div class="rule" style="font-size:.62em; margin-top:.5em; line-height:1.75;">
     ส่ง 2 ไฟล์ต่อ 1 คู่: <b>PDF ใบงาน</b> + <b>ไฟล์ workflow <code>.ows</code></b>
+    <br>บันทึก workflow: ใน Orange เลือกเมนู <b>File → Save As…</b> แล้วตั้งชื่อ <code>week1_เลขที่1_เลขที่2.ows</code> เช่น <code>week1_15_16.ows</code>
   </div>
   <div style="text-align:center; margin-top:.7em;">
     <button class="dlbig" onclick="downloadPDF()">⬇ บันทึกใบงานเป็น PDF</button>
